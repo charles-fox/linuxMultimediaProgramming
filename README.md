@@ -6,7 +6,7 @@ Curator: Charles Fox
 
 Creative Commons Wikipedia Licence
 
-1 Introduction
+# Introduction
 
 TODO could I write a little book on this + my linux audio paper? 
 
@@ -30,9 +30,9 @@ CMake intro as best practice
 
 http://www.oreilly.com/openbook/
 
-Part I Graphics
+# Graphics
 
-2 Graphics architecture
+## Graphics architecture
 
 memory mapped
 
@@ -42,21 +42,21 @@ OS + window system (eg some render using GL, others don't)
 
 hence need for GLUT/SDL etc.
 
-3 OpenGL
+## OpenGL
 
-4 SDL
+## SDL
 
 vs GLUT. Unlike GLUT does not take control, up to user to call it in own loop. Easy to use full screen mode and to access keyboard and controllers, eg for games. Also has 2D graphics not using GL.
 
-5 CAD
+## CAD
 
-5.1 Collada (dae) format
+### Collada (dae) format
 
-5.2 OpenSceneGraph (uses dae)
+### OpenSceneGraph (uses dae)
 
-6 OpenCV
+## OpenCV
 
-6.1 Reading and writing
+## Reading and writing
 
 mhm
 
@@ -154,9 +154,9 @@ int main()
 
 
 
-6.2 Basic manipulations
+### Basic manipulations
 
-7 Files and formats
+## Files and formats
 
 24 bit color = 1 bytes for each of R,G,B. 32bit adds alpha byte too.
 
@@ -164,77 +164,77 @@ BGR format for historical reasons.
 
 Various color depths.
 
-7.1 Bitmap (BMP)
+### Bitmap (BMP)
 
 Windows standard. Header then raw RGB array data.
 
 
 
-7.2 ROS Image message
+### ROS Image message
 
 header includes timestamps etc as well as img size and depth.
 
-7.3 Portable Network Graphics (PNG)
+### Portable Network Graphics (PNG)
 
 compressed, like JPG. File made of chunks of labelled types.
 
-7.4 Postscript vector graphics
+### Postscript vector graphics
 
 as programming language. as used in IOX.
 
-7.5 Portable Document Fomat (pdf)
+### Portable Document Fomat (pdf)
 
-7.6 Fonts
+### Fonts
 
-8 GPU/CUDA as graphics programming?
+## GPU/CUDA as graphics programming?
 
 how graphics cards work (from lincoln)
 
-9 Applications
+## Applications
 
-GIMP
+###GIMP
 
-FreeCAD
+###FreeCAD
 
-Part II Audio
+#Audio
 
-10 How sound cards work
+## How sound cards work
 
-11 ALSA (kernel module)
+## ALSA (kernel module)
 
-11.1 input
+### input
 
-11.2 output
+### output
 
-11.3 MIDI
+### MIDI
 
 live
 
 files
 
-12 JACK
+## JACK
 
-13 LADSPA
+## LADSPA
 
-14 File formats
+## File formats
 
-14.1 wav
+### wav
 
 header + raw bytes.
 
-14.2 vorbis (ogg)
+###vorbis (ogg)
 
-15 Music synthesis
+## Music synthesis
 
-16 Speech synthesis
+## Speech synthesis
 
 festival
 
-17 Speech recognitions
+## Speech recognitions
 
 kaldi?
 
-18 Applications
+## Applications
 
 list best LADSPA plugins?
 
@@ -246,13 +246,13 @@ ZynAddSubFX
 
 musichastie?
 
-Part III Video
+# Video
 
-19 Video architecture
+## Video architecture
 
 Multimedia comes in various kinds of streams. Streams may contain video or audio or other things. These may be compressed with codecs, eg h264,theora. Combining streams eg audio+video is multiplexing. Demupliplexing is seprate from decoding. Streams can be passed over realtime protocols such as RTP or stored in container files such as mp4,ogg. problem with compressing video is that it introduces lateny, some compressions require knowledge of future frames, eg MP4. Others are designed for live use eg H264. 
 
-20 Video4Linux (V4L)
+## Video4Linux (V4L)
 
 is a standard API for video devices such as webcams, plus some drivers implementing it.
 
@@ -270,7 +270,7 @@ logitech C920 has onboard codecs: YUYV -- splits up luma (Y) and croma (Cr and C
 
 ask for available frame rates: v4l2-ctl --device=/dev/video0 --list-frameintervals=width=640,height=480,pixelformat=YUYV
 
-20.1 Loopback
+### Loopback
 
 Loopback is a system which allows you to create virtual video devices in V4L, so that other applications may access them just as if they were real devices. Like real devices they appears in /dev/videoX.
 
@@ -278,7 +278,7 @@ enable kernel module.
 
 create loopback.
 
-21 Real-time transport protocol (RTP) streaming
+## Real-time transport protocol (RTP) streaming
 
 RTP is a dedicated http-like protocol, running over UDP, for real time media (a media stream format is bit like a container file) 
 
@@ -298,7 +298,7 @@ vlc -vvv --network-caching 200 rtsp://127.0.0.1:8554/
 
 multicast?
 
-22 GStreamer
+## GStreamer
 
 linux system for media streams, based on PIPELINEs of modules. (Competitor to ffmpeg in some ways). Requires modules to go in the pipelines (eg good/bad/ugly sets, own code). Like "ROS for video" ? We are using version 1.0 for everything (0.10 also exists) Modules are binary (Cpp) executables, implementing standard API. (Like LADSPA - but not as real time? eg including buffering).
 
@@ -326,7 +326,7 @@ it would be a good habit to get used to using gstreamer instead of ffmpeg for ge
 
 #streaming to a virtual divce is called loopback and it needs to be enabled: sudo apt-get install v4l2loopback-dkms sudo modprobe v4l2loopback #(creates /sys/class/video4linux/video1 and /dev/video1 )
 
-In Ibex, use gstreamer loopback to read an incoming VLC video stream from the robot eg in RTP format, and create a gstreamer stream here into V4L. Then python/CV doesn't care what the source was, it just looks like another webcam. (ffmpeg can also do this?)
+use gstreamer loopback to read an incoming VLC video stream from the robot eg in RTP format, and create a gstreamer stream here into V4L. Then python/CV doesn't care what the source was, it just looks like another webcam. (ffmpeg can also do this?)
 
 We can also do this to stream a video file into gstreamer/loopback(?). eg. to enable multiple processes to read the same stream and process it in parallel. gst-launch-0.10 filesrc location=~/Documents/my_video.ogv ! decodebin2 ! ffmpegcolorspace ! videoscale ! ffmpegcolorspace ! v4l2sink device=/dev/video1 (maybe is a bug in gstreamer here)
 
@@ -348,7 +348,7 @@ gst-launch-1.0 filesrc location=~/data/qb/NorwichLeeds1280.mp4 ! decodebin ! vid
 
 PYTHON GSTREAMER API https://github.com/rubenrua/GstreamerCodeSnippets good tutorials
 
-23 ffmpeg
+## ffmpeg
 
 get video file info ffprobe -show_streams -i ~/data/qb/NorwichLeeds1280.mp4
 
@@ -360,15 +360,15 @@ extract section: ffmpeg -ss 00:00:05.123 -i in.mp4 -t 00:01:00.00 -c copy out.mp
 
 downsample resolution: ffmpeg -i in.avi -c:a copy -c:v libx264 -crf 23 -s:v 640x360 output.mp4
 
-24 File formats
+## File formats
 
-24.1 theora (ogg)
+### theora (ogg)
 
-25 ROS
+## ROS
 
 ROS video streams ROS, CV have differerent img formats, use cvbridge node to convert them: http://wiki.ros.org/cv_bridge/Tutorials/ConvertingBetweenROSImagesAndOpenCVImagesPython
 
-26 (C)VLC
+## (C)VLC
 
 STREAMING FROM VLC is maybe easier than gstreamer! To stream a file as RTP over UDP:
 
@@ -380,25 +380,25 @@ multicast: cvlc -vvv ~/data/qb/NorwichLeeds1280.mp4 :norm=ntsc :v4l2-width=320 :
 
 Part IV Multimedia
 
-27 Containers and streams
+## Containers and streams
 
 arbitary data streams mixed in. eg robot commands and sensors. Also subtitles, foreign language audio tracks...
 
-28 rosbag as a container
+## rosbag as a container
 
-29 H264 (skype, DVDs, mp4s, CCTV cams)
+## H264 (skype, DVDs, mp4s, CCTV cams)
 
-30 H323 (ekiga streams)
+## H323 (ekiga streams)
 
-30.1 Session Initial Protocol (SIP)
+### Session Initial Protocol (SIP)
 
 to set up calls
 
-31 Augmented reality (GL+CV)
+## Augmented reality (GL+CV)
 
 is surprisingly hard / nonstandard
 
-32 Parallel programming
+## Parallel programming
 
 ROS image format diff frm cv, cvbridge to convert requires ROS stack overhead ROS kinetic all uses python2, with opencv3 (dont change system pyton to 3 - kills ROS!) serialise/deserialise and pipe implem,entaion : serialise is slow. ROS nodelets:allow several nodes to run as a single process, no msgs.
 
@@ -416,6 +416,6 @@ filelock stuck on a lock
 
 Thrift (over TCP)
 
-33 DSP microprocessors (Texas instruments)
+## DSP microprocessors (Texas instruments)
 
-34 FPGA DSP (verilog, Chisel)
+## FPGA DSP (verilog, Chisel)
