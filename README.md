@@ -8,7 +8,7 @@ Creative Commons CC-BY Licence
 
 # Introduction
 
-TODO could I write a little book on this + my linux audio paper? 
+TODO could we write a little book on this + my linux audio paper? 
 
 theres a pakt 2017 linux sound book here, https://www.safaribooksonline.com/library/view/linux-sound-programming/9781484224960/
 
