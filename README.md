@@ -58,11 +58,7 @@ vs GLUT. Unlike GLUT does not take control, up to user to call it in own loop. E
 
 ## Reading and writing
 
-mhm
-
-\begin{VerbatimOut}{snips/openCVcppCMake/videoWrite.cpp}
-
-khj
+{
 
 #include <iostream> // for standard I/O
 
@@ -150,7 +146,7 @@ int main()
 
 }
 
-
+}
 
 
 
