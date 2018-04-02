@@ -4,7 +4,7 @@ Graphics, Audio, Video
 
 Curator: Charles Fox
 
-Creative Commons Wikipedia Licence
+Creative Commons CC-BY Licence
 
 # Introduction
 
