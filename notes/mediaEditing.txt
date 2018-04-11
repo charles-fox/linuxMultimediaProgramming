@@ -1,0 +1,11 @@
+
+/share/spandh.ami1/sw/spl/sox/v14.4.0/x86_64/bin/sox -m  -v 0.166667 -t sox "|sox /share/spandh.ami1/data/audvis/asr/mtg/en/amicorpus/IS1000b/audio/IS1000b.Array1-01.wav -p pad 0s trim 13437440s 104800s"   -v 0.166667 -t sox "|sox /share/spandh.ami1/data/audvis/asr/mtg/en/amicorpus/IS1000b/audio/IS1000b.Array1-01.wav -p pad 1s trim 13437440s 104800s"   -v 0.166667 -t sox "|sox /share/spandh.ami1/data/audvis/asr/mtg/en/amicorpus/IS1000b/audio/IS1000b.Array1-02.wav -p pad 0s trim 13437440s 104800s"   -v 0.166667 -t sox "|sox /share/spandh.ami1/data/audvis/asr/mtg/en/amicorpus/IS1000b/audio/IS1000b.Array1-02.wav -p pad 1s trim 13437440s 104800s"   -v 0.166667 -t sox "|sox /share/spandh.ami1/data/audvis/asr/mtg/en/amicorpus/IS1000b/audio/IS1000b.Array1-03.wav -p pad 0s trim 13437440s 104800s"   -v 0.166667 -t sox "|sox /share/spandh.ami1/data/audvis/asr/mtg/en/amicorpus/IS1000b/audio/IS1000b.Array1-03.wav -p pad 1s trim 13437440s 104800s"   /share/spandh.ami1/asr/dev/mtg/ac/exp.mdm/exp/lima/pylima/out/testRun/AMI-S1000B_m4016_083984_084639/iter1/mix.wav
+
+
+sox -m  -v 0.166667 -t sox "|sox /share/spandh.ami1/data/audvis/asr/mtg/en/amicorpus/IS1000b/audio/IS1000b.Array1-01.wav -p pad 0s trim 13437440s 104800s"   -v 0.166667 -t sox "|sox /share/spandh.ami1/data/audvis/asr/mtg/en/amicorpus/IS1000b/audio/IS1000b.Array1-01.wav -p pad 1s trim 13437440s 104800s" -b 16 -r 16000
+
+
+
+
+
+

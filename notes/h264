@@ -1,0 +1,4 @@
+gst-launch-1.0 rtspsrc location=rtsp://192.168.0.119:88/videoMain !  rtph264depay ! avdec_h264 ! autovideosink
+
+gst-launch-1.0 rtspsrc location=rtsp://192.168.0.119:88/videoMain userid=ibex password=hunshelf15 !  rtph264depay ! avdec_h264 ! autovideosink
+
