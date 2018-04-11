@@ -34,41 +34,34 @@
 
 \chapter*{Licence}
 
-This is my first attempt at open sourcing some written notes on github.  This text uses Creative Commons licence CC-BY-SA 3.0 to ensure its continual free distribution and use of material by others. The text is made by automatically including read compilable program files, which are also CC-BY-SA 3.0 licenced and stored together with it on github. Each program lives in its own directory with its own CMake file.  Maybe at some point we will do a Docker image which can compile them all.  It uses material from Wikipedia, www.wikipedia.org, which is released under the CC-BY-SA 3.0 licence. As a condition of CC-BY-SA, the first (title) page and this section must not be modified.  This text remixes material from many articles which can be listed by searching www.wikipedia.org for this text.  Wikipedia author names and contribution logs may be found on these articles' history pages.   The nature of computing cookbooks such as this is that short code and text quotations are often passed around between websites and documents and it is not always possible to fully trace their origins. If you are the author of such code or text and do not wish it to be used here then please let the authors know so it can be removed. The plan is to keep it on github where others can fork it and send back pull requests for incorporation in the main version, both to grow the text and to keep all the software versions up to date. Github also allows readers to edit the text within the github webpage, without having to download to their own machine, this is a really quick and easy way to fix things so please if you are reading this just go ahead, fork, edit and send a pull request to help keep up to date. If you have made useful edits and would like to add your name to the author list below then please let me know.
-
+This text uses Creative Commons licence CC-BY-SA 3.0 to ensure its continual free distribution and use of material by others. The text is made by automatically including read compilable program files, which are also CC-BY-SA 3.0 licenced and stored together with it on github. Each program lives in its own directory with its own CMake file.  It uses material from Wikipedia, www.wikipedia.org, which is released under the CC-BY-SA 3.0 licence. As a condition of CC-BY-SA, the first (title) page and this section must not be modified.  This text remixes material from many articles which can be listed by searching www.wikipedia.org for this text.  Wikipedia author names and contribution logs may be found on these articles' history pages.   The nature of computing cookbooks such as this is that short code and text quotations are often passed around between websites and documents and it is not always possible to fully trace their origins. If you are the author of such code or text and do not wish it to be used here then please let the authors know so it can be removed. 
 Current authors include: Charles Fox, ADD NAMES HERE
 
 \tableofcontents
 
 \chapter{Introduction}
 
-idea: select the best of breed of everything and present together.
-Not a detailed tech manual. Can refer reader to web APIs etc.
+This is my first attempt at open sourcing some written notes using github and Creative Commons like what my friend Robin Lovelace does. I am collecting all my little text files and code snippits from over the years into one place and thought I might as well share them in case they are useful to anyone.  As I just finished writing my Springer book "Data Science for Transport" it's easy to reuse the book template, though this is just intended as a loose collection of stuff, not an actual book itself.
 
-hence what we choose to miss out is aslo improtant. eg dont cover
-OSS. Only latest, one of everything. Find tools that work toghehter.
-One view of how to do it.
+The idea is to select only the best of breed of everything and present them together. It's like a Linux distribution in making these selections. But it is a distribution of ideas and choices rather than of actual software. (unless we do a Docker as well).   As such, the choice of what to leave out and not cover is also important. The idea is to present a single, best, toolkit, of tools which work and which also work well with one another as in a distro.
 
-http://www.oreilly.com/openbook/
+It is not a detailed tech manual. The purpose is to present the best tools for media tasks, and to give basic but compilable hello-world examples of code to help get new project started. I use these code snippets all the time when I need to make small new projects based on libraries I might not have used for a while and need to remember how to set them up.  After that it's usually easy to consult their big docs on the net to get details for the specific things I need to do.
 
-Similar books:
-theres a pakt 2017 linux sound book here, https://www.safaribooksonline.com/library/view/linux-sound-programming/9781484224960/
+Maybe one day this might get big enough to make an actual but fully open-source and continually updated commuity book as sometimes printed by \url{www.oreilly.com/openbook/}.  Continual updating would be really important as like a distro all these tool are constantly changing.
 
-begin{lstlisting}
-place your source code here
-\end{lstlisting}
+The plan is to keep it on github where others can fork it and send back pull requests for incorporation in the main version, both to grow the text and to keep all the software versions up to date. Github also allows readers to edit the text within the github webpage, without having to download to their own machine, this is a really quick and easy way to fix things so please if anyone out there happens to be reading this just go ahead, fork, edit and send a pull request to help keep up to date. If you make useful edits and would like to add your name to the author list then please ask and I will add it.
 
-talk about IOX, this was written during it.
+\section{Known similar documents}
+- Pakt 2017 linux sound book, \url{www.safaribooksonline.com/library/view/linux-sound-programming/9781484224960/}
 
-We need to use C so we can see the bits and bytes and understand what's going on.
+\section{C with CMake}
 
-
-\section{CMake}
+We need to use C so we can see the bits and bytes and understand what's going on.  Many of the tools have Python and other wrappers which are great to use later, but only C lets us see the actual data representations which are important in understanding multimedia in detail.  It's usually best to learn the C version first then switch to a Python or other language wrapper later if needed.
 
 \lstinputlisting{snips/cmake/tutorial.cpp}
 \lstinputlisting{snips/cmake/CMakeLists.txt}
 
-CMake is the modern build system for C++ on Linux and also other platforms (the C stands for "cross-platform).  To use it, first write a program and cmake file as above. Then run,
+CMake is the best modern build system for C++ on Linux and also other platforms (the C stands for "cross-platform).  To use it, first write a program and cmake file as above. Then run,
 \begin{lstlisting}
 cmake .
 make
@@ -185,7 +178,7 @@ Panda3D - unity-like - developed by Disney?
 Blender game engine
 
 
-\chapter(Cairo vector graphics)
+\chapter{Cairo vector graphics}
 
 \chapter{CAD}
 FreeCAD
