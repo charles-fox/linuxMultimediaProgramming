@@ -1,0 +1,3 @@
+/home/charles/Dropbox/test/cl/CMakeFiles/edit_cache.dir
+/home/charles/Dropbox/test/cl/CMakeFiles/rebuild_cache.dir
+/home/charles/Dropbox/test/cl/CMakeFiles/go.dir

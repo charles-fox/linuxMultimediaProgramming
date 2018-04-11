@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/charles/Dropbox/linuxMultimedia/snips/sdl_gl/sdlgl.cpp
+SDL/SDL.h
+-
+GL/gl.h
+-
+GL/glu.h
+-
+stdio.h
+-
+stdlib.h
+-
+

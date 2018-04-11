@@ -1,0 +1,3 @@
+/home/charles/Dropbox/test/c/cmake/CMakeFiles/edit_cache.dir
+/home/charles/Dropbox/test/c/cmake/CMakeFiles/rebuild_cache.dir
+/home/charles/Dropbox/test/c/cmake/CMakeFiles/Tutorial.dir

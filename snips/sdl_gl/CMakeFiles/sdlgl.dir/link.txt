@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/sdlgl.dir/sdlgl.cpp.o  -o sdlgl -rdynamic -lGL -lGLU -lSDL 

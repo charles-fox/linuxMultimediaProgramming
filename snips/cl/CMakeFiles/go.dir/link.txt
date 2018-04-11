@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/go.dir/go.cpp.o  -o go -rdynamic -lOpenCL 
