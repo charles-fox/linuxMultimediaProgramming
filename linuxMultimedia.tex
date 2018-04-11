@@ -53,7 +53,7 @@ The plan is to keep it on github where others can fork it and send back pull req
 
 \section{Known similar documents}
 - Pakt 2017 linux sound book, \url{www.safaribooksonline.com/library/view/linux-sound-programming/9781484224960/}
-
+- \url{en.wikibooks.org/wiki/Configuring_Sound_on_Linux} 
 \section{C with CMake}
 
 We need to use C so we can see the bits and bytes and understand what's going on.  Many of the tools have Python and other wrappers which are great to use later, but only C lets us see the actual data representations which are important in understanding multimedia in detail.  It's usually best to learn the C version first then switch to a Python or other language wrapper later if needed.
@@ -318,6 +318,26 @@ firewire system (is a bus, chained). FFADO driver (IML setup).
 USB system (p2p)
 
 
+\section{Example: MAUDIO USB card}
+    inputs:
+	signal dials: -40db control.   Pad: extra -20db.
+    flow model:
+	all inputs have direct JACK outputs
+		the box also has a line out and a phones out
+	A/B button-out :patches line out to phones when OUT(A);  
+		(spdif to phones when button-in, B)
+		so ALWAYS button-OUT if not using any SPDIFs
+	Mix: Left: live inputs to phone.  Right: PC to phones
+		should be all-right
+	Output: volume of line out
+	Level: volume of phones
+	gtr: inst, vol at 45deg north east
+
+	#NB sampled audio goes out of the MAUDIO through  hw:1,1.  That's nonstanard, defaults are usually hw1,0.  So need to set to listen to hw:1,1.
+
+	#2015: on XPS machine -- need hw2,0 OUTPUT and hw2,1 INPUT (different!)  mich ch 1
+
+
 \chapter{ALSA (kernel module)}
 
 
@@ -336,6 +356,37 @@ files
 \chapter{Spatial audio: OpenAL}
 
 \chapter{JACK}
+
+\section{setup}
+\url{http://jackaudio.org/faq/linux_rt_config.html}
+
+\begin{lstlisting}
+    jackd -d alsa - r48000 -p128 -n2  -P hw:1,0 -C hw:1,1    #works for mic in socket1 of MAUDIO, and for MAUDIIO playboack (not for mic in s2?)
+
+	jackd -dalsa -dhw:0 -r48000 -p128 -n2  #INTERNAL soundcard (not -p64 kills ard3)
+	
+	killall -9 jackd
+
+qjackctl: (not needed if use JACK cmd above)
+	interface (default) (greyed out)
+	in dev: hw:1,1
+	out dev: hw:1,0	
+	chs 2 in 2 out
+	128 frames.
+\end{lstlisting}
+
+\section{JACK tools}
+NB we need to record form the nonstandard hw1,1 , not the default hw1,0:
+
+\begin{lstlisting}
+ /usr/bin/jackd -P65 -u -dalsa -r48000 -p128 -n2 -Xseq -D -Chw:1,1 -Phw:1,0 -i2 -o2    #works (and in qjackctl)
+
+killall -9 jackd			#to kill
+ecasound -f:16,2,48000 -i jack,system -o rec.wav  			 #record -- not working** (16bit,2ch,48kHz)
+ecasound -i output.wav -o jack,system 					 #playback
+
+meterbridge 1   #to open a test app - use qjackctl to connect
+\end{lstlisting}
 
 
 \chapter{LADSPA}
@@ -356,9 +407,13 @@ NB 4Gb limit? still dont know how to fix this/ repair from header.
 \section{Sox and soxi}
 Sox is the swiss army knife of the audio command line. Its friend soxi gives information about audio files.
 \begin{lstlisting}
+
 	sox k.wav -n stat   #see length(seconds)
 	sox in.wav out.wav trim start_time dur			
 	sox in.wav out.wav pad start_pad_sec end_pad_sec
+
+	sox ts.wav -b 16 output.wav rate -s -a 48000 dither -s    #upsample
+	sox mono.wav -c 2 stereo.wav                              #make stereo fm mono (JACK cares a lot about right types here)
 
 	#delay and weighed mix.  -p is used in place of output fn, to pipe out.
 	sox -m -v 0.9 a.wav   -v 0.5 '|sox a.wav -p pad 1' out.wav    #in seconds
@@ -389,6 +444,17 @@ Sample Encoding: 32-bit Signed Integer PCM
 
 \end{lstlisting}
 
+\section{ALSA command line tools}
+\begin{lstlisting}
+
+aplay -D hw:0,0 stereo.wav   #PC
+aplay -D hw:0 stereo.wav     #PC
+aplay -D hw:1,0 stereo.wav     #USB
+aplay -D hw:1,1 stereo.wav     #silent (spdif?)
+
+arecord -f cd -D hw:1,1 g.wav           #works**
+
+\end{lstlisting}
 
 \chapter{Music synthesis}
 
@@ -409,9 +475,56 @@ list best LADSPA plugins?
 
 LMMS
 
-Ardour
+\section{Ardour 3}
 
-ZynAddSubFX
+just create new audio track, should be already to record. 
+	(right click in track space, add track)
+	(dont need to add audio bus patch) 
+	for second and more tracks:
+		might need to set to hardware in 1 vs 2
+			use icons in top right under "Audio2"
+
+flow model:
+	jack,system is conencted auto to the Ardour Master
+	the master is connected to any track with record enabled.
+
+region = one segment of wav or midi
+
+SPACE: 		play/stop
+SHIFT-SPACE:  	play and record  
+SHIFT-R:  	en/diable record (while playing)
+(CTL-SPACE: 	stop and forget record)
+
+PUNCH markers are set by ctrl-drag in marker field. 
+	Enable puch IN OUT at top right of screen. (under DSP) 
+	Press [ to set markers + drag them
+	Start record (not just play)
+	NB this records NEW WAV FILE doesn't destory old one
+ 
+L: 	en/disable loop play
+	works similar to punch, using ] instead of [
+	each version is separate WAV, keep old ones	
+
+cursors: 	move to start/end of regions
+shift-cursors: 	cue (use spa  ce to stop)
+ctl-cursor 	move to marks (CF set, was keypad)
+
+HOME/END goto start/end
+
+6: Auto-Return enable: back to play start location (after play or rec)
+7: clicks
+
+to0 SPLIT: select region, position playhead, press S
+
+
+ARDOUR editing
+	S split region at edit pount
+	use trim bar (region name area) to crop left and right ends
+
+ARDOUR CONFIGS:
+	preferences - default dir
+
+\section{ZynAddSubFX}
 
 musichastie?
 
@@ -564,6 +677,11 @@ gst-launch-1.0 filesrc location=\textasciitilde{}/data/qb/NorwichLeeds1280.mp4
 
 PYTHON GSTREAMER API https://github.com/rubenrua/GstreamerCodeSnippets
 good tutorials
+
+gst-launch-1.0 rtspsrc location=rtsp://192.168.0.119:88/videoMain !  rtph264depay ! avdec_h264 ! autovideosink
+
+gst-launch-1.0 rtspsrc location=rtsp://192.168.0.119:88/videoMain userid=charles password=PASSWORD !  rtph264depay ! avdec_h264 ! autovideosink
+
 
 
 \chapter{ffmpeg}
