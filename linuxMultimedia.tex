@@ -48,6 +48,7 @@ The idea is to select only the best of breed of everything and present them toge
 It is not a detailed tech manual. The purpose is to present the best tools for media tasks, and to give basic but compilable hello-world examples of code to help get new project started. I use these code snippets all the time when I need to make small new projects based on libraries I might not have used for a while and need to remember how to set them up.  After that it's usually easy to consult their big docs on the net to get details for the specific things I need to do.
 
 Maybe one day this might get big enough to make an actual but fully open-source and continually updated commuity book as sometimes printed by \url{www.oreilly.com/openbook/}.  Continual updating would be really important as like a distro all these tool are constantly changing.
+lyP
 
 The plan is to keep it on github where others can fork it and send back pull requests for incorporation in the main version, both to grow the text and to keep all the software versions up to date. Github also allows readers to edit the text within the github webpage, without having to download to their own machine, this is a really quick and easy way to fix things so please if anyone out there happens to be reading this just go ahead, fork, edit and send a pull request to help keep up to date. If you make useful edits and would like to add your name to the author list then please ask and I will add it.
 
@@ -142,7 +143,7 @@ Hence, to use the OpenGL requires an implementation library, such as Mesa, and u
 
 As modern systems operate from within a desktop window manager, which often gets implemented through OpenGL itself, some method is needed to prepare part of the screen and/or a window in the windowing system for the programmer's own OpenGL commands to run.  This is called a GL context.  It is provided by libraries such as SDL.   The programmer cannot give OpenGL commands directly because the window manager has already bagged the status of "master" of libDRM, and has instructed it not to take commands from anyone else.  SDL is given special permission by the window manager to pass its own commands (via the OpenGL implementations) to libDRM.  libDRM will then see that they coem from an allowed source and let them through to the kernel and GPU.
 
-Simple DirectMedia Layer (SDL) is a cross-platform software development library designed to provide a hardware abstraction layer for computer multimedia hardware components including OpenGL graphics cards, and also keyboards and joysticks.  It is used in 3D games including 0AD, FreeCiv, Oolite, and in 2D games such as Secret Maryo Chnonicles and many others in Humble Bundles.  (Traditionally, a different link library, GLUT, was used. GLUT's programming model requires it to take full control of your program and communicate only through callbacks, while SDL keeps the user in control and assumes they will call its functions regularly. We consider the GLLUT model to be "rude" in takign over control, and this may conflict with other tools which also ask for control, such as ROS.  GLUT is considered old and dying.  Other altneratives include GLFW).
+Simple DirectMedia Layer (SDL) is a cross-platform software development library designed to provide a hardware abstraction layer for computer multimedia hardware components including OpenGL graphics cards, and also keyboards and joysticks.  It is used in 3D games including 0AD, FreeCiv, Oolite, and in 2D games such as Secret Maryo Chnonicles and many others in Humble Bundles.  (Traditionally, a different link library, GLUT, was used. GLUT's programming model requires it to take full control of your program and communicate only through callbacks, while SDL keeps the user in control and assumes they will call its functions regularly. We consider the GLLUT model to be "rude" in takign over control, and this may conflict with other tools which also ask for control, such as ROS.  GLUT is considered old and dying.  Other altneratives include GLFW and pyglet for Python).
 
 \lstinputlisting{snips/sdl_gl/sdlgl.cpp}
 \lstinputlisting{snips/sdl_gl/CMakeLists.txt}
@@ -179,6 +180,8 @@ Blender game engine
 
 
 \chapter{Cairo vector graphics}
+
+also Pango font rendering ?
 
 \chapter{CAD}
 FreeCAD
@@ -347,12 +350,6 @@ USB system (p2p)
 \section{output}
 
 
-\section{MIDI}
-
-live
-
-files
-
 \chapter{Spatial audio: OpenAL}
 
 \chapter{JACK}
@@ -390,6 +387,64 @@ meterbridge 1   #to open a test app - use qjackctl to connect
 
 
 \chapter{LADSPA}
+
+
+\section{MIDI}
+
+live
+
+files
+
+
+
+\chapter{Music notation}
+
+\section{Lilypond file format and engine}
+Lilypond names both a format and a program. The program is like Latex for music scores. It creates extremely high-end, professional "engravings" of scores, including fine details equivilent to Latex's kerning and ligatures. Such as tweaking the exact size of note heads and stems, setting stem directions, and hundreds of other small rules passed down from centuries of beautiful score engraving tradition.   The Lilyond program is not an editor and works from a latex-like source file specifying the musical, but not graphical, objects, such as bars, notes, and time signatures. These files can be written by hand or by an editor program such as Denemo (see below). These files do not contain any high level semantic information and they do not show relationships between simultenoys staves (e.g. that a note in one staff is occuring at the saem time as in another) or enable transpoition -- they only represent the low-level musical note content needed for engraving. So you probably don't want to cide directly in LilyPond files. You want to code in some higher level representation then use another program to export it to Lilypond format. 
+
+LilyPond can however do basic transposition from within its code -- usign a transpose command and environment. This is sufficient for quick conversions eg. for Bb jazz isntruments. But not going to be able to do hierarachical stuff.
+
+eg. to write a Schenkerian composition program: use its won format and notation at high level; export to MusicXML; convert to LilyPond; engrave.
+
+Sampel Liypond source:
+\lstinputlisting{snips/lilypond/test.ly}
+
+To isntall and compile to pdf:
+
+\begin{lstlisting}
+sudo apt-get install lilypond
+lilypond test.ly
+\end{lstlisting}
+
+Notations:
+\begin{lstlisting}
+c4 d4 e4 f4  : crochets. 4 means quarter note.
+r1 r2 r4 r8  : rests
+a4. dotted quarter-note
+ds4 : d sharp
+a,4 a'4 : octave registers CHANGES. assumes all followign notes in same register.
+<c4 e4> : notes together
+(c4 e4) : slur notes
+\repeat volta 2 { c1 | e1}  : repeat section
+c4^"super" e4_"sub" : text above and below note 
+\end{lstlisting}
+
+Dynamics are considers as additional over staves.  (LilyPond's name is a pun on an old MIDI editor, RoseGarden).
+
+\section{MusicXML: the interchange format}
+Represents scores at a similar level to Lilypond, but is used by many more programs. Specifically there is a MusicXML to Lilypond converter.  It can also be rendered to the pngs used in Wikipedia music pages.  Claims large industry backing (eg. Hollywood score writing commercial systems).
+
+\section{Denemo score editor GUI}
+Is designed specifically as a front end to LilyPond, and is to LilyPond as LyX is to Latex.  A what you see if what you mean GUI with its own quick, cheap and chearful interactive graphical screen display, which gets swapped for the advanced engraver when we are done.
+
+(Does not yet export MusicXML but may do soon? CHECK?)
+
+vs - FrescoBaldi - a Lilypond editor which does have MusicXML output? Tis one is not pointy clicky like LyX, is like TexPad, editing the raw lilypond code but with tools to autocompile and display etc.
+
+Includes hum input + assign rhythms to the hummed p[itches
+
+Curosr updown pitch, or type letter name (register nearest to cursor pitch).  Int number keys (use keypad) for durations.
+
 
 
 \chapter{File formats}
