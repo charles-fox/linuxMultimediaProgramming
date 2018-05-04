@@ -148,7 +148,12 @@ Simple DirectMedia Layer (SDL) is a cross-platform software development library 
 \lstinputlisting{snips/sdl_gl/sdlgl.cpp}
 \lstinputlisting{snips/sdl_gl/CMakeLists.txt}
 
-GL textures
+\subsection{GL/SDL Textures}
+
+GL textures are simple bitmap images, ie. arrays of raw data in a specified format. (Such as 32bit RBGA color bytes).  SDL wraps these in a lihtweight struct which adds size and format infromation to the raw data. The raw data can still be accessed and passed to GL as an element in the struct (http://sdl.beuc.net/sdl.wiki/SDL_Surface):
+
+\lstinputlisting{snips/sdl_image_texture/test.cpp}
+
 GL animation
 
 Once you have a context set up, you can apply any GL commands. The classic tutorial on pure GL programming is NeHe's website.  The classic reference is the OpenGL Red Book.
@@ -760,10 +765,10 @@ downsample resolution: ffmpeg -i in.avi -c:a copy -c:v libx264 -crf
 
 \begin{lstlisting}
 #trimmign with ffmpeg:
-ffmpeg -i 140712-g1_s1_10-09-14_c2_45min.avi  -vcodec copy -acodec copy -ss 00:00:00 -t 00:00:04 out.avi
+ffmpeg -i in.avi -vcodec copy -acodec copy -ss 00:00:00 -t 00:00:04 out.avi
 
 #downsample HD video
-ffmpeg -i hd.mts -r 30 -s 960x540 out.mp4
+ffmpeg -i in.mts -r 30 -s 960x540 out.mp4
 \end{lstlisting}
 
 \chapter{File formats}
