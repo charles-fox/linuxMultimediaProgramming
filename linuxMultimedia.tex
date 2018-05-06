@@ -154,7 +154,13 @@ GL textures are simple bitmap images, ie. arrays of raw data in a specified form
 
 \lstinputlisting{snips/sdl_image_texture/test.cpp}
 
-GL animation
+\subsection{Video textures with CV/GL/SDL}
+
+Suppose we are making a 3D video game set in a city and want to render a video of the Joker's threat to Gotham City on a giant screen on the side of a skyscraper.   Here we read frames usign OpenCV and push them into GL textures in real time.   This method is also useful fo AR if we want to just render a flat video image in GL -- it is done in exactly the saem way.  It is fast because the texture transfer is done via DMA on the GL command, so doesn't take up CPU time.
+
+\lstinputlisting{snips/gl_video_texture.cpp}
+
+\subsection{GL animation}
 
 Once you have a context set up, you can apply any GL commands. The classic tutorial on pure GL programming is NeHe's website.  The classic reference is the OpenGL Red Book.
 
