@@ -104,7 +104,7 @@ Different user-space graphics libraries then call libDRM.   These typically impl
 
 All of the above process can be implemented using different interfaces between the DRM, libDRM and user-space library implementation.   It is hard to find exact details. AFAIK the user-space library implementation (eg mesa-opengl-neuveau) translates the GL call into NVidia Tesla insrtuctins, and passes those instructions to libDRM and to the kernel module. Then libDRM and the kernel module deal with buffering them and putting them on the bus. [TODO prove this?]
 
-(To restate this: the GPU does not itself understand OpenGL, DirectX or CUDA.  These are highevel user APIs. The GPU itself understands from a GPU ISA such as Nvidia Tesla. Hence, one does not buy an OpenGL or DirectX card, one buys a Tesla card, then obtains libraries to translate OpenGL or DirectX to Tesla.)
+(To restate this: the GPU does not itself understand OpenGL, DirectX or CUDA.  These are highevel user APIs. The GPU itself understands from a GPU ISA such as Nvidia Pascal. Hence, one does not buy an OpenGL or DirectX card, one buys an NVidia Pascal card, then obtains libraries to translate OpenGL or DirectX to Nvidia Pascal.)
 
 \subsection{Windowing systems}
 X is an API, not an implementation.  Very old-fashioned X windowing implementations (such as XFree86) used to translaste X calls into memory-mapped pixels.  More recent implementations (such as not quite up to date x.org) used to translate them into libDRM commands.   Modern impementations (i.e. x.org's latest GLAMOUR) translate them into OpenGL calls then pass them to the OpenGL system. (This is also the case for the new Wayland replacement for X, and for Wayland's X emulation layer.)  So today everything goes through mesa-opengl-neuveau, lib-drm-neuvueu, and neuveua then on the bus and into the GPU.  Even a full-screen game is likely to run inside a large screen-covering window as part of this system.
@@ -266,6 +266,13 @@ as programming language. as used in IOX.
 
 
 \section{Fonts}
+Copy the .ttf file and paste it inside ~/.fonts folder, ie /home/username/.fonts folder. Create one if you dont already have one.
+
+Now run
+
+sudo fc-cache -fv
+
+
 
 
 \chapter{GPU OpenCL as graphics programming?}
@@ -411,14 +418,46 @@ files
 
 \chapter{Music notation}
 
-\section{Lilypond file format and engine}
-Lilypond names both a format and a program. The program is like Latex for music scores. It creates extremely high-end, professional "engravings" of scores, including fine details equivilent to Latex's kerning and ligatures. Such as tweaking the exact size of note heads and stems, setting stem directions, and hundreds of other small rules passed down from centuries of beautiful score engraving tradition.   The Lilyond program is not an editor and works from a latex-like source file specifying the musical, but not graphical, objects, such as bars, notes, and time signatures. These files can be written by hand or by an editor program such as Denemo (see below). These files do not contain any high level semantic information and they do not show relationships between simultenoys staves (e.g. that a note in one staff is occuring at the saem time as in another) or enable transpoition -- they only represent the low-level musical note content needed for engraving. So you probably don't want to cide directly in LilyPond files. You want to code in some higher level representation then use another program to export it to Lilypond format. 
+\section{MusicML}
+Is a (not very) human read-writable XML standard backed by many large companies and projects, including beign the standard for music notation on Wikipedia.
+
+(Unliek Lilypond) it would not be nice to write by hand. It is better to use a graphic free editor such as MuseScore.
+
+Can be converted to lilypond for engraving with musicxml2ly tool (ships with Lilypond). It is not usually possible to go the other way. Hence editing should be done in MusicXML and only exported one-way to Lilypond for engraving.  Don't write in Lilypond as its not transferrable out. (until someone writes a converter).
+
+Due to its horrific XML verbosity (several lines of text to describe each note) there is a zipped version included in the specification. As with other XMLs, the philosophy is to be human readable but verbose then worry about compression separately.
+
+
+Ontology of MusicXML: harmony changes and section names are discrete events put into measures at points.  Lyrical sylablus are tagged to individual notes. (which make it hard to write lyrics separetly from the music; but forces the music to have the correct maps to the notes.  As usual, MusicXML is not for composing in, it's a low-level description of the notes. Might want to use some other ABC like notation for lyrics and compile to here?)
+
+\section{MuseScore}
+Is standard opensource graphical MusicXML editor. Has its own format too.   
+
+Has semantic guitar chords (appear as 'harmony' objects in XML). Transposable (Notes->Transpose). Can play back as MIDI. To split music into sections eg. verse, chorus, use a 'section break', show by 'new system' flag in the XML, plus add>text>rehearsal mark. (The mark names a point not a segment; but we can interpret as namign the segment up to the next mark or end.)
+
+To enter: press N for note entry mode. Press number 1-8 for duration. Type note letter name C,D,E etc or 0 for rest. They assume the current octave.  Cursor keys to move back and forward in time, and to move notes up and down. Also mouse entry.
+
+MuseScore.com has a large library of standard music to download, eg. Beatles, Mozart, in own and MusicXML formats.
+
+\section{ABC notation}
+
+A common standard for folk music especially.   Words are paired with {\em lines} of music, usign hyphens and ties to link them to the notes.
+
+Can be converted to (and partially from?) MusicXML.
+
+Lilypond format is based on it but extends it a lot.
+
+Maybe a nice format for MusicHastie-like systems to all standardize upon.
+
+
+\section{Lilypond engraving}
+Lilypond is like Latex for music scores.  It names both a file format and a program.  It creates extremely high-end, professional "engravings" of scores, including fine details equivilent to Latex's kerning and ligatures. Such as tweaking the exact size of note heads and stems, setting stem directions, and hundreds of other small rules passed down from centuries of beautiful score engraving tradition.   The Lilyond program is not an editor and works from a latex-like source file specifying the musical, but not graphical, objects, such as bars, notes, and time signatures. These files can be written by hand or by an editor program such as Denemo (see below). These files do not contain any high level semantic information and they do not show relationships between simultenoys staves (e.g. that a note in one staff is occuring at the saem time as in another) or enable transpoition -- they only represent the low-level musical note content needed for engraving. So you probably don't want to cide directly in LilyPond files. You want to code in some higher level representation then use another program to export it to Lilypond format. 
 
 LilyPond can however do basic transposition from within its code -- usign a transpose command and environment. This is sufficient for quick conversions eg. for Bb jazz isntruments. But not going to be able to do hierarachical stuff.
 
 eg. to write a Schenkerian composition program: use its won format and notation at high level; export to MusicXML; convert to LilyPond; engrave.
 
-Sampel Liypond source:
+Sample Liypond source:
 \lstinputlisting{snips/lilypond/test.ly}
 
 To isntall and compile to pdf:
@@ -443,32 +482,38 @@ c4^"super" e4_"sub" : text above and below note
 
 Dynamics are considers as additional over staves.  (LilyPond's name is a pun on an old MIDI editor, RoseGarden).
 
-\section{MusicXML: the interchange format}
-Represents scores at a similar level to Lilypond, but is used by many more programs. Specifically there is a MusicXML to Lilypond converter.  It can also be rendered to the pngs used in Wikipedia music pages.  Claims large industry backing (eg. Hollywood score writing commercial systems).
-
-\section{Denemo score editor GUI}
+\subsection{Denemo score editor GUI}
 Is designed specifically as a front end to LilyPond, and is to LilyPond as LyX is to Latex.  A what you see if what you mean GUI with its own quick, cheap and chearful interactive graphical screen display, which gets swapped for the advanced engraver when we are done.
 
-(Does not yet export MusicXML but may do soon? CHECK?)
-
-vs - FrescoBaldi - a Lilypond editor which does have MusicXML output? Tis one is not pointy clicky like LyX, is like TexPad, editing the raw lilypond code but with tools to autocompile and display etc.
-
-Includes hum input + assign rhythms to the hummed p[itches
+Includes human input + assign rhythms to the hummed pitches.
 
 Curosr updown pitch, or type letter name (register nearest to cursor pitch).  Int number keys (use keypad) for durations.
 
+Generally we don't want to compose or edit in Denemo because then we are stuck in Lilypond world and can't get back to MusicXML.  We might thus use Denemo to add really fine grained engraving detail to a score done in MuseScore, just for priting..
+
+(Does not yet export MusicXML but may do soon? CHECK?)
+
+\sdubsection{Frescobaldi}
+FrescoBaldi - a Lilypond editor which does have MusicXML output? Tis one is not pointy clicky like LyX, is like TexPad, editing the raw lilypond code but with tools to autocompile and display etc.
 
 
-\chapter{File formats}
-
+\chapter{Audio file formats}
 
 \section{wav}
 
-header + raw bytes.
+header + raw bytes. (raw = Pulse Code Modulation) eg. 32 bit audio = 4 bytes per sample, from linearly spaced possible values. (32 bit here is the 'bit depth').
 NB 4Gb limit? still dont know how to fix this/ repair from header.
 
-\section{vorbis (ogg)}
+Since recently - wav also supports floating point representations (which avoid clipping but require more computation).
 
+\section{vorbis}
+used in ogg containers.
+
+\section{AAC}
+Audio format often used in mp4 containers along with videos.
+
+\sectin{FLAC}
+Lossles.
 
 \chapter{Tools}
 \section{Sox and soxi}
@@ -610,6 +655,10 @@ mp4,ogg. problem with compressing video is that it introduces lateny,
 some compressions require knowledge of future frames, eg MP4. Others
 are designed for live use eg H264. 
 
+Rough rule for video CPU usage: on a 2017 laptop, coding or decoding one video does not start the CPU fan; doing two or more does. (Possibly they are designed to this, as watchign a single video as a consumer is much more common that doing anything fancier.)  Consequences: if we want to run two programs than run on the same video stream, the fan is needed. They must either share an encoded stream and each run decoders, so we have two decode processes; or decode one but then stream high-bandwidth raw images around, which also starts the fan! Having the fan on for long periods has previously melted by CPU glue and required sending my laptop to Germany to have it replaced so is not recommended.
+
+eg. playing 2 hi-res youtubes in cinema mode at once takes about 200\% CPU and starts the fan. (NB youtube does many clever things such as ceasing to download video when the window is not visible; need to open the windows for a full test.)
+
 IP cameras - streaming.  vs. save to container files.
 
 \chapter{Video4Linux (V4L)}
@@ -637,161 +686,42 @@ ask for available frame rates: v4l2-ctl --device=/dev/video0 --list-frameinterva
 
 
 \section{Loopback}
+\label{loopback}
 
 Loopback is a system which allows you to create virtual video devices
 in V4L, so that other applications may access them just as if they
 were real devices. Like real devices they appears in /dev/videoX.
 
-enable kernel module.
-
-create loopback.
-
-
-
-
-\chapter{GStreamer}
-
-linux system for media streams, based on PIPELINEs of modules. (Competitor
-to ffmpeg in some ways). Requires modules to go in the pipelines (eg
-good/bad/ugly sets, own code). Like \textquotedbl{}ROS for video\textquotedbl{}
-? We are using version 1.0 for everything (0.10 also exists) Modules
-are binary (Cpp) executables, implementing standard API. (Like LADSPA
-- but not as real time? eg including buffering).
-
-includes reading and writing to/from v4l devices. eg. stream things
-into new virtual v4l devices for others to read. also UDP data stream
-sources and sinks. v4l is a minority sport though as gstreamer has
-its own internal appsrc and appsinks.
-
-can give commands to jump to points in streams
-
-it would be a good habit to get used to using gstreamer instead of
-ffmpeg for genreal conversion use. it is more powerful for realtime
-use and worth knowing.
-
-(\textquotedbl{}!\textquotedbl{} makes the pipe, like unix \textquotedbl{}|\textquotedbl{}
-but called a \textquotedbl{}pad\textquotedbl{} rather than \textquotedbl{}pipe\textquotedbl{})
-
-\#basic copy a source file to a sink file: gst-launch-1.0 filesrc
-location=\textasciitilde{}/data/qb/NorwichLeeds1280.mp4 ! filesink
-location=\textasciitilde{}/out.mp4
-
-\#play mp3 gst-launch-1.0 filesrc location=\textasciitilde{}/test.mp3
-! decodebin ! autoaudiosink
-
-\#play mp4 video gst-launch-1.0 filesrc location=\textasciitilde{}/test.mp4
-! decodebin ! autovideosink
-
-\#extract a segment of a file, recode, and send to another file (not
-working) gst-launch-0.10 gnlfilesource location=\$PWD/source.mp3 start=0
-duration=5000000000 media-start=10000000000 media-duration=5000000000
-! audioconvert ! vorbisenc ! oggmux ! filesink location=destination.ogg
-
-\#decode a file and stream raw video to a file, gst-launch-1.0 filesrc
-location=\textasciitilde{}/test.mp4 ! decodebin ! filesink location=\textasciitilde{}/out.mp4
-
-\#stream to RTP over UDP port gst-launch-1.0 filesrc location=\textasciitilde{}/test.mp4
-! decodebin ! x264enc ! rtph264pay ! udpsink host=127.0.0.1 port=9001
-
-\#stream from Ibex robot webcam, to h264 over RTP/UDP. (the comments
-tell the other modules about formats which exist at points) gst-launch-1.0
-v4l2src ! 'video/x-raw, width=640, height=480, framerate=10/1' ! videoconvert
-! x264enc pass=qual quantizer=20 tune=zerolatency ! rtph264pay ! udpsink
-host=192.168.0.220 port=1234
-
-\#streaming to a virtual divce is called loopback and it needs to
-be enabled: sudo apt-get install v4l2loopback-dkms sudo modprobe v4l2loopback
-\#(creates /sys/class/video4linux/video1 and /dev/video1 )
-
-In Ibex, use gstreamer loopback to read an incoming VLC video stream
-from the robot eg in RTP format, and create a gstreamer stream here
-into V4L. Then python/CV doesn't care what the source was, it just
-looks like another webcam. (ffmpeg can also do this?)
-
-We can also do this to stream a video file into gstreamer/loopback(?).
-eg. to enable multiple processes to read the same stream and process
-it in parallel. gst-launch-0.10 filesrc location=\textasciitilde{}/Documents/my\_video.ogv
-! decodebin2 ! ffmpegcolorspace ! videoscale ! ffmpegcolorspace !
-v4l2sink device=/dev/video1 (maybe is a bug in gstreamer here)
-
-gst-launch-1.0 -v videotestsrc ! tee ! v4l2sink device=/dev/video1 
-
-\#this works to stream a file over UDP, and read and view it on client:
-gst-launch-1.0 filesrc location=\textasciitilde{}/data/qb/NorwichLeeds1280.mp4
-! decodebin ! x264enc pass=qual quantizer=20 tune=zerolatency ! rtph264pay
-! udpsink host=127.0.0.1 port=9001
-
-gst-launch-1.0 udpsrc port=9001 ! \textquotedbl{}application/x-rtp,
-payload=127\textquotedbl{} ! rtph264depay ! avdec\_h264 ! videoconvert
-! xvimagesink
-
-\#to read from a V4L port on the same client: (eg then view in VLC)
-gst-launch-1.0 udpsrc port=9001 ! \textquotedbl{}application/x-rtp,
-payload=127\textquotedbl{} ! rtph264depay ! avdec\_h264 ! videoconvert
-! videorate ! video/x-raw, framerate=25/5 ! v4l2sink device=/dev/video1
-
-{*}this works to stream a file into a V4L device: (after activiating
-loopback)
-
-sudo modprobe v4l2loopback gst-launch-1.0 filesrc location=\textasciitilde{}/data/qb/NorwichLeeds1280.mp4
-! decodebin ! v4l2sink device=/dev/video1
-
-or with some conversions:
-
-gst-launch-1.0 filesrc location=\textasciitilde{}/data/qb/NorwichLeeds1280.mp4
-! decodebin ! videoconvert ! videorate ! video/x-raw, framerate=25/5
-! v4l2sink device=/dev/video1
-
-PYTHON GSTREAMER API https://github.com/rubenrua/GstreamerCodeSnippets
-good tutorials
-
-gst-launch-1.0 rtspsrc location=rtsp://192.168.0.119:88/videoMain !  rtph264depay ! avdec_h264 ! autovideosink
-
-gst-launch-1.0 rtspsrc location=rtsp://192.168.0.119:88/videoMain userid=charles password=PASSWORD !  rtph264depay ! avdec_h264 ! autovideosink
-
-
-
-\chapter{ffmpeg}
-
-get video file info ffprobe -show\_streams -i \textasciitilde{}/data/qb/NorwichLeeds1280.mp4
-
-speedup playback of video ffmpeg -r:v \textquotedbl{}480/1\textquotedbl{}
--i sprayingVideo.mp4 -an -r:v \textquotedbl{}12/1\textquotedbl{} output.mp4
-
-split avi into frames: ffmpeg -i corinthian\_raw\_images.avi -f image2
-frames/frame-\%3d.png 
-
-extract section: ffmpeg -ss 00:00:05.123 -i in.mp4 -t 00:01:00.00
--c copy out.mp4 \#start time and duration args; can be 00:00:00.000
-format, or seconds as 00.000. NB only splits to nearest keyframes
-(unless omit copy to transcode)
-
-downsample resolution: ffmpeg -i in.avi -c:a copy -c:v libx264 -crf
-23 -s:v 640x360 output.mp4
+Loopback module must be installed then enabled with:
 
 \begin{lstlisting}
-#trimmign with ffmpeg:
-ffmpeg -i in.avi -vcodec copy -acodec copy -ss 00:00:00 -t 00:00:04 out.avi
-
-#downsample HD video
-ffmpeg -i in.mts -r 30 -s 960x540 out.mp4
+sudo apt-get install v4l2loopback-dkms 
+sudo modprobe v4l2loopback
 \end{lstlisting}
+This creates virtual devices /sys/class/video4linux/video1 and /dev/video1 which behave like local webcams. For example they can be opened in OpenCV:
 
-\chapter{File formats}
 
+\chapter{Video formats (codecs)}
 
-\section{theora (ogg)}
+\section{raw images}
+Individual frames may be stored or transported, either as uncompressed images themselves (bmp) or as compressed images (png/jpeg). However much better compression comes form considered the frames in sequence and compressing accordingly. eg. often the camera does not move and large areas of background do not change over time.
 
-\section{AVI}
-audio video interleave.  File format containing variously coded audio and video.
-	(vs: ogg, mp4-part14(container), asf(AdvancedSystemFormat,Microsfot) )
-	can also store other interleaved data, eg subtitles, ubisense data
+Images have pixel formats. Traditionally, still images are stored in RGB (or similar, BGR, or RGBA) as three (or four) bytes per color channel.  However it is more common for video images to use different pixel formats.  This could be HSV (hue saturation value) or more commonly, YUV format, which is a similar idea to HSV.  Like RGB, which can be various bit-depths (eg. 24bit, 8bit), YUV also comes in different depths and flavours. YUV also has nice compression properties which make it popular now.  Y=luma (overall brightness); U and V are 2D chromas. (Historically: its was nice for sharing streams for black-and-white and color TVs, such as in USA PAL analog broadcasts, because the luma channel looks good by itself in B+W.)
 
-\section{MP4}
+\section{theora}
+Open format video codec used in ogg containers.
+
+\section{h264 (aka. MPEG4-part 10; MPEG4-AVC}
+Used in Freeview and Freesat Digital TV; Skype, Bluray, Youtube, inside mp4 containers, CCTV cams.
+heavily patenteted but allowed for gratis use in some cases.
+Uses image subblocks;  motion prediction
+http://iphome.hhi.de/wiegand/assets/pdfs/h264-AVC-Standard.pdf
+
+\section{MPEG2 video (MPEG2-Part2; h.262)}
+used in most DVDs.    (don't confuse with MPEG2 container which also has various audio formats (MPEG2-Part3) and system control protocol MPEG2-Part1/h.222).
 
 \section{MTS}
-MTS is found on portable digital cameras and phones as a video format.  
-
+MTS is a video codec found on portable digital cameras and phones.
 Here is a conversion method using mencoder:
 
 \begin{lstlisting}
@@ -803,6 +733,234 @@ sudo apt-get install build-essential subversion zlib1g-dev
 	sudo make install
 	mencoder 00001.MTS -o 1.avi -oac copy -ovc lavc -lavcopts vcodec=mpeg4:vbitrate=10000 -fps 50 -vf scale=1920:1080
 \end{lstlisting}
+
+
+\chapter{ffmpeg}
+
+ffmeg is a simple command line tool for performing quick, small operations on media files.
+
+transcode to open source everything (ogg+vorbis+theora; very slow):
+\begin{lstlisting}
+ffmpeg -i in.mp4 -acodec libvorbis out.ogg
+\end{lstlisting}
+
+extract section: 
+\begin{lstlisting}
+ffmpeg -ss 00:00:05.123 -i in.mp4 -t 00:01:00.00 -c copy out.mp4 
+\end{lstlisting}
+
+extract frame as image,
+\begin{lstlisting}
+ffmpeg -ss 00:12:58 -i in.mp4  -vframes 1 -q:v 2 out.jpg
+\end{lstlisting}
+
+Get video file info,
+\begin{lstlisting}
+ffprobe -show\_streams -i \textasciitilde{}/data/qb/NorwichLeeds1280.mp4
+\end{lstlisting}
+
+Speedup playback of video 
+\begin{lstlisting}
+ffmpeg -r:v \textquotedbl{}480/1\textquotedbl{}
+-i in.mp4 -an -r:v \textquotedbl{}12/1\textquotedbl{} out.mp4
+\begin{lstlisting}
+
+Split video into image frame files: 
+\begin{lstlisting}
+ffmpeg -i corinthian\_raw\_images.avi -f image2 frames/frame-\%3d.png 
+\end{lstlisting}
+(start time and duration args; can be 00:00:00.000 format, or seconds as 00.000. NB only splits to nearest keyframes, unless omit copy to transcode)
+
+downsample,
+\begin{lstlisting}
+ffmpeg -i in.mts -r 30 -s 960x540 out.mp4
+\end{lstlisting}
+
+downsample resolution: 
+\begin{lstlisting}
+ffmpeg -i in.avi -c:a copy -c:v libx264 -crf 23 -s:v 640x360 output.mp4
+\end{lstlisting}
+
+trim:
+\begin{lstlisting}
+ffmpeg -i in.avi -vcodec copy -acodec copy -ss 00:00:00 -t 00:00:04 out.avi
+\end{lstlisting}
+
+
+
+\chapter{GStreamer}
+
+GStreamer a Linux system for media streaming, within and between computers. It is based on small modules (processes) which are 'piped' together similarly to UNIX pipes.  Like ROS this allows everything to run as separate processes. Unlike ROS, GStreamer is targetted at efficiency which includes use of containers and codecs for everything. In ROS we pass messages of raw image data in video. In GStreamer we can stream coded compressed video for speed and efficiency.  This means we need to consider container and codec modules in the pipelines.
+
+\section{as command line tool}
+
+GStreamer is sometimes used as a competitor to ffmpeg to perform small command line media editing tasks such as cutting and splicing video and audio streams. It is more powerful and harder to use than ffmpeg because of its pipeline abilities.  It would be a good habit to get used to using GStreamer instead of ffmpeg even for small tasks, so that it becomes regular and easy to use for large ones.
+
+GStreamer requires modules (plugins) to go in the pipelines. The main ones are distributed in packages:
+ Base: solid stable simple ones used by many other tools;
+ Good: solid stable more specific ones, eg. theora codecs.
+ Ugly: solid stable but with patent issues, eg. reverse engineering of propriatory codecs.
+ Bad: In-development, unstable, bleeding-edge, for use at own risk.
+
+We are using version 1.0 for everything (0.10 also exists) Modules
+are binary (Cpp) executables, implementing standard API. (Like LADSPA
+- but not as real time? eg including buffering).
+
+There are modules for reading and writing to/from v4l devices. eg. stream things
+into new virtual v4l devices for others to read. also UDP data stream
+sources and sinks. v4l is a minority sport though as gstreamer has
+its own internal appsrc and appsinks.
+
+We can give transport control commands to jump to points in streams using an additional interface.
+
+\subsection{Examples - local streams}
+
+(\textquotedbl{}!\textquotedbl{} makes the pipe, like unix \textquotedbl{}|\textquotedbl{}
+but called a \textquotedbl{}pad\textquotedbl{} rather than \textquotedbl{}pipe\textquotedbl{})
+
+Basic copy a source file to a sink file: 
+
+\begin{lstlisting}
+gst-launch-1.0 filesrc location=in.mp4 ! filesink location=out.mp4
+\end{lstlisting}
+
+Play an mp3:
+
+\begin{lstlisting}
+gst-launch-1.0 filesrc location=in.mp3 ! decodebin ! autoaudiosink
+\end{lstlisting}
+
+Play mp4 video 
+\begin{lstlisting}
+gst-launch-1.0 filesrc location=in.mp4 ! decodebin ! autovideosink
+\end{lstlisting}
+(decodebin is a complex plugin which detects the video filetype and automatically constructs a whole series of modules specific to its type to decode it.)
+
+Show TV test card source,
+\begin{lstlisting}
+gst-launch-1.0 videotestsrc ! autovideosink
+\end{lstlisting}
+
+Extract a segment of a file, recode, and send to another file (not
+working) 
+
+\begin{lstlisting}
+gst-launch-0.10 gnlfilesource location=in.mp3 start=0
+duration=5000000000 media-start=10000000000 media-duration=5000000000
+! audioconvert ! vorbisenc ! oggmux ! filesink location=out.ogg
+\end{lstlisting}
+
+Decode a file and stream raw video to a file, 
+\begin{lstlisting}
+gst-launch-1.0 filesrc location=in.mp4 ! decodebin ! filesink location=out.mp4
+\end{lstlisting}
+
+Read from webcam, downsample, and view:
+\begin{lstlisting}
+gst-launch-1.0 v4l2src device="/dev/video0" ! video/x-raw,width=640,height=480 ! autovideosink
+\end{lstlisting}
+
+Split a source into multiple sinks using "tee" (like in Unix "Tee"; named after the shape of the letter "T" where a signal from below splits into left and right copies.),
+
+\begin{lstlisting}
+gst-launch filesrc location=test.mp4 ! tee name=tp tp. ! queue ! filesink location=out2 tp. ! queue ! filesink location=out2
+\end{lstlisting}
+
+\subsection{Examples - network streams}
+
+Stream to RTP over UDP port (e.g. to broadcast a live video stream on the net):
+\begin{lstlisting}
+gst-launch-1.0 filesrc location=in.mp4 ! decodebin ! x264enc ! rtph264pay ! udpsink host=127.0.0.1 port=9001
+\end{lstlisting}
+This works by decoding the local file, encoding it in the desired codec, then containerising (payloading) it as RTP, then sending over a lower-level UDP link.
+
+Version to lowwer quality and reduce latency (?):
+\begin{lstlisting}
+gst-launch-1.0 filesrc location=in.mp4 ! decodebin ! x264enc pass=qual quantizer=20 tune=zerolatency ! rtph264pay ! udpsink host=127.0.0.1 port=9001
+\end{lstlisting}
+
+To read the stream into GStreamer,
+\begin{lstlisting}
+gst-launch-1.0 udpsrc port=9001 ! "application/x-rtp, payload=127" ! rtph264depay ! avdec\_h264 ! videoconvert ! xvimagesink
+\end{lstlisting}
+
+From a remote RTP stream (e.g. an IP camera),
+\begin{lstlisting}
+gst-launch-1.0 rtspsrc location=rtsp://192.168.0.119:88/videoMain !  rtph264depay ! avdec_h264 ! autovideosink
+\end{lstlisting}
+(TODO why no mention of UDP here? Is it just assumed?)
+
+From an IP Camera with a password,
+\begin{lstlisting}
+gst-launch-1.0 rtspsrc location=rtsp://192.168.0.119:88/videoMain userid=charles password=PASSWORD !  rtph264depay ! avdec_h264 ! autovideosink
+\end{lstlisting}
+
+Stream from my webcam, to h264 over RTP/UDP (the comments tell the other modules about formats which exist at points),
+\begin{lstlisting}
+gst-launch-1.0 v4l2src ! 'video/x-raw, width=640, height=480, framerate=10/1' ! videoconvert ! x264enc pass=qual quantizer=20 tune=zerolatency ! rtph264pay ! udpsink
+host=192.168.0.220 port=1234
+\end{lstlisting}
+
+
+\subsection{Virtual v4l devices - loopback}
+
+THIS REQUIRES LOOPBACK TO BE ENABLED AS ABOVE section \ref{loopback}.
+
+\begin{lstlisting}
+gst-launch-1.0 -v videotestsrc ! tee ! v4l2sink device=/dev/video1 
+\end{lstlisting}
+
+We can then open {\em multiple} OpenCV apps which read the same capture device as,
+\begin{lstlisting}
+cv2.VideoCapture(1)
+\end{lstlisting}
+
+This works to stream the real webcam into a virtual device and then view in CV:
+\begin{lstlisting}
+gst-launch-1.0 -v v4l2src device=/dev/video0  ! tee ! v4l2sink device=/dev/video1
+\end{lstlisting}
+
+Send an incoming VLC/RTP format, to local V4L loopback: 
+\begin{lstlisting}
+gst-launch-1.0 udpsrc port=9001 ! "application/x-rtp, payload=127" ! rtph264depay ! avdec\_h264 ! videoconvert ! videorate ! video/x-raw, framerate=25/5 ! v4l2sink device=/dev/video1
+\end{lstlisting}
+
+Streaming a file into loopback (with conversions, are they needed? Maybe yes, loopback must be raw video not compressed?):
+\begin{lstlisting}
+gst-launch-1.0 filesrc location=in.mp4 ! decodebin ! videoconvert ! videorate ! video/x-raw, framerate=25/5 ! v4l2sink device=/dev/video1
+\end{lstlisting}
+(TODO: This will then open in VLC, but not openCV, why?)
+(V4L2: Pixel format of incoming image is unsupported by OpenCV.
+(from v4l info: the file is YU12 pixel format, while a webcam is YUYV. Need to convert?)
+
+\subsection{TODO}
+
+Not working:
+\begin{lstlisting}
+gst-launch-0.10 filesrc location=in.ogv ! decodebin2 ! ffmpegcolorspace ! videoscale ! ffmpegcolorspace ! v4l2sink device=/dev/video1 
+
+gst-launch-1.0 filesrc location=in.mp4 ! decodebin ! v4l2sink device=/dev/video1
+\end{lstlisting}
+(maybe is a bug in gstreamer here?)
+
+\subsection{OpenCV}
+OpenCV3 only and must be built with -DWITH_GSTREAMER=ON. (Is not in ROS-OpenCV which basically kills this for robotics.)
+cv2.VideoCapture("autovideosrc ! appsink")
+
+Hence, use loopback instead.
+
+
+\subsection{Python}
+
+PYTHON GSTREAMER API https://github.com/rubenrua/GstreamerCodeSnippets
+good tutorials
+
+\section{as C API}
+Application Development Manual:  https://gstreamer.freedesktop.org/data/doc/gstreamer/head/manual/manual.pdf
+
+heavily based on GObject/GLib (C, not cpp)
+
+
 
 \chapter{ROS}
 
@@ -845,21 +1003,27 @@ recordmydesktop tool
 \part{Multimedia}
 
 
-\chapter{Containers and streams}
+\chapter{Containers}
 
 arbitary data streams mixed in. eg robot commands and sensors. Also
 subtitles, foreign language audio tracks...
 
 Architecturally -- media streaming is nice as there are no/few branch hazards. Hence DSPs etc.
 
+\section{Ogg}
+Open container format, designed to stream Theora video+Vorbis audio.
+
+\section{Matroska}
+Open format container, more general than ogg, designed to store and stream anything.
+filenames: .mkv,  ( .mka=audio only; , mks=subititles only; mk3d for 3d video).
+
+\section{AVI}
+Audio Video Interleave. Container format containing variously coded audio and video.
+
+\chapter{mp4}
+mp4 (MPEG4-part 14) is a container format.
+
 \chapter{rosbag as a container}
-
-
-\chapter{H264 (skype, DVDs, mp4s, CCTV cams)}
-h264 (aka MP4-part10 (vs just MP4)) is newer format than MP4, used by our IP cameras
-	used on Bluray
-	they are formats (not suites)
-
 
 \chapter{H323 (ekiga streams)}
  (ITU) telcon  (signalling)
@@ -880,16 +1044,16 @@ h264 (aka MP4-part10 (vs just MP4)) is newer format than MP4, used by our IP cam
 vs Skype format, whichis secret/closed.
 
 
-\chapter{Real-time transport protocol (RTP) streaming}
+\chapter{Streaming}
+Some containers can be used to stream; some streaming protocols don't use containers (?). They are a similar idea, containers usually for files and streams for live streams. When we stream a container we just take the file data and bung it over the network.
 
-RTP is a dedicated http-like protocol, running over UDP (timeliness over reliability), for real time multi media (a media stream format is bit like a container file) usually audio and video.
+\section{Real-time transport protocol (RTP) streaming}
 
-Application layer (like HTTP, FTP)
-	used with RTCP control protocol (quality, syncronisation, monitoring/QoS)
-	(RTSP is a higher-level session control protol sometimes used together with RTP, e.g. to give rewind/fast-forward type commands.)
-		2010: other transport layers exist for streams, new, eg SCTP stream control
+RTP is a dedicated high level protocol (like http,ftp), typically running over UDP (rather than over TCP; timeliness over reliability), for real time multi media (a media stream format is bit like a container file) usually audio and video.
 
-via VLC 
+RTP can be used with the even higher-level RTCP session control protocol (rewind, fast forward control; also quality, syncronisation, monitoring/QoS).   2010: other transport layers exist for streams, new, eg SCTP stream control.
+
+via VLC: 
 
 cvlc -vvv v4l2:///dev/video0 --sout '\#transcode\{vcodec=mp2v,vb=800,acodec=none\}:rtp\{sdp=rtsp://:8554/\}' 
 
