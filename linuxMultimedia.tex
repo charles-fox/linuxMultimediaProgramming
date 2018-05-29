@@ -340,6 +340,68 @@ firewire system (is a bus, chained). FFADO driver (IML setup).
 USB system (p2p)
 
 
+\chapter{Linux audio systems}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figs/linuxaudiosystem-studio.pdf}
+  \caption{Audio system for recording.}
+  \label{fig:audio-rec}
+\end{figure}
+
+Fig. \ref{fig:audio-rec} outlines the current Linux audio system and highlights the parts used in our stack.  The Linux audio architecture has grown quite complex in recent years, with multiple ways of doing things competing and improving.
+
+Historically, the OSS system was developed for Linux in the early 1990s, focused initially on the Creative SoundBlaster cards then extending to others.  It was a locking system which allowed only one program at a time to access the sound card, and lacked support for modern features such as surround sound. It allowed low level access to the card, for example by $\tt cat audio.wav > /dev/dsp0$.  The ALSA system was designed as a modern replacement for OSS, and is used on most current distributions including our Ubuntu Studio 11.10.  PortAudio is an API with backends that abstract both OSS and ALSA, as well as sound systems of non-free platforms such as Win32 sound and Mac CoreAudio, created to allow portable audio programs to be written.  Several software mixer systems were built to resolve the locking problem for consumer-grade applications, including PulseAudio, ESD and aRts.  Some of these mixers grew to take advantage of and to control hardware mixing provided by sounds cards, and provided additional features such as network streaming.  They provided their own APIs as well as emulation layers for older (or mixer-agnostic) OSS and ALSA applications.  (To complicate matters further, recent versions of OSS4 and ALSA have now begun to provide their own software mixers, as well as emulation layers for each other.)  Many current Linux distributions including Ubuntu 11.10 deploy PulseAudio running on ALSA, and also include an ALSA emulation layer on Pulse to allow multiple ALSA and Pulse applications to run together through the mixer.  Common media libraries such as GStreamer (which powers consumer applications such as VLC, Skype and Flash) and libcanberra (the GNOME desktop sound system) have been developed closely with PulseAudio, increasing its popularity.  However, Pulse is not designed for pro-audio work which relies on very low latencies and minimal drop-outs.
+
+The JACK system is an alternative software mixer which fills this need.  Like the other soft mixers, JACK runs on many lower level platforms -- usually ALSA on modern Linux machines.  The bulk of pro-audio applications such as Ardour, zynAddSubFx and qSynth run on JACK.  JACK also provides network streaming, and emulations/interfaces for other audio APIs including ALSA, OSS and PulseAudio.  (Pulse-on-JACK is useful when using pro and consumer applications at the same time, such as when watching a YouTube tutorial about how to use a pro application.  This re-configuration happens automatically when JACK is launched on a modern Pulse machine such as Ubuntu 11.10.)
+
+\section{Example setup}
+
+Our DAW is a relatively low-power Intel E8400 (Wolfdale) duo-core, 3GHz, 4Gb Ubuntu Studio 11.10-64-bit machine.   Ubuntu studio was installed directly from CD -- not added as packages to an existing Ubuntu installation -- this gives a more minimalist installation than the latter approach.  In particular the window manager defaults to the low-power XFCE, and CPU-hogging programs such as Gnome-Network-Monitor (which periodically searches for new wifi networks in the background) are not installed.
+
+The standard ALSA and OSS provide interfaces to USB and PCI devices below, and to JACK above.  However for firewire devices such as our Pre8, the {\tt ffado} driver  provides a {\em direct} interface to JACK from the hardware, bypassing ALSA or OSS.  (Though the latest/development version provides an ALSA output layer as well.)   Our DAW uses {\tt ffado} with JACK2 (Ubuntu packages: {\tt jack2d, jack2d-firewire, libffado, jackd, laditools}.  JACK1 is the older but perhaps more stable single-processor implementation of the JACK API) and fig. \ref{fig:jack-settings} shows our JACK settings, in the {\tt qjackctl} tool.  Note that the firewire backend driver (ie. {\tt ffado}) is selected rather than ALSA.
+
+It is important to unlock memory for good JACK performance.  As well as ticking the unlock memory option, the user must also be allowed to use it, eg. {\tt adduser charles audio}.  Also the file {\tt /etc/security/limits.d/audio.conf} was edited (followed by a reboot) to include
+
+{\tt @audio - rtprio 95 }
+
+{\tt @audio - memlock unlimited }
+
+These settings can be checked by
+
+{\tt ulimit -r -l}.
+
+The JACK sample rate was set to 48kHz, matching the Pre8s.  (This is a good sample rate for speech research work as it is similar to CD quality but allows simple sub-sampling to power-of-two frequencies used in analysis.)
+
+Fig. \ref{fig:jack-connect} shows the JACK connections (again in {\tt qjackctl}) for our meeting room studio setup.  The eight channels from the converter-mode Pre8 appear as ADAT optical inputs, and the eight channels from the interface-mode Pre8 appear as `Analog' inputs, all within the firewire device.  Ardour was used with two tracks of eight channel audio to record as shown in fig. \ref{fig:ardour}.
+
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figs/jack-settings.png}
+  \caption{16 channel recording JACK settings.}
+  \label{fig:jack-settings}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figs/jack-connect.png}
+  \caption{16 channel recording JACK connections.}
+  \label{fig:jack-connect}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figs/ardour.png}
+  \caption{16 channel meeting room recording in Ardour, using two 8-channel tracks.}
+  \label{fig:ardour}
+\end{figure}
+
+
+
+
+
 \section{Example: MAUDIO USB card}
     inputs:
 	signal dials: -40db control.   Pad: extra -20db.
