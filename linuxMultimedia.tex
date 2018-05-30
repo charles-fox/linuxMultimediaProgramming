@@ -1253,7 +1253,23 @@ camera cvlc command , to record
 
 \part{Appendix: Sysadmin for multimedia}
 
+\chapter{Basic sysadmin}
+
+create user account:
+    sudo useradd recorder
+    sudo passwd recorder
+    sudo usermod -aG sudo recorder
+
+create user account plus own home directories etc:
+    sudo adduser recorder
+
+last -- shows login history (check for crackers) -- data in /use/adm or similar (a good cracker would remove their logins from this though)
+
+
 \chapter{Local subnets}
+
+[TODO notes/tcpip-myhouse has more, need to separate out]
+
 
 In experimental labs, on-board robots, grid computing and some studio/office scenarios, we
 often want to run a network of devices in a private network which
@@ -1267,24 +1283,124 @@ a local network with Linux machines for these purposes.
 
 \section{Network hardware}
 
+TCP/IP networking has three relevant layers of protocol:
+
+- Ethernet is a low level protcol in which each device on a physical network as a MAC address and can send and receive "frames" (not "packets") of data to another device via its MAC address. MAC addresses are (almost) hardwired into physical network cards. Ethernet is a bus so any frames put on the bus are visible to everyone on the bus.
+
+- IP (Internet protocol) forms and transmits IP packets, over Ethernet, or other media.  It assignes each device an IP address, which is different from the MAC addresses. IP addresses are assigned to machines by software. They can be fixed by local software, or DHCP is a protocol which allows them to be requested from a central server (in order to avoid conflicts and enforce a numbering system).
+
+- TCP is higher level still, and is a protocol which control how IP packets are passed around the (inter)network.
+
+ (ICMP is another for sending error messages such as "host unreachable")
+
 Typically a local network is based around one central switch with
 all devices connected directly to it. In some projects, a wifi switch
 is also plugged in to enable wifi devices (such as mobile robots)
-to connect. A wifi switch is a different device from a domestic combined
+to connect. A true wifi switch is a different device from a domestic combined
 router-hub-modem, though some of these devices can be hacked to function
 as switches using open source firmware.
 
 One server machine with two ethernet cards is needed to control traffic
-between the local and LAN networks. This machine is called the gateway.
-It can be useful to use this machine to host other network services
-too, as below.
+between the local and LAN networks. One card faces the local network and the other faces the public network.  This machine is called the gateway.
+As well as routing approrpiate traffic between the two cards, it can be useful to use this machine to host other network services for the local network too, as below.
 
-To restart the network system use
+\section{Basic tools}
 
-\emph{service network restart}
+There are many small differences between distros, and versions of
+distros, so use these tools and Google to understand what's going
+wrong.
 
+\begin{lstlisting}
+ifconfig -- can set IPs and bring up/down cards too
+tracetoute, mtr
+
+ip s r  #show route
+ip a r  #add route
+\end{lstlisting}
+
+Every time you change anything is is very good practice to restart the network system to ensure the changes take effect, with:
+
+\begin{lstlisting}
+service network restart
+(Or
+Debian:     /etc/init.d/networking restart
+Fedora:     /etc/init.d/network restart
+)
+
+\end{lstlisting}
 It is often useful to do this routinely after nay change to the network
 to avoid stupid bugs.
+
+This releases our current IP as assigned by a DHCP server, and requests a new one:
+\begin{lstlisting}
+su
+dhclient eth0 -r
+dhclient eth0
+\end{lstlisting}
+
+Scan home network for devices with ssh(22) or http(80) ports open (port-scanner):
+\begin{lstlisting}
+sudo nmap -sS -p22,80 192.168.1.0/24
+sudo nmap -r -sU -p22,53 IP   #UDP scan
+\end{lstlisting}
+closed means: the port is open, but no app is listening on it
+
+
+arp-scan --interface=p1p1  --localnet    #show who's connected
+
+snoop -packet sniffer tool, monitor traffic between two hosts
+
+netstat - can open ports
+    netstat -tulpn   #list open ports on server
+
+ps aux #show all processes
+
+
+dig @192.168.0.1 google.com   #sends a test nslookup to it? , shows chain of nameservers used to find it (need to use a new URL each time to avoid cache)
+    (dig is similar to nslookup, personal choice which is best)
+
+See tools: nslookup, whois, host
+
+\section{Static IP}
+
+set hostname: /etc/hosts    #local DNS lookup 
+        /etc/hostname   #or use hostname command 
+ 
+remove network-manager (ubuntu,apt-get) NetworkManager(Fedora,yum) package 
+    this is an high level layer of aumated conenctions, eg auto switch from wifi to ethernet, when cable plugged in 
+    it gets in the way of manual edits. 
+ 
+if card not shown in ifconfig, it may be DOWN: 
+    ifconfig -a   #list all cards including DOWN 
+    ifconfig eth1 up 
+    
+define cards here:   (eg which to bring up on boot, which to dhcp on boot, set static IPs?) 
+debian              fedora 
+/etc/network/interfaces     /etc/sysconfig/networking/devices/ifcdf-<cardname>   
+ 
+fedora: format for static assign is 
+UUID="e88f1292-1f87-4576-97aa-bb8b2be34bd3" 
+NM_CONTROLLED="yes" 
+HWADDR="D8:D3:85:AE:DD:4C" 
+BOOTPROTO="static"
+DEVICE="em1"
+ONBOOT="yes"
+IPADDR=192.168.1.2
+NETMASK=255.255.255.0
+BROADCAST=192.168.1.255
+NETWORK=192.168.1.0
+GATEWAY=192.168.1.1
+    
+debian:
+auto eth0
+iface eth0 inet dhcp 
+
+iface wlan0 inet static
+address 192.168.0.22
+netmask 255.255.255.0
+gateway 192.168.0.1
+
+should be able to manual assign IPs and ping between them here.
 
 
 \section{Routing to the internet}
@@ -1455,6 +1571,43 @@ To see current leases:
 
 less /var/lib/dhcp/dhclient.leases
 
+\subsection{additional notes - server}
+
+before starting DHCP, p2p1 must have an IP already in the range used in the dhcpd.conf file.  Assign a static one manually.
+
+/etc/sysconfig/dhcpd #lists which card to serve DHCP on (we use p1p1)   *TAKE EXTREME CARE NOT TO SERVE DHCPS TO DCS NETWORK!!!!!!
+/etc/dhcp/dhcpd.conf   #lists all machines, ubisensors etc, which subnet to run on.
+
+subnet theory:
+    eg use 192.168.1.0 as the network name, 255.255.255.0 mask    (sometimes written 192.168.1.0/24 where 24 means 24 1's in the mask)
+    the .0 refers to the whole network, can't name a machine after it as well
+    .255 is the broadcast address
+    .254 often used for router address, just convention
+    192.168 is reseved for local nets, no internet IPs can use it.
+
+weird problems using 192.168.0.0 network, use 192.168.1.0 instead. (DHCP service not starting otherwise)
+
+  debian                fedora  (or use debian way)             fedora-log
+/sbin/service dhcpd start       systemctrl restart dhcpd.service    /var/log/messages
+/sbin/service dhcpd stop
+/sbin/service dhcpd status
+
+debugging: see /var/log/messages for DHCP server output (fedora)
+           /var/log/messages   (debian)
+
+\subsection{additional notes - client}
+
+when changing over in 2card mahine:
+    double check all physical connections, they often pop out
+    sudo dhclient -v -r   #release IP, verbose
+    sudo dhclient -v      #request new IP, verbose (useful)
+    sudo dhclient -v eth0     #force which card to use (if above doesnt work) (needed on audio PC)
+
+can specify in the interface config files which cards are to req DHCPs on boot.
+
+(i think -v also goes into /var/log/messages ?)
+
+
 
 \section{DNS}
 
@@ -1518,6 +1671,34 @@ Note DNS is a different, more powerful system, than defining /etc/hosts
 files on each machine.
 
 
+\subsection{additoinal notes - DNS}
+    we want to have host names like audio-pc.iml assigned by local DNS server, also allow local machines to use google.com etc rather than IPs.
+    bind9 is the DNS server suite (as in binding IPs to addresses), its main deamon is called named.  DNS runs on port 53.
+        (other parts: dig debugger; rndc admin tool)
+    roles: authoritive on (internal) NAT names.   Send out and cache requests for internet names.
+        vs. recursive, knows how to call out.   Don't mix the two - instead give clients addresses of both.
+
+    /etc/named.conf
+        NB this INCLUDEs other conf files at the end
+
+    systemctrl start named.service      or  service named restart
+    log file location - is spec'd in the named.conf (within the "directory" definded, then in "logging")
+    see also /var/log/messages on SEVICE STARTUP for errors due to rncd.key ************8
+
+    Fedora: need to change defualt config to allow clients to use named, (defualt, only usable on the sever itself)
+        remove these lines from named.conf:  (they restrict use to particular machines)
+            listen-on-port 53 {127.0.0.1;};
+            listen-on-v6-port 53 {::1;};
+            allow-query {localhost;};
+
+    see also files in
+        /var/named/
+
+    client machine: /etc/resov.conf tells where to find the dns server  (ubuntu: autogen by resolvconf tool -- spt-get removed it)
+        used by service, need to restart when conf changed:
+            /etc/init.d/nscd service restart
+
+
 \section{Mounts}
 
 To mount a remote server,
@@ -1531,6 +1712,48 @@ To mount a NAS drive on the local network:
 
 see \emph{fstab} for permanent mounts -- but careful to have it run
 after DHCP and DNS running.
+
+\section{Routing and firewall: iptables}
+
+ (vs. bridging: (not used, we want a router not a bridge.  brctl    #add bridge, assign cards to it, bring it up)
+ (Bridge is L2 ethernet frames and MAC addresses, bonding two networks into one, eg wifi and wired)
+ (Router is L3, packets and IPs. Is what we want.)
+ (IP-MASQ masquerading is what we want, allow web request from 192.168.0.1 to appear on the inet as router 143 IP. Then rename back by the router (using post numbers in the packet.
+   vs. Full NAT, requires subnet  block of addresses from DCS, not allowed
+   vs. Proxy server, requires client to know about it and use it, too complex.)
+  Routing is done using a firewall, we will use iptables   (vs Ubuntu ufw firewall)
+
+
+second card: p2p1 connect to internet.   Run DHCP on it, eg
+    dhclient p2p1
+does not conflict with local network -- broadcasts req out to internet, not to local network. Gets IP.
+or auto set it to shcp using its interface file.
+
+enter promiscuous mode: (allow iptables etc to see all local net traffic)
+ifconfig p1p1 promisc
+
+Enable IP forwarding (ok to pass packets between cards)
+    echo 1 > /proc/sys/net/ipv4/ip_forward      #(cant be saved with vi, must use >) -- temporary setting
+    vi /etc/sysctl.conf  ;  edit line to set:  net.ipv4.ip_forward = 1    -- permanent setting
+    sysctl -p /etc/sysctl.conf
+
+check iptables running:
+    service iptables status             #or restart it, and check /var/log/messages to see it
+
+
+iptables -A FORWARD -i p2p1 -o p1p1 -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i p1p1 -o p2p1 -j ACCEPT
+iptables -t nat -A POSTROUTING -o p2p1 -j MASQUERADE
+Debian: service iptables save   #Fedora: /usr/libexec/iptables.init save.
+
+NB these autoedit the file:  /etc/sysconfig/iptables.   *nat section leave alone, only for NAT stuff.   Main rule section is *filter.
+    i might have done the commands int he worng order -- failed until I manually edited the iptables file and moved the host-prohibited lines to the very end before COMMIT.  I think the rules get tried in order, so the prohibs are the fail-through last choice?
+
+to enable ssh accept: open local port 22: add to near top of *filter:   (INPUT is the chain for packets that are delivered to the server itself)
+  -A INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
+    service sshd status  #to check its running
+
+Ok last step for Fedora/RHEL users. In order for your system to save the iptables rules we setup in step two you have to configure iptables correctly. You will need to edit /etc/sysconfig/iptables-config and make sure IPTABLES_MODULES_UNLOAD, IPTABLES_SAVE_ON_STOP, and IPTABLES_SAVE_ON_RESTART are all set to 'yes'
 
 
 \section{Use}
@@ -1547,22 +1770,6 @@ Then from there, ssh into the other local machines,
 where the local machine and domain names are defined by DNS. From
 your home laptop you can also use your hosts file to give a short
 name to the gateway.
-
-
-\section{Network debugging}
-
-See tools: nslookup, whois, host, ifconfig (many hidden options).
-There are many small differences between distros, and versions of
-distros, so use these tools and Google to understand what's going
-wrong.
-\
-
-
-\subsection{Rescue broken DHCP}
-su
-dhclient eth0 -r
-dhclient eth0
-
 
 \chapter{Device re-naming}
 \subsection{USB}
