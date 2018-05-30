@@ -8,4 +8,4 @@ Create a pdf from multiple png pages:
 convert *.png out.pdf
 
 Merge pdf files:
-pdfunite in-1.pdf in-2.pdf in-n.pdf out.pdf
+pdfunite innput1.pdf input2.pdf input3.pdf out.pdf

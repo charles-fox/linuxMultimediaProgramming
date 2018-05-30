@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/charles/Dropbox/linuxMultimediaProgramming/snips/postscript/cairo/test1.cpp
+cairo/cairo.h
+-
+cairo/cairo-svg.h
+-
+cairo/cairo-ps.h
+-
+stdio.h
+-
+

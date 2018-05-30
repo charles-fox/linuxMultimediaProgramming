@@ -1,0 +1,3 @@
+/home/charles/Dropbox/linuxMultimediaProgramming/snips/postscript/cairo/CMakeFiles/rebuild_cache.dir
+/home/charles/Dropbox/linuxMultimediaProgramming/snips/postscript/cairo/CMakeFiles/edit_cache.dir
+/home/charles/Dropbox/linuxMultimediaProgramming/snips/postscript/cairo/CMakeFiles/test1.dir
