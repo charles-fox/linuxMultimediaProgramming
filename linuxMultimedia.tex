@@ -56,6 +56,17 @@ The plan is to keep it on github where others can fork it and send back pull req
 - Pakt 2017 linux sound book, \url{www.safaribooksonline.com/library/view/linux-sound-programming/9781484224960/}
 - \url{en.wikibooks.org/wiki/Configuring_Sound_on_Linux} 
 
+\section{Structure}
+Multimedia data representation and programming, like most types of data repreesntation and programming, are characterised by heriachies of abstractions. At the lowest levels, mutltmedia is represented by 0s and 1s in computer memory.  These are grouped into bytes of 8 bits each, and then into words of up to 8 bytes each (on a 64bit machine).  For example, a 4-byte word may presensent the color of a single pixel with red,gree,blue and transparency each as one byte.  Or a 3 byte word (24bit) may represent the displacement of a single instant of audio.  TIme and spatial series of such values form images, sound waves, and video.
+
+Beyond this, hierachies for storage exploit Information Theory and regulatries and percetual ambiguities to compress mutltimedia.  Typically this is done by chunking the media stream into small chunks (a few hundred pixels square or cube of image or video; a fraction of a second of audio) and applying compression to each chunk.   Systems for compression and decompression are called codecs (for "compression-decompression"). 
+
+Alternatively, hierarchies for the creation and modification of media content will grow upwards through artistically meaningful layers of absrtaction. (Or equviliently: downwards from the highest level towards the raw data).   A single musical note of audio can be made from of harmonic frequenies and their temporal envelopes and filters; a picture can be made of shapes with colours and sizes.  
+
+At even higher artistic levels: musical notes are grouped into phrases, chords, progressions, and song structures (whihc are largely independent of whether they are realised as audio or as graphical sheet music); images are grouped into objects such as cats and tables; and video is grouped into events -- temporal relationships between objects.  At these levels, representation becomes a seriously frontier aplication of philosophical metaphyiscs, requiring answers to questions such as 'when are two notes the same note' and 'are verses made of chord structures plus melodies; or from a series of events over time?'. 
+
+The focus of this book is on the middle levels of these hierachies. We will try to breifly introduce enough of the very low levels to make it clear how each level is constructed up to the middle layer, then focus on tools for working at this middle level.   This is in contrast to programming the very low levels, and to getting involved in the (deeply facinating, but for another day) issues of high-level artistic manipulation.   The middle level is where you will typically work as a creative multimedia programmer, an AI programmer writing programs to reconstrct higher from lower levels, or as a developer on consumer multimedia players or creativity studio applications.
+
 \section{C with CMake}
 
 We need to use C so we can see the bits and bytes and understand what's going on.  Many of the tools have Python and other wrappers which are great to use later, but only C lets us see the actual data representations which are important in understanding multimedia in detail.  It's usually best to learn the C version first then switch to a Python or other language wrapper later if needed.
@@ -481,7 +492,8 @@ Fig. \ref{fig:jack-connect} shows the JACK connections (again in {\tt qjackctl})
 
 
 \chapter{ALSA (kernel module)}
-
+See ALSA tutorials:
+http://users.suse.com/~mana/alsa090_howto.html
 
 \section{input}
 
@@ -1143,6 +1155,9 @@ Audio Video Interleave. Container format containing variously coded audio and vi
 \chapter{mp4}
 mp4 (MPEG4-part 14) is a container format.
 
+\section{Subtitles (DVD style)}
+also for live opera captioning, kareoke etc.
+
 \chapter{rosbag as a container}
 
 \chapter{H323 (ekiga streams)}
@@ -1232,6 +1247,11 @@ Thrift (over TCP)
 
 \chapter{FPGA DSP (verilog, Chisel)}
 
+
+\chapter{Very high level event representation}
+\section{MP7}
+\section{SQRlib}
+
 \chapter{MISC IDEAS}
 
 
@@ -1265,6 +1285,47 @@ create user account plus own home directories etc:
 
 last -- shows login history (check for crackers) -- data in /use/adm or similar (a good cracker would remove their logins from this though)
 
+
+useradd -m charles   #m create homedir
+userdel charles
+
+change user name (same internal uID number)
+usermod -l newname oldname
+
+groupadd myname
+
+swapping keys
+~/.xmodmap   #need to remove the 'lock' on each key, then update it, then re-lock it
+
+autologin (xubuntu only?)
+   /etc/lightdm/lightdm.conf
+
+change prompt:
+\begin{lstlisting}
+\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\u@\h:\w\$
+\end{lstlisting}
+
+\subsection{cron jobs}
+to add jobs:
+crontab -e     
+nb: MUST end with a return character or will not work!
+
+eg.
+11 45 * * * touch full/path/to/foo <CR>
+
+this runs the touch cmd at 11:45 every day.
+nothing further to do -- auto updates everything, and cron is (usually) always running on linux machines.
+
+
+If cmd needs to be done as root, then must add as
+sudo crontab -e
+(this adds to root's cronjobs rather than a users)
+(eg useful for rebooting a machine every day)
+
+
+
+to see reboot history:
+$last reboot
 
 \chapter{Local subnets}
 
