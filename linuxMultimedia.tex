@@ -337,7 +337,7 @@ PS and PDF have some ownshipship issues; SVG is a fully open standard for vector
 
 \lstinputlisting{snips/postscript/test.svg}
 
-\chapter{Cairo vector graphics}
+\section{Cairo vector graphics API}
 
 Cairo is an API for vector graphics drawing with many backends which can render these commands in many ways such as postscript and pdf files, SVG, on-screen GUIs, and OpenGL shapes.
 
@@ -350,6 +350,13 @@ Surface: the "canvas" being drawn on; this is implemented by the backends.
 
 \lstinputlisting{snips/postscript/cairo/test1.cpp}
 
+Cairo has many bindings including Python:
+
+\lstinputlisting{snips/postscript/cairo/test1.py}
+
+Cairo can also be used to draw in GUIs, as GTK provides a Cairo surrface type:
+
+\lstinputlisting{snips/postscript/cairo-gtk/cairo-gtk.py}
 
 \section{Fonts}
 
@@ -368,13 +375,22 @@ also Pango font rendering ?
 \part{Audio}
 
 
-\chapter{How sound cards work}
+\chapter{Audio hardware (sound cards)}
 
-firewire system (is a bus, chained). FFADO driver (IML setup).
-USB system (p2p)
+A sound card is really just a group of DAC (digital-anallog) converters, and indeed it is possible to make your own from any DAC such as found on Labjack, Software Defined Radios, or Arduino Duo. (Though not Arduino Uni, which fakes DAC using digital PWM).   Typically pro and consumer soundcards are optimised for certain features useful specifically for music production, including:
+Low latency: a science lab DAC might not care about response time if it is just recording data; a musician cares a lot, especially if they are applying real-time processing to an instrument being played live, which needs to be just a few milliseconds latency.
+Cost - for consumer cards. Limit number of channels eg. to stereo in an out; whil science lab recorders may have hundreds or thousands of channels.
+Quality - optimise for audio signals which run in audible frequency ranges (48kHz recording is the pro standard; representing Nyquist rate for human perception of half of this, 24kHz) and have known (eg. 24 bit is the pro standard) bit-depth perceptual detetions.
 
+Sound card hardware typically consists of a ring-buffer for each channel, and DAC hardware which reads or writes to/from it. A ring buffer maintains a pointer to the next location to write, and wraps the storage around the ring so it doens't run out of storage. The buffer size provides a tradeoff between latency and dropouts. Small buffer means low latency but risks dropouts.  We can also choose the bit depth of the audio.
 
-\chapter{Linux audio systems}
+Sound cards, like graphics cards, connect to the computers system bus. They are less bandwidth hungry than video so are usually found on a bus hanging off of Southbridge, such as PCI for internal cards, or USB or Firewire for external cards.  PCI and Firewire are true busses (eg. Firewire devices can be daisy chained as they all see the full content of the bus) while USB is not a bus put a point-to-point connection.
+
+Sound card hardware APIs vary by manufacturer, and like GPUs their details may be propriatory and known only to the driver writers inside the company, who then make a software API available. As with GPUs the hardware API are then reverse engineered by open source driver writers.  They typically (?) consist, like GPUs, of device-specfic commands sent as data writes and reads (i.e. commands which initiate data transfers to/from main memory and/or CPU?).
+
+(In theory: APIs could include GPU texture style DMA transfers with main memory, I'm not sure if anyone needs or does this though? Might that be interesting?  Are there speeds to be gained by reading direct to CPU rather than memory first? Is this already done?)
+
+\chapter{Audio software stack}
 
 \begin{figure}
   \centering
@@ -385,9 +401,17 @@ USB system (p2p)
 
 Fig. \ref{fig:audio-rec} outlines the current Linux audio system and highlights the parts used in our stack.  The Linux audio architecture has grown quite complex in recent years, with multiple ways of doing things competing and improving.
 
-Historically, the OSS system was developed for Linux in the early 1990s, focused initially on the Creative SoundBlaster cards then extending to others.  It was a locking system which allowed only one program at a time to access the sound card, and lacked support for modern features such as surround sound. It allowed low level access to the card, for example by $\tt cat audio.wav > /dev/dsp0$.  The ALSA system was designed as a modern replacement for OSS, and is used on most current distributions including our Ubuntu Studio 11.10.  PortAudio is an API with backends that abstract both OSS and ALSA, as well as sound systems of non-free platforms such as Win32 sound and Mac CoreAudio, created to allow portable audio programs to be written.  Several software mixer systems were built to resolve the locking problem for consumer-grade applications, including PulseAudio, ESD and aRts.  Some of these mixers grew to take advantage of and to control hardware mixing provided by sounds cards, and provided additional features such as network streaming.  They provided their own APIs as well as emulation layers for older (or mixer-agnostic) OSS and ALSA applications.  (To complicate matters further, recent versions of OSS4 and ALSA have now begun to provide their own software mixers, as well as emulation layers for each other.)  Many current Linux distributions including Ubuntu 11.10 deploy PulseAudio running on ALSA, and also include an ALSA emulation layer on Pulse to allow multiple ALSA and Pulse applications to run together through the mixer.  Common media libraries such as GStreamer (which powers consumer applications such as VLC, Skype and Flash) and libcanberra (the GNOME desktop sound system) have been developed closely with PulseAudio, increasing its popularity.  However, Pulse is not designed for pro-audio work which relies on very low latencies and minimal drop-outs.
+Historically, the OSS system was developed for Linux in the early 1990s, focused initially on the Creative SoundBlaster cards then extending to other PCI and USB devices.  It was a locking system which allowed only one program at a time to access the sound card, and lacked support for modern features such as surround sound. It allowed low level access to the card, for example by $\tt cat audio.wav > /dev/dsp0$.  
+
+The ALSA system was designed as a modern replacement for OSS, and is used on most current distributions to control PCI and USB soundcards.  It does not handle Firewire cards.
+
+PortAudio is an API with backends that abstract both OSS and ALSA, as well as sound systems of non-free platforms such as Win32 sound and Mac CoreAudio, created to allow portable audio programs to be written.  
+
+Several software mixer systems were built to resolve the locking problem for consumer-grade applications, including PulseAudio, ESD and aRts.  Some of these mixers grew to take advantage of and to control hardware mixing provided by sounds cards, and provided additional features such as network streaming.  They provided their own APIs as well as emulation layers for older (or mixer-agnostic) OSS and ALSA applications.  (To complicate matters further, recent versions of OSS4 and ALSA have now begun to provide their own software mixers, as well as emulation layers for each other.)  Many current Linux distributions including Ubuntu 11.10 deploy PulseAudio running on ALSA, and also include an ALSA emulation layer on Pulse to allow multiple ALSA and Pulse applications to run together through the mixer.  Common media libraries such as GStreamer (which powers consumer applications such as VLC, Skype and Flash) and libcanberra (the GNOME desktop sound system) have been developed closely with PulseAudio, increasing its popularity.  However, Pulse is not designed for pro-audio work which relies on very low latencies and minimal drop-outs.
 
 The JACK system is an alternative software mixer which fills this need.  Like the other soft mixers, JACK runs on many lower level platforms -- usually ALSA on modern Linux machines.  The bulk of pro-audio applications such as Ardour, zynAddSubFx and qSynth run on JACK.  JACK also provides network streaming, and emulations/interfaces for other audio APIs including ALSA, OSS and PulseAudio.  (Pulse-on-JACK is useful when using pro and consumer applications at the same time, such as when watching a YouTube tutorial about how to use a pro application.  This re-configuration happens automatically when JACK is launched on a modern Pulse machine such as Ubuntu 11.10.)
+
+FFADO is a driver for pro Firewire devices, and includes JACK and other interfaces as well as its own interface and command-line tools for basic recording and playback.  (Until recent USB3, Firewire was the "pro" choice; USB3 has now caught up and should be the new pro standard.)
 
 \section{Example setup}
 
