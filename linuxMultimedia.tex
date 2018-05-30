@@ -47,12 +47,12 @@ The idea is to select only the best of breed of everything and present them toge
 
 It is not a detailed tech manual. The purpose is to present the best tools for media tasks, and to give basic but compilable hello-world examples of code to help get new project started. I use these code snippets all the time when I need to make small new projects based on libraries I might not have used for a while and need to remember how to set them up.  After that it's usually easy to consult their big docs on the net to get details for the specific things I need to do.
 
-Maybe one day this might get big enough to make an actual but fully open-source and continually updated commuity book as sometimes printed by \url{www.oreilly.com/openbook/}.  Continual updating would be really important as like a distro all these tool are constantly changing.
-lyP
+Maybe one day this might get big enough to make an actual but fully open-source and continually updated commuity book as sometimes printed by O'Reilly Community Press \url{www.oreilly.com/openbook/} or No Starch Press (https://nostarch.com/writeforus).  Continual updating would be really important as like a distro all these tool are constantly changing.
 
 The plan is to keep it on github where others can fork it and send back pull requests for incorporation in the main version, both to grow the text and to keep all the software versions up to date. Github also allows readers to edit the text within the github webpage, without having to download to their own machine, this is a really quick and easy way to fix things so please if anyone out there happens to be reading this just go ahead, fork, edit and send a pull request to help keep up to date. If you make useful edits and would like to add your name to the author list then please ask and I will add it.
 
 \section{Known similar documents}
+- OReilley 2005, Linux multimedia hacks, Kyle Rankin. More of a consumer/user's guide to apps than a programming guide.
 - Pakt 2017 linux sound book, \url{www.safaribooksonline.com/library/view/linux-sound-programming/9781484224960/}
 - \url{en.wikibooks.org/wiki/Configuring_Sound_on_Linux} 
 
@@ -641,6 +641,8 @@ Since recently - wav also supports floating point representations (which avoid c
 \section{vorbis}
 used in ogg containers.
 
+TODO how to edit meta-data artist, year etc.
+
 \section{AAC}
 Audio format often used in mp4 containers along with videos.
 
@@ -700,9 +702,15 @@ arecord -f cd -D hw:1,1 g.wav           #works**
 
 \end{lstlisting}
 
+\section{Musical descriptor features}
+Queen Mary tools?
+
+
 \chapter{Music synthesis}
 
 
+\section{Musical descriptor features}
+Queen Mary tools?
 \chapter{Speech synthesis}
 
 festival
@@ -1145,7 +1153,7 @@ Architecturally -- media streaming is nice as there are no/few branch hazards. H
 \section{Ogg}
 Open container format, designed to stream Theora video+Vorbis audio.
 
-\section{Matroska}
+\section{Matroska (.mkv)}
 Open format container, more general than ogg, designed to store and stream anything.
 filenames: .mkv,  ( .mka=audio only; , mks=subititles only; mk3d for 3d video).
 
@@ -1249,8 +1257,17 @@ Thrift (over TCP)
 
 
 \chapter{Very high level event representation}
-\section{MP7}
-\section{SQRlib}
+
+\section{MPEG7 format}
+
+MPEG7 is a weak standard for multimedia files to contain meta-infomration about themsevles.  In simplest case, this includes tags such as Artist, Album and Year for musical audio files (as already used in MP3's ID3 tags).  However MPEG7 is defined as an open-ended container where all manner of both human annotation and automatically extracted features can be tagged both to a file as a whole and also to specific times in the stream.  The systems is intended primarily to aid infomration retreival, for example to enable users to search collections of files for songs containing certain melodies (query by humming) or textures (classical vs pop); and similarly for images and video, to search for files containing features such as visual textures or high level objects like cats and tables.   For speech and singing audio, automated speed recongition could add transcripts automatically and enable easy searching by these texts.
+
+MPEG7 defines both the basic structure which these and infinitely more features can be contained; and also defines many potential standards for specific features, based on massive consultations with information retreival communities.   For example in music, the Music InformatioN Retreival confernece community has found many near-standard features such as pitch and texture descriptors, while the image retrieval and machine vision community has found similar near-standards as emshrined in OpenCV's feature libraries such as interest points and SIFT features.
+
+The dream is for music files to come with full hierachical descriptions of their song structures, chords, lyrics, melodies, and audio descriptors such as musical texture, mixing style, and classes such as genre, mood, subgenre.   And for video to include semantic-network style representations of the characters, events, and plot lines, as well as details of objects and actors, product placements, visual style, and film genre.  Most of these will be tagged by AI systems, as they are features already used in standard AI libraries such as OpenCV.   Others are massively more speculative and would require a full understanding of the metahphysics and aethethics to be optained and to be automated.   The MPEG7 community was formed from the engineers who built the low-level MP3 and MP4 codecs and were left with nothing else to do -- reaching for these philosophical levels of abstraction is likely to keep them all busy in their retirements and they enjoy the patent revenues of their previous work.
+
+
+\section{QSRlib}
 
 \chapter{MISC IDEAS}
 
