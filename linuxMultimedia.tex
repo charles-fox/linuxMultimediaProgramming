@@ -1,3 +1,10 @@
+
+NVidia's ISA is called PTX (Parallel Thread eXecution) and is documented here,
+http://www.nvidia.com/object/io_1195170102263.html
+
+AMD's ISA is called R700 and is here,
+ihttp://developer.amd.com/wordpress/media/2012/10/R700-Family_Instruction_Set_Architecture.pdf
+
 \documentclass[oneside,english]{scrbook}
 \usepackage[T1]{fontenc}
 \usepackage[latin9]{inputenc}
@@ -269,7 +276,13 @@ compressed, like JPG. File made of chunks of labelled types.
 
 It is very rare to program GPUs directly in their own ISA.  Probably the only people who do this are staff at NVidia and staff and volunteers at Mesa who write the implementations for OpenGL and OpenCL etc.
 
-An example program (for an AMD card):
+NVidia's ISA is called PTX as is documented here,
+http://www.nvidia.com/object/io_1195170102263.html
+
+AMD's ISA is called R700 and is here,
+ihttp://developer.amd.com/wordpress/media/2012/10/R700-Family_Instruction_Set_Architecture.pdf
+
+An example program (for an R700 AMD card):
 
 \begin{lstlisting}
 00 ALU: ADDR(32) CNT(4) KCACHE0(CB0:0-15)   
@@ -288,7 +301,6 @@ to pass GPU binary via a CL function:
 https://www.khronos.org/registry/OpenCL/sdk/1.0/docs/man/xhtml/clCreateProgramWithBinary.html
 
 TODO how to call libDRM directly with the commands ?
-
 \section{OpenCL setup}
 We can choose the Mesa stack or a propriatory (eg. NVidia or Intel) stack, for the particular GPU type in our computer.
 
@@ -412,86 +424,25 @@ Sound card hardware APIs vary by manufacturer, and like GPUs their details may b
 
 Fig. \ref{fig:audio-rec} outlines the current Linux audio system and highlights the parts used in our stack.  The Linux audio architecture has grown quite complex in recent years, with multiple ways of doing things competing and improving.
 
-Historically, the OSS system was developed for Linux in the early 1990s, focused initially on the Creative SoundBlaster cards then extending to other PCI and USB devices.  It was a locking system which allowed only one program at a time to access the sound card, and lacked support for modern features such as surround sound. It allowed low level access to the card, for example by $\tt cat audio.wav > /dev/dsp0$.  
+Historically, the OSS API and implementation was developed for Linux in the early 1990s, focused initially on the Creative SoundBlaster cards then extending to other PCI and USB devices.  It was a locking system which allowed only one program at a time to access the sound card, and lacked support for modern features such as surround sound. It allowed low level access to the card, for example by $\tt cat audio.wav > /dev/dsp0$.  
 
-The ALSA system was designed as a modern replacement for OSS, and is used on most current distributions to control PCI and USB soundcards.  It does not handle Firewire cards.
+The ALSA API and implementation was designed as a modern replacement for OSS, and is used on most current distributions to control PCI and USB soundcards.  It does not handle Firewire cards. It is also a locking system.
 
-PortAudio is an API with backends that abstract both OSS and ALSA, as well as sound systems of non-free platforms such as Win32 sound and Mac CoreAudio, created to allow portable audio programs to be written.  
+PortAudio is an API with multiple backend implementations that abstract both OSS and ALSA, as well as sound systems of non-free platforms such as Win32 sound and Mac CoreAudio, created to allow portable audio programs to be written.  
 
-Several software mixer systems were built to resolve the locking problem for consumer-grade applications, including PulseAudio, ESD and aRts.  Some of these mixers grew to take advantage of and to control hardware mixing provided by sounds cards, and provided additional features such as network streaming.  They provided their own APIs as well as emulation layers for older (or mixer-agnostic) OSS and ALSA applications.  (To complicate matters further, recent versions of OSS4 and ALSA have now begun to provide their own software mixers, as well as emulation layers for each other.)  Many current Linux distributions including Ubuntu 11.10 deploy PulseAudio running on ALSA, and also include an ALSA emulation layer on Pulse to allow multiple ALSA and Pulse applications to run together through the mixer.  Common media libraries such as GStreamer (which powers consumer applications such as VLC, Skype and Flash) and libcanberra (the GNOME desktop sound system) have been developed closely with PulseAudio, increasing its popularity.  However, Pulse is not designed for pro-audio work which relies on very low latencies and minimal drop-outs.
+Several software mixer APIs and implementations were then built to resolve the locking problem for consumer desktop applications, including PulseAudio, ESD and aRts.  Like graphical window managers which enable applications to share the screen, these allow multiple applications to request audio channels at the same time, and handle mixing them together to send to a single physical audio device.  Some of these mixers grew to take advantage of hardware mixing provided by some sound cards, and to provide features such as network streaming.  They provided their own APIs as well as emulation layers for older (or mixer-agnostic) OSS and ALSA applications.  (To complicate matters further, recent versions of OSS4 and ALSA have now begun to provide their own software mixers, as well as emulation layers for each other.)  Many current Linux distributions including Ubuntu 11.10 deploy PulseAudio running on ALSA, then also include an ALSA emulation layer on top of Pulse to allow multiple ALSA and Pulse applications to run together through the Pulse mixer.  Common media libraries such as GStreamer (which powers consumer applications such as VLC, Skype and Flash) and libcanberra (the GNOME desktop sound system) have been developed closely with PulseAudio, increasing its popularity.  For writing a new desktop applicaiton with audio, we probably want to use the ALSA API, and link it to the ALSA emulation layer on Pulse.  (Or if we are sure that we want to take ove the whole sound system, for example writing a pro audio application, then the same ALSA API can be linked directly to the low-level ALSA library itself without pulse.)
 
-The JACK system is an alternative software mixer which fills this need.  Like the other soft mixers, JACK runs on many lower level platforms -- usually ALSA on modern Linux machines.  The bulk of pro-audio applications such as Ardour, zynAddSubFx and qSynth run on JACK.  JACK also provides network streaming, and emulations/interfaces for other audio APIs including ALSA, OSS and PulseAudio.  (Pulse-on-JACK is useful when using pro and consumer applications at the same time, such as when watching a YouTube tutorial about how to use a pro application.  This re-configuration happens automatically when JACK is launched on a modern Pulse machine such as Ubuntu 11.10.)
+The JACK system is an alternative software mixer designed for pro-audio, multi-process work which relies on very low latencies and minimal drop-outs, such as Digital Audio Workstation applications.  Like the other soft mixers, JACK runs on many lower level platforms -- usually ALSA on modern Linux machines.  The bulk of pro-audio applications such as Ardour, zynAddSubFx and qSynth run on JACK.  JACK also provides network streaming, and emulations/interfaces for other audio APIs including ALSA, OSS and PulseAudio.  (Pulse-on-JACK is useful when using pro and consumer applications at the same time, such as when watching a YouTube tutorial about how to use a pro application.  This re-configuration happens automatically when JACK is launched on a modern Pulse machine such as Ubuntu 11.10.)  JACK applications have standard input and output channels which can be patched together to form complex musical symthesis and processing chains. (Such as, using an audio drum output signal as a side-chain to control a Eric Prydz-style compressor.)
+
+LADSPA is a weaker API which also enables plugins to be chained, similarly to VST plugins on Windows/Cubase, and which includes APIs for graphical interfaces with control dials and for more easily saving their state as part of a DAW setup.
 
 FFADO is a driver for pro Firewire devices, and includes JACK and other interfaces as well as its own interface and command-line tools for basic recording and playback.  (Until recent USB3, Firewire was the "pro" choice; USB3 has now caught up and should be the new pro standard.)
 
-\section{Example setup}
 
-Our DAW is a relatively low-power Intel E8400 (Wolfdale) duo-core, 3GHz, 4Gb Ubuntu Studio 11.10-64-bit machine.   Ubuntu studio was installed directly from CD -- not added as packages to an existing Ubuntu installation -- this gives a more minimalist installation than the latter approach.  In particular the window manager defaults to the low-power XFCE, and CPU-hogging programs such as Gnome-Network-Monitor (which periodically searches for new wifi networks in the background) are not installed.
+\chapter{ALSA}
 
-The standard ALSA and OSS provide interfaces to USB and PCI devices below, and to JACK above.  However for firewire devices such as our Pre8, the {\tt ffado} driver  provides a {\em direct} interface to JACK from the hardware, bypassing ALSA or OSS.  (Though the latest/development version provides an ALSA output layer as well.)   Our DAW uses {\tt ffado} with JACK2 (Ubuntu packages: {\tt jack2d, jack2d-firewire, libffado, jackd, laditools}.  JACK1 is the older but perhaps more stable single-processor implementation of the JACK API) and fig. \ref{fig:jack-settings} shows our JACK settings, in the {\tt qjackctl} tool.  Note that the firewire backend driver (ie. {\tt ffado}) is selected rather than ALSA.
+ALSA is a single-process API.  Its main implemention is a low-level one which takes full control of the soundcard, and which is used, for example, by higher level mixer applications.  The API is however also re-implemented at an even higher-level, where mixers emulate multiple ALSA soundcards and make them avaiable to applications.  They then do the mixing and send the result out to the original low level ALSA.  Thus learnign ALSA is useful for programming at both the audio system and the audio application level;
 
-It is important to unlock memory for good JACK performance.  As well as ticking the unlock memory option, the user must also be allowed to use it, eg. {\tt adduser charles audio}.  Also the file {\tt /etc/security/limits.d/audio.conf} was edited (followed by a reboot) to include
-
-{\tt @audio - rtprio 95 }
-
-{\tt @audio - memlock unlimited }
-
-These settings can be checked by
-
-{\tt ulimit -r -l}.
-
-The JACK sample rate was set to 48kHz, matching the Pre8s.  (This is a good sample rate for speech research work as it is similar to CD quality but allows simple sub-sampling to power-of-two frequencies used in analysis.)
-
-Fig. \ref{fig:jack-connect} shows the JACK connections (again in {\tt qjackctl}) for our meeting room studio setup.  The eight channels from the converter-mode Pre8 appear as ADAT optical inputs, and the eight channels from the interface-mode Pre8 appear as `Analog' inputs, all within the firewire device.  Ardour was used with two tracks of eight channel audio to record as shown in fig. \ref{fig:ardour}.
-
-
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{figs/jack-settings.png}
-  \caption{16 channel recording JACK settings.}
-  \label{fig:jack-settings}
-\end{figure}
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{figs/jack-connect.png}
-  \caption{16 channel recording JACK connections.}
-  \label{fig:jack-connect}
-\end{figure}
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{figs/ardour.png}
-  \caption{16 channel meeting room recording in Ardour, using two 8-channel tracks.}
-  \label{fig:ardour}
-\end{figure}
-
-
-
-
-
-\section{Example: MAUDIO USB card}
-    inputs:
-	signal dials: -40db control.   Pad: extra -20db.
-    flow model:
-	all inputs have direct JACK outputs
-		the box also has a line out and a phones out
-	A/B button-out :patches line out to phones when OUT(A);  
-		(spdif to phones when button-in, B)
-		so ALWAYS button-OUT if not using any SPDIFs
-	Mix: Left: live inputs to phone.  Right: PC to phones
-		should be all-right
-	Output: volume of line out
-	Level: volume of phones
-	gtr: inst, vol at 45deg north east
-
-	#NB sampled audio goes out of the MAUDIO through  hw:1,1.  That's nonstanard, defaults are usually hw1,0.  So need to set to listen to hw:1,1.
-
-	#2015: on XPS machine -- need hw2,0 OUTPUT and hw2,1 INPUT (different!)  mich ch 1
-
-
-\chapter{ALSA (kernel module)}
 See ALSA tutorials:
 http://users.suse.com/~mana/alsa090_howto.html
 
@@ -535,6 +486,70 @@ ecasound -i output.wav -o jack,system 					 #playback
 
 meterbridge 1   #to open a test app - use qjackctl to connect
 \end{lstlisting}
+
+\section{Configuring JACK for pro audio}
+
+For example: Our DAW was a relatively low-power Intel E8400 (Wolfdale) duo-core, 3GHz, 4Gb Ubuntu Studio 11.10-64-bit machine.   Ubuntu studio was installed directly from CD -- not added as packages to an existing Ubuntu installation -- this gives a more minimalist installation than the latter approach.  In particular the window manager defaults to the low-power XFCE, and CPU-hogging programs such as Gnome-Network-Monitor (which periodically searches for new wifi networks in the background) are not installed.
+
+The standard ALSA and OSS provide interfaces to USB and PCI devices below, and to JACK above.  However for firewire devices such as our Pre8, the {\tt ffado} driver  provides a {\em direct} interface to JACK from the hardware, bypassing ALSA or OSS.  (Though the latest/development version provides an ALSA output layer as well.)   Our DAW uses {\tt ffado} with JACK2 (Ubuntu packages: {\tt jack2d, jack2d-firewire, libffado, jackd, laditools}.  JACK1 is the older but perhaps more stable single-processor implementation of the JACK API) and fig. \ref{fig:jack-settings} shows our JACK settings, in the {\tt qjackctl} tool.  Note that the firewire backend driver (ie. {\tt ffado}) is selected rather than ALSA.
+
+It is important to unlock memory for good JACK performance.  As well as ticking the unlock memory option, the user must also be allowed to use it, eg. {\tt adduser charles audio}.  Also the file {\tt /etc/security/limits.d/audio.conf} was edited (followed by a reboot) to include
+
+{\tt @audio - rtprio 95 }
+
+{\tt @audio - memlock unlimited }
+
+These settings can be checked by
+
+{\tt ulimit -r -l}.
+
+The JACK sample rate was set to 48kHz, matching the Pre8s.  (This is a good sample rate for speech research work as it is similar to CD quality but allows simple sub-sampling to power-of-two frequencies used in analysis.)
+
+Fig. \ref{fig:jack-connect} shows the JACK connections (again in {\tt qjackctl}) for our meeting room studio setup.  The eight channels from the converter-mode Pre8 appear as ADAT optical inputs, and the eight channels from the interface-mode Pre8 appear as `Analog' inputs, all within the firewire device.  Ardour was used with two tracks of eight channel audio to record as shown in fig. \ref{fig:ardour}.
+
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figs/jack-settings.png}
+  \caption{16 channel recording JACK settings.}
+  \label{fig:jack-settings}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figs/jack-connect.png}
+  \caption{16 channel recording JACK connections.}
+  \label{fig:jack-connect}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figs/ardour.png}
+  \caption{16 channel meeting room recording in Ardour, using two 8-channel tracks.}
+  \label{fig:ardour}
+\end{figure}
+
+
+\subsection{Example: MAUDIO USB card}
+    inputs:
+	signal dials: -40db control.   Pad: extra -20db.
+    flow model:
+	all inputs have direct JACK outputs
+		the box also has a line out and a phones out
+	A/B button-out :patches line out to phones when OUT(A);  
+		(spdif to phones when button-in, B)
+		so ALWAYS button-OUT if not using any SPDIFs
+	Mix: Left: live inputs to phone.  Right: PC to phones
+		should be all-right
+	Output: volume of line out
+	Level: volume of phones
+	gtr: inst, vol at 45deg north east
+
+	#NB sampled audio goes out of the MAUDIO through  hw:1,1.  That's nonstanard, defaults are usually hw1,0.  So need to set to listen to hw:1,1.
+
+	#2015: on XPS machine -- need hw2,0 OUTPUT and hw2,1 INPUT (different!)  mich ch 1
+
 
 
 \chapter{LADSPA}
@@ -874,6 +889,8 @@ sudo apt-get install build-essential subversion zlib1g-dev
 	mencoder 00001.MTS -o 1.avi -oac copy -ovc lavc -lavcopts vcodec=mpeg4:vbitrate=10000 -fps 50 -vf scale=1920:1080
 \end{lstlisting}
 
+\section{AV1}
+AV1 is a 2018 video codec designed fully open source and patent free to improve and replace h264 (MP4part10).
 
 \chapter{ffmpeg}
 
@@ -1166,6 +1183,14 @@ mp4 (MPEG4-part 14) is a container format.
 \section{Subtitles (DVD style)}
 also for live opera captioning, kareoke etc.
 
+\section{COntainer manipulation commands}
+
+Extract audio from mp4 container:
+\begin{lstlisting}
+ ffmpeg -i in.mp4  out.mp3
+\end{lstlisting}
+
+
 \chapter{rosbag as a container}
 
 \chapter{H323 (ekiga streams)}
@@ -1264,7 +1289,7 @@ MPEG7 is a weak standard for multimedia files to contain meta-infomration about 
 
 MPEG7 defines both the basic structure which these and infinitely more features can be contained; and also defines many potential standards for specific features, based on massive consultations with information retreival communities.   For example in music, the Music InformatioN Retreival confernece community has found many near-standard features such as pitch and texture descriptors, while the image retrieval and machine vision community has found similar near-standards as emshrined in OpenCV's feature libraries such as interest points and SIFT features.
 
-The dream is for music files to come with full hierachical descriptions of their song structures, chords, lyrics, melodies, and audio descriptors such as musical texture, mixing style, and classes such as genre, mood, subgenre.   And for video to include semantic-network style representations of the characters, events, and plot lines, as well as details of objects and actors, product placements, visual style, and film genre.  Most of these will be tagged by AI systems, as they are features already used in standard AI libraries such as OpenCV.   Others are massively more speculative and would require a full understanding of the metahphysics and aethethics to be optained and to be automated.   The MPEG7 community was formed from the engineers who built the low-level MP3 and MP4 codecs and were left with nothing else to do -- reaching for these philosophical levels of abstraction is likely to keep them all busy in their retirements and they enjoy the patent revenues of their previous work.
+The dream is for music files to come with full hierachical descriptions of their song structures, chords, lyrics, melodies, and audio descriptors such as musical texture, mixing style, and classes such as genre, mood, subgenre.   And for video to include semantic-network style representations of the characters, events, and plot lines, as well as details of objects and actors, product placements, visual style, and film genre.  Most of these will be tagged by AI systems, as they are features already used in standard AI libraries such as OpenCV.   Others are massively more speculative and would require a full understanding of the metahphysics and aethethics to be optained and to be automated.   The MPEG7 community was formed from the engineers who built the low-level MP3 and MP4 codecs and were left with nothing else to do -- reaching for these philosophical levels of abstraction is likely to keep them all busy in their retirements as they enjoy the patent revenues of their previous work.
 
 
 \section{QSRlib}
@@ -1292,30 +1317,44 @@ camera cvlc command , to record
 
 \chapter{Basic sysadmin}
 
-create user account:
-    sudo useradd recorder
-    sudo passwd recorder
-    sudo usermod -aG sudo recorder
+\section{Users}
+For laboratory and robotics media systems we will often have a dedicated computer controlling the multimedia hardware.  This computer usually needs to be used my multiple people rather than an individual.   So we set it up to have an abstract user account, here called "ouruser".
 
-create user account plus own home directories etc:
-    sudo adduser recorder
+Create user account and allow user to use sudo and access USB devices (with are owned by members of the group "dialout"):
+\begin{lstlisting}
+    sudo useradd -m ouruser   #-m to create home directory
+    sudo passwd ouruser   #give them a password
+    sudo usermod -aG sudo ouruser
+	sudo adduser ouruser dialout
+\end{lstlisting}
+
+Modify user attributes:
+\begin{lstlisting}
+usermod -l ouruser ourusernew    #change user name (preserve uID number)
+sudo userdel ouruser   #delete user
+groupadd myname
+\end{lstlisting}
+
 
 last -- shows login history (check for crackers) -- data in /use/adm or similar (a good cracker would remove their logins from this though)
 
+\section{Setup}
 
-useradd -m charles   #m create homedir
-userdel charles
+Swapping keys is often useful as a lab machine may have unusual form factor and keyboard, or we might just want to make CAPS into ESCAPE to use in vi, by adding to bashrc:
 
-change user name (same internal uID number)
-usermod -l newname oldname
+\begin{lstlisting}
+xmodmap -e "keycode  60 = period greater a b slash question d"
+\end{lstlisting}
+(xmodmap can also be given a config file containing many such mappings.  The seven outputs for key 60 here are for the key itself, then when pressed with shift, ctrl, alt, AltGr and combinations thereof (aka super,hyper,meta etc). )
 
-groupadd myname
+TODO may need to remove the 'lock' on each key, then update it, then re-lock it ?
 
-swapping keys
-~/.xmodmap   #need to remove the 'lock' on each key, then update it, then re-lock it
 
 autologin (xubuntu only?)
    /etc/lightdm/lightdm.conf
+
+TODO laptop lid close behaviour for robots
+
 
 change prompt:
 \begin{lstlisting}
@@ -1380,7 +1419,7 @@ as switches using open source firmware.
 
 One server machine with two ethernet cards is needed to control traffic
 between the local and LAN networks. One card faces the local network and the other faces the public network.  This machine is called the gateway.
-As well as routing approrpiate traffic between the two cards, it can be useful to use this machine to host other network services for the local network too, as below.
+As well as routing approrpiate traffic between the two cards, it can be useful to use this machine to host other network services for the local network too, as below.  Often this machine is a dedicated "router" device, as found in "home routers" and also more professional ones; which combines a simple low-power PC with ethernet and wifi cards, a modem, and pre-configured routing, DNS, and DHCP services, usually with some cusotmer-friedly web-based control interface to a subset of their functions. In other cases we can use a regular or rack-server PC to perform the same functions, especially if we want more control over them, as discussed here.
 
 \section{Basic tools}
 
@@ -1394,6 +1433,12 @@ tracetoute, mtr
 
 ip s r  #show route
 ip a r  #add route
+\end{lstlisting}
+
+if card not shown in ifconfig, it may be "down" (ie disabled): 
+\begin{lstlisting}
+    ifconfig -a   #list all cards including DOWN 
+    ifconfig eth1 up    #bring it back up
 \end{lstlisting}
 
 Every time you change anything is is very good practice to restart the network system to ensure the changes take effect, with:
@@ -1416,6 +1461,12 @@ dhclient eth0 -r
 dhclient eth0
 \end{lstlisting}
 
+Use ping to test if a particular machine is reachable, either by its IP or address,
+\begin{lstlisting}
+ping 192.168.0.5
+ping google.com
+\end{lstlisting}
+
 Scan home network for devices with ssh(22) or http(80) ports open (port-scanner):
 \begin{lstlisting}
 sudo nmap -sS -p22,80 192.168.1.0/24
@@ -1423,7 +1474,7 @@ sudo nmap -r -sU -p22,53 IP   #UDP scan
 \end{lstlisting}
 closed means: the port is open, but no app is listening on it
 
-
+\begin{lstlisting}
 arp-scan --interface=p1p1  --localnet    #show who's connected
 
 snoop -packet sniffer tool, monitor traffic between two hosts
@@ -1436,26 +1487,38 @@ ps aux #show all processes
 
 dig @192.168.0.1 google.com   #sends a test nslookup to it? , shows chain of nameservers used to find it (need to use a new URL each time to avoid cache)
     (dig is similar to nslookup, personal choice which is best)
+\end{lstlisting}
 
-See tools: nslookup, whois, host
+See also: nslookup, whois, host
+
+\section{Removing automated tools}
+Ubuntu and other distos sometimes include a user-friendly desktop GUI program which tries to manage networking for us. For example, automatically detecting that an ethernet cable is plugged in or a known wifi network is available, and automatically switching to them.  This is great for consumers but do manage our own networks we will need to remove all of this so that it doens't automatically revert all our changes:
+
+\begin{lstlisting}
+remove network-manager (ubuntu,apt-get) NetworkManager(Fedora,yum) package 
+\end{lstlisting}
+  
 
 \section{Static IP}
 
-set hostname: /etc/hosts    #local DNS lookup 
-        /etc/hostname   #or use hostname command 
- 
-remove network-manager (ubuntu,apt-get) NetworkManager(Fedora,yum) package 
-    this is an high level layer of aumated conenctions, eg auto switch from wifi to ethernet, when cable plugged in 
-    it gets in the way of manual edits. 
- 
-if card not shown in ifconfig, it may be DOWN: 
-    ifconfig -a   #list all cards including DOWN 
-    ifconfig eth1 up 
-    
+IP requires each machine have a software IP address.  In typical offices and homes run a central DHCP server which all other machines contact (via special low level ethernet MAC-based request) and which assigns an IP to each of them.  This is usually a Good Thing because it ensures there is a single central list of mappings from MACs to IPs and no-one will get confused.  
+
+In our own labs, robots etc though, the hassle of running a DHCP server may be too much and Static IPs quicker and easier.  (e.g. if a robot loses its long-range connection to a DHCP server then bad things may happen).   In Static IP, each computer simply has its own file saying what it's own IP address is.  There are no checks to make sure that two computers don't claim the same one - we must ensure this ourselves.  But then we know exactly who is who and don't rely on any other machines.  Computers can simply contact each other via their IPs, such as "ping 192.168.0.5".
+
 define cards here:   (eg which to bring up on boot, which to dhcp on boot, set static IPs?) 
 debian              fedora 
-/etc/network/interfaces     /etc/sysconfig/networking/devices/ifcdf-<cardname>   
- 
+\begin{lstlisting}
+/etc/network/interfaces     /etc/sysconfig/networking/devices/ifcdf-<cardname>  
+
+debian:
+auto eth0
+iface eth0 inet dhcp 
+
+iface wlan0 inet static
+address 192.168.0.22
+netmask 255.255.255.0
+gateway 192.168.0.1
+
 fedora: format for static assign is 
 UUID="e88f1292-1f87-4576-97aa-bb8b2be34bd3" 
 NM_CONTROLLED="yes" 
@@ -1469,19 +1532,29 @@ BROADCAST=192.168.1.255
 NETWORK=192.168.1.0
 GATEWAY=192.168.1.1
     
-debian:
-auto eth0
-iface eth0 inet dhcp 
+\end{lstlisting}
 
-iface wlan0 inet static
-address 192.168.0.22
-netmask 255.255.255.0
-gateway 192.168.0.1
+should be able to manual assign IPs and ping between them here, using numeric IPs.
 
-should be able to manual assign IPs and ping between them here.
+\section{Hostnames}
 
+While it is possible to work entirely with numerical IPs, it is convenient to assign a text name to each machine on our local network, these are called hostnames.  Then we can do, for example.
+\begin{lstlisting}
+ssh myrobot
+ping cameraserver1
+\end{lstlisting}
 
-\section{Routing to the internet}
+For large networks (typically those runnign DHCP) we set all the hostnames centrally, similarly to setting IPs centrally, using a DNS (domain name service) server. This usually runs on the same server machine as DHCP and the gateway.
+
+For small networks, (typically with no DHCP) we just give each indivual machine its own list of mappings from hostnames to IPs, by editing the file,
+\begin{lstlisting}
+/etc/hosts    #local DNS lookup 
+or on some systems,
+/etc/hostname   #or use hostname command 
+\end{lstlisting}
+  
+
+\section{Gateway: routing to the internet}
 
 It is important to understand the levels of TCPIP here. A bridge is
 a Level 2 method of bonding two networks together, meaning that packets
@@ -1586,12 +1659,48 @@ Note iptables is also used by systems like webasr and USTAR to pass
 packets received by a public gateway to specific servers depending
 on their type.
 
+\section{Routing and firewall: iptables}
+
+ (vs. bridging: (not used, we want a router not a bridge.  brctl    #add bridge, assign cards to it, bring it up)
+ (Bridge is L2 ethernet frames and MAC addresses, bonding two networks into one, eg wifi and wired)
+ (Router is L3, packets and IPs. Is what we want.)
+ (IP-MASQ masquerading is what we want, allow web request from 192.168.0.1 to appear on the inet as router 143 IP. Then rename back by the router (using post numbers in the packet.
+   vs. Full NAT, requires subnet  block of addresses from DCS, not allowed
+   vs. Proxy server, requires client to know about it and use it, too complex.)
+  Routing is done using a firewall, we will use iptables   (vs Ubuntu ufw firewall)
+
+second card: p2p1 connect to internet.   Run DHCP on it, eg
+    dhclient p2p1
+does not conflict with local network -- broadcasts req out to internet, not to local network. Gets IP.
+or auto set it to shcp using its interface file.
+
+enter promiscuous mode: (allow iptables etc to see all local net traffic)
+ifconfig p1p1 promisc
+
+Enable IP forwarding (ok to pass packets between cards)
+    echo 1 > /proc/sys/net/ipv4/ip_forward      #(cant be saved with vi, must use >) -- temporary setting
+    vi /etc/sysctl.conf  ;  edit line to set:  net.ipv4.ip_forward = 1    -- permanent setting
+    sysctl -p /etc/sysctl.conf
+
+check iptables running:
+    service iptables status             #or restart it, and check /var/log/messages to see it
+
+iptables -A FORWARD -i p2p1 -o p1p1 -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i p1p1 -o p2p1 -j ACCEPT
+iptables -t nat -A POSTROUTING -o p2p1 -j MASQUERADE
+Debian: service iptables save   #Fedora: /usr/libexec/iptables.init save.
+
+NB these autoedit the file:  /etc/sysconfig/iptables.   *nat section leave alone, only for NAT stuff.   Main rule section is *filter.
+    i might have done the commands int he worng order -- failed until I manually edited the iptables file and moved the host-prohibited lines to the very end before COMMIT.  I think the rules get tried in order, so the prohibs are the fail-through last choice?
+
+to enable ssh accept: open local port 22: add to near top of *filter:   (INPUT is the chain for packets that are delivered to the server itself)
+  -A INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
+    service sshd status  #to check its running
+
+Ok last step for Fedora/RHEL users. In order for your system to save the iptables rules we setup in step two you have to configure iptables correctly. You will need to edit /etc/sysconfig/iptables-config and make sure IPTABLES_MODULES_UNLOAD, IPTABLES_SAVE_ON_STOP, and IPTABLES_SAVE_ON_RESTART are all set to 'yes'
+
 
 \section{DHCP}
-
-NB for applications such as outdoor robots where network contact with
-base may be lost occasionally, it may be best to configure everything
-with static IPs so that no-one is reliant on any central DHCP server.
 
 The gateway will assign local IPs to local machines via DHCP, but
 should not attempt to reply to DHCP requests from the outside LAN.
@@ -1701,7 +1810,7 @@ Second, we would like to name machines inside the local network so
 that we can ssh between them more easily.
 
 The linux DNS suite is called bind9 and its main deamon is called
-``named''. DNS runs as a service on port 53 of the gateway. (Other
+``named'' ("name deamon"). DNS runs as a service on port 53 of the gateway. (Other
 useful bind9 tools are the dig debugger and rndc admin tool).
 
 We configure named to be ``authorative'' on internal names, meaning
@@ -1776,7 +1885,6 @@ files on each machine.
         used by service, need to restart when conf changed:
             /etc/init.d/nscd service restart
 
-
 \section{Mounts}
 
 To mount a remote server,
@@ -1790,49 +1898,6 @@ To mount a NAS drive on the local network:
 
 see \emph{fstab} for permanent mounts -- but careful to have it run
 after DHCP and DNS running.
-
-\section{Routing and firewall: iptables}
-
- (vs. bridging: (not used, we want a router not a bridge.  brctl    #add bridge, assign cards to it, bring it up)
- (Bridge is L2 ethernet frames and MAC addresses, bonding two networks into one, eg wifi and wired)
- (Router is L3, packets and IPs. Is what we want.)
- (IP-MASQ masquerading is what we want, allow web request from 192.168.0.1 to appear on the inet as router 143 IP. Then rename back by the router (using post numbers in the packet.
-   vs. Full NAT, requires subnet  block of addresses from DCS, not allowed
-   vs. Proxy server, requires client to know about it and use it, too complex.)
-  Routing is done using a firewall, we will use iptables   (vs Ubuntu ufw firewall)
-
-
-second card: p2p1 connect to internet.   Run DHCP on it, eg
-    dhclient p2p1
-does not conflict with local network -- broadcasts req out to internet, not to local network. Gets IP.
-or auto set it to shcp using its interface file.
-
-enter promiscuous mode: (allow iptables etc to see all local net traffic)
-ifconfig p1p1 promisc
-
-Enable IP forwarding (ok to pass packets between cards)
-    echo 1 > /proc/sys/net/ipv4/ip_forward      #(cant be saved with vi, must use >) -- temporary setting
-    vi /etc/sysctl.conf  ;  edit line to set:  net.ipv4.ip_forward = 1    -- permanent setting
-    sysctl -p /etc/sysctl.conf
-
-check iptables running:
-    service iptables status             #or restart it, and check /var/log/messages to see it
-
-
-iptables -A FORWARD -i p2p1 -o p1p1 -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -A FORWARD -i p1p1 -o p2p1 -j ACCEPT
-iptables -t nat -A POSTROUTING -o p2p1 -j MASQUERADE
-Debian: service iptables save   #Fedora: /usr/libexec/iptables.init save.
-
-NB these autoedit the file:  /etc/sysconfig/iptables.   *nat section leave alone, only for NAT stuff.   Main rule section is *filter.
-    i might have done the commands int he worng order -- failed until I manually edited the iptables file and moved the host-prohibited lines to the very end before COMMIT.  I think the rules get tried in order, so the prohibs are the fail-through last choice?
-
-to enable ssh accept: open local port 22: add to near top of *filter:   (INPUT is the chain for packets that are delivered to the server itself)
-  -A INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
-    service sshd status  #to check its running
-
-Ok last step for Fedora/RHEL users. In order for your system to save the iptables rules we setup in step two you have to configure iptables correctly. You will need to edit /etc/sysconfig/iptables-config and make sure IPTABLES_MODULES_UNLOAD, IPTABLES_SAVE_ON_STOP, and IPTABLES_SAVE_ON_RESTART are all set to 'yes'
-
 
 \section{Use}
 
@@ -1849,93 +1914,60 @@ where the local machine and domain names are defined by DNS. From
 your home laptop you can also use your hosts file to give a short
 name to the gateway.
 
-\chapter{Device re-naming}
-\subsection{USB}
+\chapter{USB Device re-naming}
+
 When workng with multimedia we often have USB devices such as cameras, soundcards, and large media storage devices. By default these appear in system with default names like "/dev/sdb1", "/dev/tty1" but it will be convenient, especially if worknig with with robots and other systems that have many devices, to rename them.
 
 The USB protocol ensures that each device knows its own manufacturer name and model name, so the generic Linux USB device driver can see these without any need for other drivers. All other drivers sit on top of the USB drivers and protocols.    Because of this structure, any new USB device can be seen before installing any specific software for it:
 
+\begin{lstlisting}
 dmesg
+\end{lstlisting}
 will show system "device messages" about when devices have been plugged in or removed, which include their model and manufacturer information.
 
+\begin{lstlisting}
 ls /dev
+\end{lstlisting}
 will show all USB devices which act as serial ports in this way. (This is not all devices).
 
 To rename serial devices, we edit the file /etc/udev/rules.d/99-usb-serial.rules to incldude lines which map known manufacturer and model information (eg. obtained from dmesg) to new names:
 
+\begin{lstlisting}
+SUBSYSTEM=="tty", ATTRS{idVendor}=="067b", ATTRS{idProduct}=="2303", SYMLINK+="ttyPiksiRadioLink"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="067b", ATTRS{idProduct}=="2303", SYMLINK+="ttyGPSgstar"
+\end{lstlisting}
+Then unplug and replug the device to re-regcnize it as the new name, eg. /dev/ttyPiksiRadioLink . 
 
-If devies identical, they can be distinguished by the physical USB port number which they are connected to:
-http://askubuntu.com/questions/49910/how-to-distinguish-between-identical-usb-to-serial-adapters#50412
-using KERNELS attribute (eg 1-4-5 means port 5 of hub on port 4).  eg udev rule
+If two devices are identical (e.g. two USB cameras used for stereo vision), they can be distinguished by the physical USB port number which they are connected to using the KERNELS attribute describing which physical port they are on (eg 1-4-5 means port 5 of hub on port 4):
+\begin{lstlisting}
 KERNEL=="ttyUSB*", KERNELS=="1-8.1.5", NAME="ttyUSB0"
 KERNEL=="ttyUSB*", KERNELS=="1-8.1.6", NAME="ttyUSB1"
+\end{lstlisting}
 
-
+(See http://askubuntu.com/questions/49910/how-to-distinguish-between-identical-usb-to-serial-adapters#50412 for more details.)
 
 
 TODO see file notes/usb.txt
-TODO devices which are not serial ports, eg webcams.
 
+TODO devices which are not serial ports, eg webcams.
 For devices which are not serial ports but are storage devices, some systems will automatically detect this and mount them in a location such as
 /media/
 
-On some distributions, security restrictions may prevent access to USB devices by user accounts (eg. for use on shared machines in public places) so access needs to be granted by root, and they will need to be mounted: (TODO check this):
-
-GIVE USER ACCESS TO SERIAL DEVICES:
-$ sudo usermod -a -G dialout charles
-
-$ sudo umount /dev/sdb1
-$ sudo mount -t ntfs -rw /dev/sdb1 hd
-
-(Some setups have problems with hard discs and USB sticks, if in a rush it can be useful to do transfers as root, eg, 
-sudo cp foo.pdf /media/usb/document/
-)
-
-
-
-\section{Device naming}
-\subsection{USB}
-When workng with multimedia we often have USB devices such as cameras, soundcards, and large media storage devices. By default these appear in system with default names like "/dev/sdb1", "/dev/tty1" but it will be convenient, especially if worknig with with robots and other systems that have many devices, to rename them.
-
-The USB protocol ensures that each device knows its own manufacturer name and model name, so the generic Linux USB device driver can see these without any need for other drivers. All other drivers sit on top of the USB drivers and protocols.    Because of this structure, any new USB device can be seen before installing any specific software for it:
-
-dmesg
-will show system "device messages" about when devices have been plugged in or removed, which include their model and manufacturer information.
-
-ls /dev
-will show all USB devices which act as serial ports in this way. (This is not all devices).
-
-To rename serial devices, we edit the file /etc/udev/rules.d/99-usb-serial.rules to incldude lines which map known manufacturer and model information (eg. obtained from dmesg) to new names:
-
-
-If devies identical, they can be distinguished by the physical USB port number which they are connected to:
-http://askubuntu.com/questions/49910/how-to-distinguish-between-identical-usb-to-serial-adapters#50412
-using KERNELS attribute (eg 1-4-5 means port 5 of hub on port 4).  eg udev rule
-KERNEL=="ttyUSB*", KERNELS=="1-8.1.5", NAME="ttyUSB0"
-KERNEL=="ttyUSB*", KERNELS=="1-8.1.6", NAME="ttyUSB1"
-
-
-
-
-TODO see file notes/usb.txt
-TODO devices which are not serial ports, eg webcams.
-
-For devices which are not serial ports but are storage devices, some systems will automatically detect this and mount them in a location such as
-/media/
+\section{USB mount problems}
 
 On some distributions, security restrictions may prevent access to USB devices by user accounts (eg. for use on shared machines in public places) so access needs to be granted by root, and they will need to be mounted: (TODO check this):
 
-GIVE USER ACCESS TO SERIAL DEVICES:
-$ sudo usermod -a -G dialout charles
-
+Remounting USB devices (assumign user had access, see user setup above),
+\begin{lstlisting}
 $ sudo umount /dev/sdb1
 $ sudo mount -t ntfs -rw /dev/sdb1 hd
+\end{lstlisting}
 
 (Some setups have problems with hard discs and USB sticks, if in a rush it can be useful to do transfers as root, eg, 
+\begin{lstlisting}
 sudo cp foo.pdf /media/usb/document/
+\end{lstlisting}
 )
-
-
 
 
 \end{document}
