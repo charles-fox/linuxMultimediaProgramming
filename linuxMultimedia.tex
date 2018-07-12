@@ -1,10 +1,3 @@
-
-NVidia's ISA is called PTX (Parallel Thread eXecution) and is documented here,
-http://www.nvidia.com/object/io_1195170102263.html
-
-AMD's ISA is called R700 and is here,
-ihttp://developer.amd.com/wordpress/media/2012/10/R700-Family_Instruction_Set_Architecture.pdf
-
 \documentclass[oneside,english]{scrbook}
 \usepackage[T1]{fontenc}
 \usepackage[latin9]{inputenc}
@@ -299,6 +292,7 @@ https://stackoverflow.com/questions/27733704/how-is-webgl-or-cuda-code-actually-
 
 to pass GPU binary via a CL function:
 https://www.khronos.org/registry/OpenCL/sdk/1.0/docs/man/xhtml/clCreateProgramWithBinary.html
+
 
 TODO how to call libDRM directly with the commands ?
 \section{OpenCL setup}
@@ -1322,25 +1316,24 @@ For laboratory and robotics media systems we will often have a dedicated compute
 
 Create user account and allow user to use sudo and access USB devices (with are owned by members of the group "dialout"):
 \begin{lstlisting}
-    sudo useradd -m ouruser   #-m to create home directory
-    sudo passwd ouruser   #give them a password
-    sudo usermod -aG sudo ouruser
-	sudo adduser ouruser dialout
+sudo useradd -m ouruser   #-m to create home directory
+sudo passwd ouruser   #give them a password
+sudo usermod -aG sudo ouruser
+sudo adduser ouruser dialout
 \end{lstlisting}
 
 Modify user attributes:
 \begin{lstlisting}
-usermod -l ouruser ourusernew    #change user name (preserve uID number)
+usermod -l ouruser ourusernew   #change name (preserve uID)
 sudo userdel ouruser   #delete user
 groupadd myname
 \end{lstlisting}
 
 
-last -- shows login history (check for crackers) -- data in /use/adm or similar (a good cracker would remove their logins from this though)
 
 \section{Setup}
 
-Swapping keys is often useful as a lab machine may have unusual form factor and keyboard, or we might just want to make CAPS into ESCAPE to use in vi, by adding to bashrc:
+\paragraph{Swapping keys} is often useful as a lab machine may have unusual form factor and keyboard, or we might just want to make CAPS into ESCAPE to use in vi, by adding to bashrc:
 
 \begin{lstlisting}
 xmodmap -e "keycode  60 = period greater a b slash question d"
@@ -1349,39 +1342,106 @@ xmodmap -e "keycode  60 = period greater a b slash question d"
 
 TODO may need to remove the 'lock' on each key, then update it, then re-lock it ?
 
-
-autologin (xubuntu only?)
-   /etc/lightdm/lightdm.conf
-
-TODO laptop lid close behaviour for robots
-
-
-change prompt:
+\paragraph{Changing the prompt format} can be very useful for setups where we plan to dial into the machine from outside, in this case it is useful to show the machine name to distinguish from local prompts on the outside machine,
 \begin{lstlisting}
 \[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\u@\h:\w\$
 \end{lstlisting}
 
-\subsection{cron jobs}
-to add jobs:
+\paragraph{Autologin} is often useful, (xubuntu only?)
+\begin{lstlisting}
+   /etc/lightdm/lightdm.conf
+\end{lstlisting}
+
+TODO laptop lid close behaviour for robots
+
+\section{Scheduling automatic program exection times (cron jobs)}
+
+Cron jobs are tasks which are run automatically at given times.  For example taking a picture from a camera every 5 seconds.  ("cron" is a unix program which runs constantly in the background and checks it anything needs to be run from the cron job schedule. "cron" is for "chonometer" or timer.)
+
+to add cron jobs:
+\begin{lstlisting}
 crontab -e     
-nb: MUST end with a return character or will not work!
+\end{lstlisting}
+This opens cron config file (cron table) in your favourite editor, for you to add lines describing schedules.  The file MUST end with a return character or will not work!  To add jobs, add lines such as,
 
-eg.
+\begin{lstlisting}
 11 45 * * * touch full/path/to/foo <CR>
-
+\end{lstlisting}
 this runs the touch cmd at 11:45 every day.
-nothing further to do -- auto updates everything, and cron is (usually) always running on linux machines.
 
+There is nothing further to do -- cron auto updates everything, and is (usually) always running on linux machines within needing to be turned on.
 
-If cmd needs to be done as root, then must add as
+If a cron job needs to run as root, then add it to root's own chron table rather than your user account's:
+\begin{lstlisting}
 sudo crontab -e
-(this adds to root's cronjobs rather than a users)
-(eg useful for rebooting a machine every day)
+\end{lstlisting}
+(This is particularly useful for rebooting a machine every day to ensure it is in a clean state.)
 
+\section{System logs}
 
+last
+shows login history (eg. to check for access by crackers) -- data in /use/adm or similar (a good cracker would remove their logins from this though)
 
 to see reboot history:
 $last reboot
+
+
+\section{USB device naming}
+
+When workng with multimedia we often have USB devices such as cameras, soundcards, and large media storage devices. By default these appear in system with default names like "/dev/sdb1", "/dev/tty1" but it will be convenient, especially if worknig with with robots and other systems that have many devices, to rename them.
+
+The USB protocol ensures that each device knows its own manufacturer name and model name, so the generic Linux USB device driver can see these without any need for other drivers. All other drivers sit on top of the USB drivers and protocols.    Because of this structure, any new USB device can be seen before installing any specific software for it:
+
+\begin{lstlisting}
+dmesg
+\end{lstlisting}
+will show system "device messages" about when devices have been plugged in or removed, which include their model and manufacturer information.
+
+\begin{lstlisting}
+ls /dev
+\end{lstlisting}
+will show all USB devices which act as serial ports in this way. (This is not all devices).
+
+To rename serial devices, we edit the file /etc/udev/rules.d/99-usb-serial.rules to incldude lines which map known manufacturer and model information (eg. obtained from dmesg) to new names:
+
+\begin{lstlisting}
+SUBSYSTEM=="tty", ATTRS{idVendor}=="067b", ATTRS{idProduct}=="2303", SYMLINK+="ttyPiksiRadioLink"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="067b", ATTRS{idProduct}=="2303", SYMLINK+="ttyGPSgstar"
+\end{lstlisting}
+Then unplug and replug the device to re-regcnize it as the new name, eg. /dev/ttyPiksiRadioLink . 
+
+If two devices are identical (e.g. two USB cameras used for stereo vision), they can be distinguished by the physical USB port number which they are connected to using the KERNELS attribute describing which physical port they are on (eg 1-4-5 means port 5 of hub on port 4):
+\begin{lstlisting}
+KERNEL=="ttyUSB*", KERNELS=="1-8.1.5", NAME="ttyUSB0"
+KERNEL=="ttyUSB*", KERNELS=="1-8.1.6", NAME="ttyUSB1"
+\end{lstlisting}
+
+(See http://askubuntu.com/questions/49910/how-to-distinguish-between-identical-usb-to-serial-adapters#50412 for more details.)
+
+
+TODO see file notes/usb.txt
+
+TODO devices which are not serial ports, eg webcams.
+For devices which are not serial ports but are storage devices, some systems will automatically detect this and mount them in a location such as
+/media/
+
+\section{USB mount problems}
+
+On some distributions, security restrictions may prevent access to USB devices by user accounts (eg. for use on shared machines in public places) so access needs to be granted by root, and they will need to be mounted: (TODO check this):
+
+Remounting USB devices (assumign user had access, see user setup above),
+\begin{lstlisting}
+$ sudo umount /dev/sdb1
+$ sudo mount -t ntfs -rw /dev/sdb1 hd
+\end{lstlisting}
+
+(Some setups have problems with hard discs and USB sticks, if in a rush it can be useful to do transfers as root, eg, 
+\begin{lstlisting}
+sudo cp foo.pdf /media/usb/document/
+\end{lstlisting}
+)
+
+
 
 \chapter{Local subnets}
 
@@ -1402,13 +1462,14 @@ a local network with Linux machines for these purposes.
 
 TCP/IP networking has three relevant layers of protocol:
 
-- Ethernet is a low level protcol in which each device on a physical network as a MAC address and can send and receive "frames" (not "packets") of data to another device via its MAC address. MAC addresses are (almost) hardwired into physical network cards. Ethernet is a bus so any frames put on the bus are visible to everyone on the bus.
+\paragraph{Ethernet} is a low level protcol in which each device on a physical network as a MAC address and can send and receive "frames" (not "packets") of data to another device via its MAC address. MAC addresses are (almost) hardwired into physical network cards. Ethernet is a bus so any frames put on the bus are visible to everyone on the bus.
 
-- IP (Internet protocol) forms and transmits IP packets, over Ethernet, or other media.  It assignes each device an IP address, which is different from the MAC addresses. IP addresses are assigned to machines by software. They can be fixed by local software, or DHCP is a protocol which allows them to be requested from a central server (in order to avoid conflicts and enforce a numbering system).
+\paragraph{IP} (Internet protocol) forms and transmits IP packets, over Ethernet, or other media.  It assignes each device an IP address, which is different from the MAC addresses. IP addresses are assigned to machines by software. They can be fixed by local software, or DHCP is a protocol which allows them to be requested from a central server (in order to avoid conflicts and enforce a numbering system).
 
-- TCP is higher level still, and is a protocol which control how IP packets are passed around the (inter)network.
+\paragraph{TCP} is higher level still, and is a protocol which control how IP packets are passed around the (inter)network. Is is the usual way to pass packets.
+\paragraph{UDP} is an alternative to TCP, which also controls how IP packets are passed around. It removes most of the error checking and gaurentee of deliverty from TCP so is faster but expects to loose packets. It is used typically for media streaming where low latency is required and there is no point in guarentiing slow deliver of packetes from, say, video frames whose time has already passed.
 
- (ICMP is another for sending error messages such as "host unreachable")
+\paragraph{(ICMP} is a futher protocol for sending error messages such as "host unreachable")
 
 Typically a local network is based around one central switch with
 all devices connected directly to it. In some projects, a wifi switch
@@ -1913,61 +1974,5 @@ Then from there, ssh into the other local machines,
 where the local machine and domain names are defined by DNS. From
 your home laptop you can also use your hosts file to give a short
 name to the gateway.
-
-\chapter{USB Device re-naming}
-
-When workng with multimedia we often have USB devices such as cameras, soundcards, and large media storage devices. By default these appear in system with default names like "/dev/sdb1", "/dev/tty1" but it will be convenient, especially if worknig with with robots and other systems that have many devices, to rename them.
-
-The USB protocol ensures that each device knows its own manufacturer name and model name, so the generic Linux USB device driver can see these without any need for other drivers. All other drivers sit on top of the USB drivers and protocols.    Because of this structure, any new USB device can be seen before installing any specific software for it:
-
-\begin{lstlisting}
-dmesg
-\end{lstlisting}
-will show system "device messages" about when devices have been plugged in or removed, which include their model and manufacturer information.
-
-\begin{lstlisting}
-ls /dev
-\end{lstlisting}
-will show all USB devices which act as serial ports in this way. (This is not all devices).
-
-To rename serial devices, we edit the file /etc/udev/rules.d/99-usb-serial.rules to incldude lines which map known manufacturer and model information (eg. obtained from dmesg) to new names:
-
-\begin{lstlisting}
-SUBSYSTEM=="tty", ATTRS{idVendor}=="067b", ATTRS{idProduct}=="2303", SYMLINK+="ttyPiksiRadioLink"
-SUBSYSTEM=="tty", ATTRS{idVendor}=="067b", ATTRS{idProduct}=="2303", SYMLINK+="ttyGPSgstar"
-\end{lstlisting}
-Then unplug and replug the device to re-regcnize it as the new name, eg. /dev/ttyPiksiRadioLink . 
-
-If two devices are identical (e.g. two USB cameras used for stereo vision), they can be distinguished by the physical USB port number which they are connected to using the KERNELS attribute describing which physical port they are on (eg 1-4-5 means port 5 of hub on port 4):
-\begin{lstlisting}
-KERNEL=="ttyUSB*", KERNELS=="1-8.1.5", NAME="ttyUSB0"
-KERNEL=="ttyUSB*", KERNELS=="1-8.1.6", NAME="ttyUSB1"
-\end{lstlisting}
-
-(See http://askubuntu.com/questions/49910/how-to-distinguish-between-identical-usb-to-serial-adapters#50412 for more details.)
-
-
-TODO see file notes/usb.txt
-
-TODO devices which are not serial ports, eg webcams.
-For devices which are not serial ports but are storage devices, some systems will automatically detect this and mount them in a location such as
-/media/
-
-\section{USB mount problems}
-
-On some distributions, security restrictions may prevent access to USB devices by user accounts (eg. for use on shared machines in public places) so access needs to be granted by root, and they will need to be mounted: (TODO check this):
-
-Remounting USB devices (assumign user had access, see user setup above),
-\begin{lstlisting}
-$ sudo umount /dev/sdb1
-$ sudo mount -t ntfs -rw /dev/sdb1 hd
-\end{lstlisting}
-
-(Some setups have problems with hard discs and USB sticks, if in a rush it can be useful to do transfers as root, eg, 
-\begin{lstlisting}
-sudo cp foo.pdf /media/usb/document/
-\end{lstlisting}
-)
-
 
 \end{document}
