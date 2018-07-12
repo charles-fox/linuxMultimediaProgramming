@@ -41,7 +41,7 @@ Current authors include: Charles Fox, ADD NAMES HERE
 
 \chapter{Introduction}
 
-This is my first attempt at open sourcing some written notes using github and Creative Commons like what my friend Robin Lovelace does. I am collecting all my little text files and code snippits from over the years of working with Linux graphics, sound and video into one place and thought I might as well share them in case they are useful to anyone.  As I just finished writing my Springer book "Data Science for Transport" it's easy to reuse the book template, though this is just intended as a loose collection of stuff, not an actual book itself.
+This is an attempt at open sourcing some written notes using github and Creative Commons. I am collecting all my little text and code snippits from over the years of working with Linux graphics, sound and video into one place and thought I might as well share them in case they are useful to anyone. They are based on about my last 10 years of working as an academic and commercial researcher in pattern multimedia pattern recongition in machine vision, speech recongition, computer music and robotics, and have been used to implement the systems in my research papers (https://scholar.google.co.uk/citations?user=dQ7RURYAAAAJ&hl=en). As I just finished writing my Springer book "Data Science for Transport" it's easy to reuse the book template, though this is just intended as a loose collection of stuff, not an actual book itself.
 
 The idea is to select only the best of breed of everything and present them together. It's like a Linux distribution in making these selections. But it is a distribution of ideas and choices rather than of actual software. (unless we do a Docker as well).   As such, the choice of what to leave out and not cover is also important. The idea is to present a single, best, toolkit, of tools which work and which also work well with one another as in a distro.
 
@@ -56,6 +56,7 @@ The plan is to keep it on github where others can fork it and send back pull req
 - Pakt 2017 linux sound book, \url{www.safaribooksonline.com/library/view/linux-sound-programming/9781484224960/}
 - \url{en.wikibooks.org/wiki/Configuring_Sound_on_Linux} 
 - Steve Money, BBC Micro Graphics and Ground, 1983, was the inspiration for this, though it was all a lot less complication in those days.
+- Robin Lovelace's open source github books on R an GIS are the inspiration for doing it this way, thanks Robin you are such a star!
 
 \section{Structure}
 Multimedia data representation and programming, like most types of data repreesntation and programming, are characterised by heriachies of abstractions. At the lowest levels, mutltmedia is represented by 0s and 1s in computer memory.  These are grouped into bytes of 8 bits each, and then into words of up to 8 bytes each (on a 64bit machine).  For example, a 4-byte word may presensent the color of a single pixel with red,gree,blue and transparency each as one byte.  Or a 3 byte word (24bit) may represent the displacement of a single instant of audio.  TIme and spatial series of such values form images, sound waves, and video.
