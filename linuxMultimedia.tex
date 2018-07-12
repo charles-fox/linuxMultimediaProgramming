@@ -47,7 +47,7 @@ The idea is to select only the best of breed of everything and present them toge
 
 It is not a detailed tech manual. The purpose is to present the best tools for media tasks, and to give basic but compilable hello-world examples of code to help get new project started. I use these code snippets all the time when I need to make small new projects based on libraries I might not have used for a while and need to remember how to set them up.  After that it's usually easy to consult their big docs on the net to get details for the specific things I need to do.
 
-Maybe one day this might get big enough to make an actual but fully open-source and continually updated commuity book as sometimes printed by O'Reilly Community Press \url{www.oreilly.com/openbook/} or No Starch Press (https://nostarch.com/writeforus).  Continual updating would be really important as like a distro all these tool are constantly changing.
+Maybe one day this might get big enough to make an actual but fully open-source and continually updated commuity book as sometimes printed by O'Reilly Community Press \url{www.oreilly.com/openbook/} or No Starch Press (https://nostarch.com/writeforus).  Continual updating would be really important as like a distro all these tool are constantly changing.  
 
 The plan is to keep it on github where others can fork it and send back pull requests for incorporation in the main version, both to grow the text and to keep all the software versions up to date. Github also allows readers to edit the text within the github webpage, without having to download to their own machine, this is a really quick and easy way to fix things so please if anyone out there happens to be reading this just go ahead, fork, edit and send a pull request to help keep up to date. If you make useful edits and would like to add your name to the author list then please ask and I will add it.
 
@@ -55,6 +55,7 @@ The plan is to keep it on github where others can fork it and send back pull req
 - OReilley 2005, Linux multimedia hacks, Kyle Rankin. More of a consumer/user's guide to apps than a programming guide.
 - Pakt 2017 linux sound book, \url{www.safaribooksonline.com/library/view/linux-sound-programming/9781484224960/}
 - \url{en.wikibooks.org/wiki/Configuring_Sound_on_Linux} 
+- Steve Money, BBC Micro Graphics and Ground, 1983, was the inspiration for this, though it was all a lot less complication in those days.
 
 \section{Structure}
 Multimedia data representation and programming, like most types of data repreesntation and programming, are characterised by heriachies of abstractions. At the lowest levels, mutltmedia is represented by 0s and 1s in computer memory.  These are grouped into bytes of 8 bits each, and then into words of up to 8 bytes each (on a 64bit machine).  For example, a 4-byte word may presensent the color of a single pixel with red,gree,blue and transparency each as one byte.  Or a 3 byte word (24bit) may represent the displacement of a single instant of audio.  TIme and spatial series of such values form images, sound waves, and video.
@@ -1488,32 +1489,24 @@ There are many small differences between distros, and versions of
 distros, so use these tools and Google to understand what's going
 wrong.
 
+The most essential network status command is,
 \begin{lstlisting}
-ifconfig -- can set IPs and bring up/down cards too
-tracetoute, mtr
-
-ip s r  #show route
-ip a r  #add route
+ifconfig
 \end{lstlisting}
-
-if card not shown in ifconfig, it may be "down" (ie disabled): 
+which in its most basic form (it is capable fo much more) lists all currently active ("up") network cards and their IP and MAC addresses.  If the main card is missing an IP this is an indication something is wrong.  If card not shown in ifconfig, it may be "down" (ie disabled): 
 \begin{lstlisting}
-    ifconfig -a   #list all cards including DOWN 
-    ifconfig eth1 up    #bring it back up
+ifconfig -a   #list all cards including DOWN 
+ifconfig eth1 up    #bring a card back up
 \end{lstlisting}
 
 Every time you change anything is is very good practice to restart the network system to ensure the changes take effect, with:
 
 \begin{lstlisting}
-service network restart
-(Or
-Debian:     /etc/init.d/networking restart
-Fedora:     /etc/init.d/network restart
-)
-
+service network restart			 #(Ubuntu)
+/etc/init.d/networking restart   #(Debian)
+/etc/init.d/network restart      #(Fedora)
 \end{lstlisting}
-It is often useful to do this routinely after nay change to the network
-to avoid stupid bugs.
+It is often useful to do this routinely after nay change to the network to avoid stupid bugs.
 
 This releases our current IP as assigned by a DHCP server, and requests a new one:
 \begin{lstlisting}
@@ -1528,29 +1521,37 @@ ping 192.168.0.5
 ping google.com
 \end{lstlisting}
 
-Scan home network for devices with ssh(22) or http(80) ports open (port-scanner):
+\paragraph{Port scanning} can be performed to list all network devices having ports ssh(22) or http(80) ports open:
 \begin{lstlisting}
 sudo nmap -sS -p22,80 192.168.1.0/24
 sudo nmap -r -sU -p22,53 IP   #UDP scan
 \end{lstlisting}
 closed means: the port is open, but no app is listening on it
 
+Other useful commands:
 \begin{lstlisting}
+tracetoute
+mtr
+ip s r  #show route
+ip a r  #add route
+
 arp-scan --interface=p1p1  --localnet    #show who's connected
 
 snoop -packet sniffer tool, monitor traffic between two hosts
 
 netstat - can open ports
-    netstat -tulpn   #list open ports on server
+netstat -tulpn   #list open ports on server
 
 ps aux #show all processes
 
-
 dig @192.168.0.1 google.com   #sends a test nslookup to it? , shows chain of nameservers used to find it (need to use a new URL each time to avoid cache)
     (dig is similar to nslookup, personal choice which is best)
+
+nslookup
+whois
+host
 \end{lstlisting}
 
-See also: nslookup, whois, host
 
 \section{Removing automated tools}
 Ubuntu and other distos sometimes include a user-friendly desktop GUI program which tries to manage networking for us. For example, automatically detecting that an ethernet cable is plugged in or a known wifi network is available, and automatically switching to them.  This is great for consumers but do manage our own networks we will need to remove all of this so that it doens't automatically revert all our changes:
@@ -1617,8 +1618,10 @@ or on some systems,
 
 \section{Gateway: routing to the internet}
 
+This section is about how to connect our subnet to a larger network such as a company network or the internet. 
+
 It is important to understand the levels of TCPIP here. A bridge is
-a Level 2 method of bonding two networks together, meaning that packets
+an IP-level (Level 2) method of bonding two networks together, meaning that packets
 entering one network will also enter the other. Bridging is appropriate
 for example between a wifi network and a wired network. Bridging is
 not what we want to do to connect our local network to the internet,
@@ -1628,7 +1631,7 @@ from other uses of the LAN in our office building to circulate in
 our local network and interfere with  transmission of high speed data
 during an experiment. We want to allow packets from outside to enter
 but only if they are destined for one of our machines. The appropriate
-level to provide this behaviour is instead level 3, and the method
+level to provide this behaviour is instead the TCP level (level 3), and the method
 is routing, not bridging.
 
 IP Masquerading is a system which converts between local and external
@@ -1731,7 +1734,9 @@ on their type.
   Routing is done using a firewall, we will use iptables   (vs Ubuntu ufw firewall)
 
 second card: p2p1 connect to internet.   Run DHCP on it, eg
-    dhclient p2p1
+\begin{lstlisting}
+dhclient p2p1
+\end{lstlisting}
 does not conflict with local network -- broadcasts req out to internet, not to local network. Gets IP.
 or auto set it to shcp using its interface file.
 
@@ -1739,17 +1744,23 @@ enter promiscuous mode: (allow iptables etc to see all local net traffic)
 ifconfig p1p1 promisc
 
 Enable IP forwarding (ok to pass packets between cards)
-    echo 1 > /proc/sys/net/ipv4/ip_forward      #(cant be saved with vi, must use >) -- temporary setting
-    vi /etc/sysctl.conf  ;  edit line to set:  net.ipv4.ip_forward = 1    -- permanent setting
-    sysctl -p /etc/sysctl.conf
+\begin{lstlisting}
+echo 1 > /proc/sys/net/ipv4/ip_forward      #(cant be saved with vi, must use >) -- temporary setting
+vi /etc/sysctl.conf  ;  edit line to set:  net.ipv4.ip_forward = 1    -- permanent setting
+sysctl -p /etc/sysctl.conf
+\end{lstlisting}
 
 check iptables running:
-    service iptables status             #or restart it, and check /var/log/messages to see it
+\begin{lstlisting}
+service iptables status             #or restart it, and check /var/log/messages to see it
+\end{lstlisting}
 
+\begin{lstlisting}
 iptables -A FORWARD -i p2p1 -o p1p1 -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A FORWARD -i p1p1 -o p2p1 -j ACCEPT
 iptables -t nat -A POSTROUTING -o p2p1 -j MASQUERADE
 Debian: service iptables save   #Fedora: /usr/libexec/iptables.init save.
+\end{lstlisting}
 
 NB these autoedit the file:  /etc/sysconfig/iptables.   *nat section leave alone, only for NAT stuff.   Main rule section is *filter.
     i might have done the commands int he worng order -- failed until I manually edited the iptables file and moved the host-prohibited lines to the very end before COMMIT.  I think the rules get tried in order, so the prohibs are the fail-through last choice?
