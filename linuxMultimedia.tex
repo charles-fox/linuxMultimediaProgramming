@@ -41,15 +41,9 @@ Current authors include: Charles Fox, ADD NAMES HERE
 
 \chapter{Introduction}
 
-This is an attempt at open sourcing some written notes using github and Creative Commons. I am collecting all my little text and code snippits from over the years of working with Linux graphics, sound and video into one place and thought I might as well share them in case they are useful to anyone. They are based on about my last 10 years of working as an academic and commercial researcher in pattern multimedia pattern recongition in machine vision, speech recongition, computer music and robotics, and have been used to implement the systems in my research papers (https://scholar.google.co.uk/citations?user=dQ7RURYAAAAJ&hl=en). As I just finished writing my Springer book "Data Science for Transport" it's easy to reuse the book template, though this is just intended as a loose collection of stuff, not an actual book itself.
+This is a technical coding introduction to Linux multimedia libraries and tools including graphics, sound, and video programming.   Linux famously allows many competing libraries and tools to provide similar functions from which the open source community eventually select the best.  This eventually gives great tools but can be quite confusing for beginner programmers as they are faced with many alternative ways to do everything.  The idea in this document is to select only the best of breed of everything and present them together. It's like a Linux distribution in making these selections. But it is a distribution of ideas and choices rather than of actual software. (unless we do a Docker as well).   As such, the choice of what to leave out and not cover is also important. The idea is to present a single, best, toolkit, of tools which work and which also work well with one another as in a distro.   This is not a detailed tech manual. The purpose is to present the best tools for media tasks, and to give basic but compilable hello-world examples of code to help get new project started. I use these code snippets all the time when I need to make small new projects based on libraries I might not have used for a while and need to remember how to set them up.  After that it's usually easy to consult their big docs on the net to get details for the specific things I need to do.
 
-The idea is to select only the best of breed of everything and present them together. It's like a Linux distribution in making these selections. But it is a distribution of ideas and choices rather than of actual software. (unless we do a Docker as well).   As such, the choice of what to leave out and not cover is also important. The idea is to present a single, best, toolkit, of tools which work and which also work well with one another as in a distro.
-
-It is not a detailed tech manual. The purpose is to present the best tools for media tasks, and to give basic but compilable hello-world examples of code to help get new project started. I use these code snippets all the time when I need to make small new projects based on libraries I might not have used for a while and need to remember how to set them up.  After that it's usually easy to consult their big docs on the net to get details for the specific things I need to do.
-
-Maybe one day this might get big enough to make an actual but fully open-source and continually updated commuity book as sometimes printed by O'Reilly Community Press \url{www.oreilly.com/openbook/} or No Starch Press (https://nostarch.com/writeforus).  Continual updating would be really important as like a distro all these tool are constantly changing.  
-
-The plan is to keep it on github where others can fork it and send back pull requests for incorporation in the main version, both to grow the text and to keep all the software versions up to date. Github also allows readers to edit the text within the github webpage, without having to download to their own machine, this is a really quick and easy way to fix things so please if anyone out there happens to be reading this just go ahead, fork, edit and send a pull request to help keep up to date. If you make useful edits and would like to add your name to the author list then please ask and I will add it.
+The document is an attempt at open sourcing some of my written notes using github and Creative Commons. I am collecting all my little text and code snippits from over the years of working with Linux graphics, sound and video into one place and thought I might as well share them in case they are useful to anyone. They are based on about my last 10 years of working as an academic and commercial researcher in pattern multimedia pattern recongition in machine vision, speech recongition, computer music and robotics, and have been used to implement the systems in my research papers (https://scholar.google.co.uk/citations?user=dQ7RURYAAAAJ&hl=en). As I just finished writing my Springer book "Data Science for Transport" it's easy to reuse the book template, though this is just intended as a loose collection of stuff, not an actual book itself.    Maybe one day this might get big enough to make an actual but fully open-source and continually updated commuity book as sometimes printed by O'Reilly Community Press \url{www.oreilly.com/openbook/} or No Starch Press (https://nostarch.com/writeforus).  Continual updating would be really important as like a distro all these tool are constantly changing.    The plan is to keep it on github where others can fork it and send back pull requests for incorporation in the main version, both to grow the text and to keep all the software versions up to date. Github also allows readers to edit the text within the github webpage, without having to download to their own machine, this is a really quick and easy way to fix things so please if anyone out there happens to be reading this just go ahead, fork, edit and send a pull request to help keep up to date. If you make useful edits and would like to add your name to the author list then please ask and I will add it.
 
 \section{Known similar documents}
 - OReilley 2005, Linux multimedia hacks, Kyle Rankin. More of a consumer/user's guide to apps than a programming guide.
@@ -272,10 +266,14 @@ compressed, like JPG. File made of chunks of labelled types.
 It is very rare to program GPUs directly in their own ISA.  Probably the only people who do this are staff at NVidia and staff and volunteers at Mesa who write the implementations for OpenGL and OpenCL etc.
 
 NVidia's ISA is called PTX as is documented here,
+\begin{lstlisting}
 http://www.nvidia.com/object/io_1195170102263.html
+\end{lstlisting}
 
 AMD's ISA is called R700 and is here,
-ihttp://developer.amd.com/wordpress/media/2012/10/R700-Family_Instruction_Set_Architecture.pdf
+\begin{lstlisting}
+http://developer.amd.com/wordpress/media/2012/10/R700-Family_Instruction_Set_Architecture.pdf
+\end{lstlisting}
 
 An example program (for an R700 AMD card):
 
@@ -434,18 +432,126 @@ LADSPA is a weaker API which also enables plugins to be chained, similarly to VS
 
 FFADO is a driver for pro Firewire devices, and includes JACK and other interfaces as well as its own interface and command-line tools for basic recording and playback.  (Until recent USB3, Firewire was the "pro" choice; USB3 has now caught up and should be the new pro standard.)
 
+\chapter{ALSA command line tools}
 
-\chapter{ALSA}
+ALSA is available both as its C API and as a set of command line tools which call it.  We will look at these tools first then at the library in the next chapter.   Most modern desktops run Pulse Audio which includes an ALSA emulation layer in which these commands and calls will run. On non-Pulse machines it is possible to setup to have the same commands execute on the native ALSA layer.  Here we show the commands indifferent to how they are being run -- typically they will go through Pulse on a modern desktop.
+
+Any work with ALSA will begin by listing the available audio devices to decide which to use:
+\begin{lstlisting}
+aplay -l
+\end{lstlisting}
+
+On a modern machine there are likely to be many of these, including HDMI interfaces, on-motherboard sound card, and possibly dedicated PCI or USB sound cards for more pro use.   Each device has a number, then within each device there are one or more channels.   For example the microphone input of a laptop's motherboard channel might be device 1 (soundcard), channel 0 (microphone).  In ALSA notation this is written hw:0,1 (for a hardware hw soundcard; others might be virtual.)  Input and output channels are separate, for example the microphone can be input 0 while the speakers are output 0 so both appear as $hw:1,0$ in differeent contexts. (?)
+
+To record a mono wav file having identified a device, using audio DAT (dat) format (f) (which is 48kHz samples, 16 bit), from the named device (D):
+\begin{lstlisting}
+arecord -f dat -D hw:1,0 g.wav          
+\end{lstlisting}
+Many other formats of sample rates, depths, and integer representations are available, type "arecord" with no arguments to see the list.
+
+To play it back on the same device,
+\begin{lstlisting}
+aplay -D hw:1,0 g.wav
+\end{lstlisting}
+
+If you are lucky and-or on a very standard machine, arecord and aplay can be used with no arguments except the filename and produce sensible behavior (such as recording speech-style audio at 8kHz from the motherboard's onboard soundcard). For pro work however we usually need to specify which of our more expensive devices to use and how to use it.  This may require some knowledge of what the cards can actually do before asking for difficult formats.  When we program ALSA in C we will get more control over the process of querying device capabilities and matching our format requests to them.  From the command line it is more a trial and error process -- ask for various formats and see if the command runs or gives an error if they are not possible.
+
+To playback a stereo file on a device (number 1) having two channels:
+\begin{lstlisting}
+aplay -D hw:1 stereo.wav
+\end{lstlisting}
+
+Record midi file,
+\begin{lstlisting}
+amidi TODO TODO
+\end{lstlisting}
+
+Playback midi file,
+\begin{lstlisting}
+aplay TODO
+\end{lstlisting}
+
+
+
+
+\chapter{ALSA programming}
 
 ALSA is a single-process API.  Its main implemention is a low-level one which takes full control of the soundcard, and which is used, for example, by higher level mixer applications.  The API is however also re-implemented at an even higher-level, where mixers emulate multiple ALSA soundcards and make them avaiable to applications.  They then do the mixing and send the result out to the original low level ALSA.  Thus learnign ALSA is useful for programming at both the audio system and the audio application level;
 
-See ALSA tutorials:
+Examples below are based on Matthias Nagorni's ALSA tutorials (GPL licenced):
+\begin{lstlisting}
 http://users.suse.com/~mana/alsa090_howto.html
+\end{lstlisting}
+
+\section{output}
+\lstinputlisting{snips/alsa/audioout.c}
 
 \section{input}
 
+\chapter{Audio files}
 
-\section{output}
+\section{Formats}
+\subsection{wav}
+
+header + raw bytes. (raw = Pulse Code Modulation) eg. 32 bit audio = 4 bytes per sample, from linearly spaced possible values. (32 bit here is the 'bit depth').
+NB 4Gb limit? still dont know how to fix this/ repair from header.
+
+Since recently - wav also supports floating point representations (which avoid clipping but require more computation).
+
+\subsection{vorbis}
+used in ogg containers.
+
+TODO how to edit meta-data artist, year etc.
+
+\subsection{AAC}
+Audio format often used in mp4 containers along with videos.
+
+\subsection{FLAC}
+Lossles.
+
+\section{Editing audio files Sox and soxi}
+Sox is the swiss army knife of the audio command line. Its friend soxi gives information about audio files.
+\begin{lstlisting}
+
+	sox k.wav -n stat   #see length(seconds)
+	sox in.wav out.wav trim start_time dur			
+	sox in.wav out.wav pad start_pad_sec end_pad_sec
+
+	sox ts.wav -b 16 output.wav rate -s -a 48000 dither -s    #upsample
+	sox mono.wav -c 2 stereo.wav                              #make stereo fm mono (JACK cares a lot about right types here)
+
+	#delay and weighed mix.  -p is used in place of output fn, to pipe out.
+	sox -m -v 0.9 a.wav   -v 0.5 '|sox a.wav -p pad 1' out.wav    #in seconds
+	sox -m -v 0.9 a.wav   -v 0.5 '|sox a.wav -p pad 1s' out.wav   #in samples
+
+	#lima
+	sox -D -m -v 1 -t sox "|sox a.wav -p pad 0s trim 0 5s"      -v 0.5 -t sox "|sox a.wav -p pad 1s trim 0 5s"  out.wav
+ 
+	#equiv to (as "-p" subs to "-t sox -" and "-" is the pipe out)
+	sox  -m -v 1 -t sox "|sox a.wav -t sox - pad 0s trim 0 5s"      -v 0.5 -t sox "|sox a.wav -t sox - pad 1s trim 0 5s"   out.wav
+	
+	#piping out of sox
+	sox -m -v 0.9 a.wav   -v 0.5 '|sox a.wav -p pad 1s' -t wav - | less    #WARNING about wav header though
+
+	#pad and trim
+	sox Array1-01.wav -p pad 0s trim 13437440s 104800s  o2.wav
+
+ soxi  /share/spandh.ami1/asr/dev/mtg/ac/exp.mdm/exp/lima/pylima/out/testRun/AMI-S1000B_m4016_083984_084639/iter1/mix.wav
+
+Input File     : '/share/spandh.ami1/asr/dev/mtg/ac/exp.mdm/exp/lima/pylima/out/testRun/AMI-S1000B_m4016_083984_084639/iter1/mix.wav'
+Channels       : 1
+Sample Rate    : 16000
+Precision      : 32-bit
+Duration       : 00:00:06.55 = 104800 samples ~ 491.25 CDDA sectors
+File Size      : 419k
+Bit Rate       : 512k
+Sample Encoding: 32-bit Signed Integer PCM
+
+\end{lstlisting}
+
+\section{Musical descriptor features}
+Queen Mary tools?
+
 
 
 \chapter{Spatial audio: OpenAL}
@@ -638,83 +744,6 @@ Generally we don't want to compose or edit in Denemo because then we are stuck i
 
 \sdubsection{Frescobaldi}
 FrescoBaldi - a Lilypond editor which does have MusicXML output? Tis one is not pointy clicky like LyX, is like TexPad, editing the raw lilypond code but with tools to autocompile and display etc.
-
-
-\chapter{Audio file formats}
-
-\section{wav}
-
-header + raw bytes. (raw = Pulse Code Modulation) eg. 32 bit audio = 4 bytes per sample, from linearly spaced possible values. (32 bit here is the 'bit depth').
-NB 4Gb limit? still dont know how to fix this/ repair from header.
-
-Since recently - wav also supports floating point representations (which avoid clipping but require more computation).
-
-\section{vorbis}
-used in ogg containers.
-
-TODO how to edit meta-data artist, year etc.
-
-\section{AAC}
-Audio format often used in mp4 containers along with videos.
-
-\sectin{FLAC}
-Lossles.
-
-\chapter{Tools}
-\section{Sox and soxi}
-Sox is the swiss army knife of the audio command line. Its friend soxi gives information about audio files.
-\begin{lstlisting}
-
-	sox k.wav -n stat   #see length(seconds)
-	sox in.wav out.wav trim start_time dur			
-	sox in.wav out.wav pad start_pad_sec end_pad_sec
-
-	sox ts.wav -b 16 output.wav rate -s -a 48000 dither -s    #upsample
-	sox mono.wav -c 2 stereo.wav                              #make stereo fm mono (JACK cares a lot about right types here)
-
-	#delay and weighed mix.  -p is used in place of output fn, to pipe out.
-	sox -m -v 0.9 a.wav   -v 0.5 '|sox a.wav -p pad 1' out.wav    #in seconds
-	sox -m -v 0.9 a.wav   -v 0.5 '|sox a.wav -p pad 1s' out.wav   #in samples
-
-	#lima
-	sox -D -m -v 1 -t sox "|sox a.wav -p pad 0s trim 0 5s"      -v 0.5 -t sox "|sox a.wav -p pad 1s trim 0 5s"  out.wav
- 
-	#equiv to (as "-p" subs to "-t sox -" and "-" is the pipe out)
-	sox  -m -v 1 -t sox "|sox a.wav -t sox - pad 0s trim 0 5s"      -v 0.5 -t sox "|sox a.wav -t sox - pad 1s trim 0 5s"   out.wav
-	
-	#piping out of sox
-	sox -m -v 0.9 a.wav   -v 0.5 '|sox a.wav -p pad 1s' -t wav - | less    #WARNING about wav header though
-
-	#pad and trim
-	sox Array1-01.wav -p pad 0s trim 13437440s 104800s  o2.wav
-
- soxi  /share/spandh.ami1/asr/dev/mtg/ac/exp.mdm/exp/lima/pylima/out/testRun/AMI-S1000B_m4016_083984_084639/iter1/mix.wav
-
-Input File     : '/share/spandh.ami1/asr/dev/mtg/ac/exp.mdm/exp/lima/pylima/out/testRun/AMI-S1000B_m4016_083984_084639/iter1/mix.wav'
-Channels       : 1
-Sample Rate    : 16000
-Precision      : 32-bit
-Duration       : 00:00:06.55 = 104800 samples ~ 491.25 CDDA sectors
-File Size      : 419k
-Bit Rate       : 512k
-Sample Encoding: 32-bit Signed Integer PCM
-
-\end{lstlisting}
-
-\section{ALSA command line tools}
-\begin{lstlisting}
-
-aplay -D hw:0,0 stereo.wav   #PC
-aplay -D hw:0 stereo.wav     #PC
-aplay -D hw:1,0 stereo.wav     #USB
-aplay -D hw:1,1 stereo.wav     #silent (spdif?)
-
-arecord -f cd -D hw:1,1 g.wav           #works**
-
-\end{lstlisting}
-
-\section{Musical descriptor features}
-Queen Mary tools?
 
 
 \chapter{Music synthesis}
@@ -939,7 +968,10 @@ trim:
 ffmpeg -i in.avi -vcodec copy -acodec copy -ss 00:00:00 -t 00:00:04 out.avi
 \end{lstlisting}
 
-
+convert mp3 to mp4 video with a background image (eg to upload music to youtube),
+\begin{lstlisting}
+ffmpeg  -y -i radio4logo.jpg -i FarmingToday-20180613.mp3 -acodec copy -vcodec libx264 FarmingToday-20180613.mp4
+\end{lstlisting}
 
 \chapter{GStreamer}
 
@@ -1356,6 +1388,23 @@ TODO may need to remove the 'lock' on each key, then update it, then re-lock it 
 
 TODO laptop lid close behaviour for robots
 
+Also we usually need to disable screensavers and automated timer sleepings for lab and robot machine, using whatever desktop GUI is running, or sometimes as config files.
+
+\section{GNU Screen}
+Lab and robot machines are usually access remotely via ssh.  A basic ssh connection will kill the whole session if the connection goes down, and only provides one terminal.   Screen solves both problems and provides a persistent session in one or more terminals.
+
+\begin{lstlisting}
+sudo apt-get install screen
+
+screen -dRR  #start screen, attach to a session if already exists
+screen -ls #list sessions
+
+C-a 0  #go to terminal 0
+C-a 1  #go to terminal 1
+C-a c  #create new terminal
+C-a k  #kill current terminal
+\end{lstlisting}
+
 \section{Scheduling automatic program exection times (cron jobs)}
 
 Cron jobs are tasks which are run automatically at given times.  For example taking a picture from a camera every 5 seconds.  ("cron" is a unix program which runs constantly in the background and checks it anything needs to be run from the cron job schedule. "cron" is for "chonometer" or timer.)
@@ -1431,7 +1480,17 @@ For devices which are not serial ports but are storage devices, some systems wil
 
 On some distributions, security restrictions may prevent access to USB devices by user accounts (eg. for use on shared machines in public places) so access needs to be granted by root, and they will need to be mounted: (TODO check this):
 
-Remounting USB devices (assumign user had access, see user setup above),
+If USB device is blocked due to a previous program still owning it, the error is given, "could not open port dev/tty0 device or resource busy".   To see which process is holding it,
+\begin{lstlisting}
+fuser /dev/tty0
+\end{lstlisting}
+Then kill the offending process by its PID number with
+\begin{lstlisting}
+kill -kill PID
+\end{lstlisting}
+This works for any file too -- a USB device is just a file and fuser stands for "file user".
+
+Remounting USB devices (assuming user has access, see user setup above),
 \begin{lstlisting}
 $ sudo umount /dev/sdb1
 $ sudo mount -t ntfs -rw /dev/sdb1 hd
