@@ -28,6 +28,7 @@
 \usepackage{listings}
 \lstset{columns=flexible}
 \lstset{basicstyle=\small\ttfamily}
+\lstset{breaklines=true}
 
 
 \begin{document}
@@ -840,7 +841,7 @@ mp4,ogg. problem with compressing video is that it introduces lateny,
 some compressions require knowledge of future frames, eg MP4. Others
 are designed for live use eg H264. 
 
-Rough rule for video CPU usage: on a 2017 laptop, coding or decoding one video does not start the CPU fan; doing two or more does. (Possibly they are designed to this, as watchign a single video as a consumer is much more common that doing anything fancier.)  Consequences: if we want to run two programs than run on the same video stream, the fan is needed. They must either share an encoded stream and each run decoders, so we have two decode processes; or decode one but then stream high-bandwidth raw images around, which also starts the fan! Having the fan on for long periods has previously melted by CPU glue and required sending my laptop to Germany to have it replaced so is not recommended.
+Rough rule for video CPU usage: on a 2017 laptop, coding or decoding one video does not start the CPU fan; doing two or more does. (Possibly they are designed to this, as watchign a single video as a consumer is much more common that doing anything fancier.)  Consequences: if we want to run two programs than run on the same video stream, the fan is needed. They must either share an encoded stream and each run decoders, so we have two decode processes; or decode one but then stream high-bandwidth raw images around, which also starts the fan! Having the fan on for long periods has previously melted my CPU glue and required sending my laptop to Germany to have it replaced so is not recommended.
 
 eg. playing 2 hi-res youtubes in cinema mode at once takes about 200\% CPU and starts the fan. (NB youtube does many clever things such as ceasing to download video when the window is not visible; need to open the windows for a full test.)
 
