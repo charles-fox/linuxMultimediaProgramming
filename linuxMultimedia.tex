@@ -560,7 +560,21 @@ Queen Mary tools?
 
 
 
-\chapter{Spatial audio: OpenAL}
+\chapter{Spatial audio}
+
+Spatial audio can include headphone and speaker models.   
+
+Headphone models are probably simpler as we just have to compute the sound field at two locations of the ears.  For VR we need to track and update the ear positions. 
+
+Speaker models are likely complicated, as we are trying to reproduce either a sound experience in a single listing chair or local area around it, or sometimes a large walking around area as in ambisonics, from some usually suboptimal provided array of speakers such as high end surround TV speakers or pro-audio ambisonics rings.
+
+\section{OpenAL}
+OpenAL was developed by Creative labs (maker of soundcards) to provide a games-focussed interface allowing sounds and listeners to be positioned in space.  Then effects including time delay, volume degragation, and doppler shifts are implemented to compute the sound at the listener location.
+(does it have a head model too to impede the sound across the skull?)
+
+\section{Ambisonics}
+Soundscape renderer for large amisonic rigs.
+
 
 \chapter{JACK}
 
