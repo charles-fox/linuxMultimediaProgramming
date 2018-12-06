@@ -9,3 +9,7 @@ convert *.png out.pdf
 
 Merge pdf files:
 pdfunite innput1.pdf input2.pdf input3.pdf out.pdf
+
+Make a 3x2 mini-slide handout from A4 slides:
+pdfnup  --nup 3x2  MyTalk.pdf
+
