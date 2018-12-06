@@ -569,10 +569,12 @@ Headphone models are probably simpler as we just have to compute the sound field
 Speaker models are likely complicated, as we are trying to reproduce either a sound experience in a single listing chair or local area around it, or sometimes a large walking around area as in ambisonics, from some usually suboptimal provided array of speakers such as high end surround TV speakers or pro-audio ambisonics rings.
 
 \section{OpenAL}
-OpenAL was developed by Creative labs (maker of soundcards) to provide a games-focussed interface allowing sounds and listeners to be positioned in space.  Then effects including time delay, volume attenuation, and doppler shifts are implemented to compute the sound at the listener location.  The open source implementation is now "OpenAL Soft" (vs a propriatory implementation by Creative).
+OpenAL was developed by Creative labs (maker of soundcards) to provide a games-focussed interface allowing sounds and listeners to be positioned in space.  Then effects including volume attenuation and doppler shifts (but not time delay of arrival, weirdly) are implemented to compute the sound at the listener location.  The open source implementation is now "OpenAL Soft" (vs a propriatory implementation by Creative).
 
 It comes with setups including headphones (with HRTF head related transfer function biunaural) and also standard stereo, 5.1 and 7.1 surround speaker setups, which approximate the locations around a listing chair.
 
+\section{Resonance Audio}
+Opensource started by Google, for VR focussed audio.  May be better than OpenAL.
 
 \section{Ambisonics}
 Soundscape renderer for large amisonic rigs.
