@@ -1526,7 +1526,11 @@ sudo cp foo.pdf /media/usb/document/
 \end{lstlisting}
 )
 
-
+\section{Finding data}
+Finding text lost in lots of files: this is like running a search engine on the (recursive) contents of a folder (may need to run overnight etc for large data logs etc):
+\begin{lstlisting}
+find /  /path/to/search/from -type f -print0 | xargs -0 grep -H "phrase to search for"
+\end{lstlisting}
 
 \chapter{Local subnets}
 
