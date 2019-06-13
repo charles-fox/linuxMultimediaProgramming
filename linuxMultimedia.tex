@@ -997,6 +997,13 @@ convert mp3 to mp4 video with a background image (eg to upload music to youtube)
 ffmpeg  -y -i radio4logo.jpg -i FarmingToday-20180613.mp3 -acodec copy -vcodec libx264 FarmingToday-20180613.mp4
 \end{lstlisting}
 
+Join two videos:
+\begin{lstlisting}
+ffmpeg -i "concat:1.mp4|2.mp4" -c copy out.mp4
+\end{lstlisting}
+
+
+
 \chapter{GStreamer}
 
 GStreamer a Linux system for media streaming, within and between computers. It is based on small modules (processes) which are 'piped' together similarly to UNIX pipes.  Like ROS this allows everything to run as separate processes. Unlike ROS, GStreamer is targetted at efficiency which includes use of containers and codecs for everything. In ROS we pass messages of raw image data in video. In GStreamer we can stream coded compressed video for speed and efficiency.  This means we need to consider container and codec modules in the pipelines.
