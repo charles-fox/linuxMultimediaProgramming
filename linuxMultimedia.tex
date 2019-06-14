@@ -355,7 +355,7 @@ PDF is a newer vector graphics language based closely on postscript and eps.  It
 \lstinputlisting{snips/pdfcut/pdfcut_cmd}
 
 
-\section{SVG} format
+\section{SVG}
 PS and PDF have some ownshipship issues; SVG is a fully open standard for vector graphics files. Is is a flavour of XML and widely supported by web browsers:
 
 \lstinputlisting{snips/postscript/test.svg}
@@ -1200,12 +1200,30 @@ multicast: cvlc -vvv \textasciitilde{}/data/qb/NorwichLeeds1280.mp4
 --loop --ttl 
 
 \chapter{Video edit applications}
-\section{Openshot}
-use openshot program
-	import avi , images, make text titles , drag aroudn like cubase
-	to crop: select clip, right click, properties, length
-	export as avi
-	if no clips at start -- shows blank screen (for padding)
+\section{OpenShot}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figs/openshot.png}
+	\caption{OpenShot, used here to edit an audio recording of a lecture together with png-exported Beamer slides.}
+  \label{fig:jack-settings}
+\end{figure}
+
+OpenShot allows video, audio, and still-image clips to be combined over time into videos.  It is set up similarly to music software such as Ardour, with tmpora,l tracks show at the bottom of the screen.   At the top left of the screen is the list of available media clips.  
+
+To use OpenShot, first drag each media clip from Nautilus into the set of media clips.  It will appear in the list.  
+
+Then to deploy it in the video track, drag a copy from this list onto the temporal tracks at the bottom.
+
+To crop: select a clip on the temporal track. Then select the resize tool icon just above the temporal track on the left (<--> icon) to resize the two edges.  (Or right clip the clip, go to properties, length to specify with exact numbers.)
+
+To move clips in the temporal track, select the mouse-pointer icon in the abve right.   As in music editors, there are also ways to quantize cut and resize points using a magnet tool, which is on by default and may need to be turned off for fine editing.
+
+OpenShot has tools to add text titles and captions, in its menus.  it also provides various fades and effects (which should be used sparingly to avoid looking like amateur home video).
+
+OpenShot can save the whole project as an OpenShot project file.  It can also export to most major video formats, including preset formats for common applications such as popular Internet video sites.
+
+
 
 \section{Zonemaster}
 For CCTV multi IP-camera control.
