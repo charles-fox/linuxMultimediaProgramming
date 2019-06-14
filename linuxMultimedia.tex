@@ -1200,6 +1200,7 @@ multicast: cvlc -vvv \textasciitilde{}/data/qb/NorwichLeeds1280.mp4
 --loop --ttl 
 
 \chapter{Video edit applications}
+
 \section{OpenShot}
 
 \begin{figure}
@@ -1208,6 +1209,8 @@ multicast: cvlc -vvv \textasciitilde{}/data/qb/NorwichLeeds1280.mp4
 	\caption{OpenShot, used here to edit an audio recording of a lecture together with png-exported Beamer slides.}
   \label{fig:jack-settings}
 \end{figure}
+
+Good Linux style is usually to prefer command line tools for basic video editing. For example, see ffpmeg example above for basic commands to cut video files, splice them, and build from or extract still images and audio files.  But for more artistic applications, some users might prefer to use a GUI which wraps these features.
 
 OpenShot allows video, audio, and still-image clips to be combined over time into videos.  It is set up similarly to music software such as Ardour, with tmpora,l tracks show at the bottom of the screen.   At the top left of the screen is the list of available media clips.  
 
@@ -1225,11 +1228,17 @@ OpenShot can save the whole project as an OpenShot project file.  It can also ex
 
 
 
-\section{Zonemaster}
-For CCTV multi IP-camera control.
+\section{Desktop screencast recording}
 
-\section{Desktop recording}
-recordmydesktop tool
+Download the {\em recordmydesktop} tool (e.g. from synaptic). Then just,
+\begin{lstlisting}
+recordmydesktop
+\end{lstlisting}
+will record a screencast file, named with the current date and time.  Stop the recording with Ctrl-D.
+
+
+\section{Zonemaster}
+Is a GUI applicatoin for CCTV multi IP-camera control, e.g. for home security monitoring and recording.
 
 
 
