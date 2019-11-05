@@ -1464,7 +1464,18 @@ TODO may need to remove the 'lock' on each key, then update it, then re-lock it 
    /etc/lightdm/lightdm.conf
 \end{lstlisting}
 
-TODO laptop lid close behaviour for robots
+\subsection{Ignore laptop lid closures}
+Linux when installed on laptops will usually auto-configure to shutdown or sleep when the lid is closed.  If the laptop is indended as use as an unattended media device then we need to either completely disable this behaviour, or in some cases just instruct Linux to turn off the screen but nothing else when the lid is closed.  Usually laptop physical hardware will turn off the screen for us without any action from the OS so we just need to disable all lid close OS behaviours. eg.
+
+        GIU - >  power manager -> do nothing when lid is closed
+
+Or if doesn't work (there are some known GUI bugs): command line version:  edit /etc/systemd/logind.conf to
+                        HandlePowerKey=ignore
+                        HandleSuspendKey=ignore
+                        HandleHibernateKey=ignore
+                        HandleLidSwitch=ignore
+                
+
 
 Also we usually need to disable screensavers and automated timer sleepings for lab and robot machine, using whatever desktop GUI is running, or sometimes as config files.
 
