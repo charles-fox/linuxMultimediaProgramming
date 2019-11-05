@@ -724,7 +724,8 @@ Maybe a nice format for MusicHastie-like systems to all standardize upon.
 
 
 \section{Lilypond engraving}
-Lilypond is like Latex for music scores.  It names both a file format and a program.  It creates extremely high-end, professional "engravings" of scores, including fine details equivilent to Latex's kerning and ligatures. Such as tweaking the exact size of note heads and stems, setting stem directions, and hundreds of other small rules passed down from centuries of beautiful score engraving tradition.   The Lilyond program is not an editor and works from a latex-like source file specifying the musical, but not graphical, objects, such as bars, notes, and time signatures. These files can be written by hand or by an editor program such as Denemo (see below). These files do not contain any high level semantic information and they do not show relationships between simultenoys staves (e.g. that a note in one staff is occuring at the saem time as in another) or enable transpoition -- they only represent the low-level musical note content needed for engraving. So you probably don't want to cide directly in LilyPond files. You want to code in some higher level representation then use another program to export it to Lilypond format. 
+
+Lilypond is like Latex for music scores.  It names both a file format and a program.  It creates extremely high-end, professional "engravings" of scores, including fine details equivilent to Latex's kerning and ligatures. Such as tweaking the exact size of note heads and stems, setting stem directions, and hundreds of other small rules passed down from centuries of beautiful score engraving tradition.   The Lilyond program is not an editor and works from a latex-like source file specifying the musical, but not graphical, objects, such as bars, notes, and time signatures. These files can be written by hand or by an editor program such as Denemo (see below). These files do not contain any high level semantic information and they do not show relationships between simultenoys staves (e.g. that a note in one staff is occuring at the saem time as in another) or enable transpoition -- they only represent the low-level musical note content needed for engraving. So you probably don't want to code directly in LilyPond files. You want to code in some higher level representation or your favourite composition GUI program then export to MusicXML and then convert that to Lilypond format before making final engraving edits to the Lilypond file.  
 
 LilyPond can however do basic transposition from within its code -- usign a transpose command and environment. This is sufficient for quick conversions eg. for Bb jazz isntruments. But not going to be able to do hierarachical stuff.
 
@@ -733,7 +734,7 @@ eg. to write a Schenkerian composition program: use its won format and notation 
 Sample Liypond source:
 \lstinputlisting{snips/lilypond/test.ly}
 
-To isntall and compile to pdf:
+To install and compile to pdf:
 
 \begin{lstlisting}
 sudo apt-get install lilypond
@@ -755,21 +756,21 @@ c4^"super" e4_"sub" : text above and below note
 
 Dynamics are considers as additional over staves.  (LilyPond's name is a pun on an old MIDI editor, RoseGarden).
 
-\subsection{Denemo score editor GUI}
-Is designed specifically as a front end to LilyPond, and is to LilyPond as LyX is to Latex.  A what you see if what you mean GUI with its own quick, cheap and chearful interactive graphical screen display, which gets swapped for the advanced engraver when we are done.
+\subsection{MusicXML to LilyPond conversion with Frescobaldi}
+
+Frescobaldi is a Lilypond editor which can import MusicXML and output Lilypond.
+It is not pointy clicky like LyX, is like TexPad, editing the raw lilypond code but with tools to autocompile and display etc.
+
+\subsection{Denemo Lilypond score editor GUI}
+Denemo designed specifically as a front end to LilyPond, and is to LilyPond as LyX is to Latex.  A what you see if what you mean GUI with its own quick, cheap and chearful interactive graphical screen display, which gets swapped for the advanced engraver when we are done.
 
 Includes human input + assign rhythms to the hummed pitches.
 
 Curosr updown pitch, or type letter name (register nearest to cursor pitch).  Int number keys (use keypad) for durations.
 
-Generally we don't want to compose or edit in Denemo because then we are stuck in Lilypond world and can't get back to MusicXML.  We might thus use Denemo to add really fine grained engraving detail to a score done in MuseScore, just for priting..
+Generally we don't want to compose or edit in Denemo because then we are stuck in Lilypond world and can't get back to MusicXML.  We might thus use Denemo to add really fine grained engraving detail to a score done in MuseScore.  This is a one-way conversion, as LilyPond specified fine details which are absent from MusicXML.   So it should only be used for example by music publishers after the composition has been completed.
 
-(Does not yet export MusicXML but may do soon? CHECK?)
-
-\sdubsection{Frescobaldi}
-FrescoBaldi - a Lilypond editor which does have MusicXML output? Tis one is not pointy clicky like LyX, is like TexPad, editing the raw lilypond code but with tools to autocompile and display etc.
-
-
+(Denemo export to MusicXML has been discussed but not yet implemented).
 \chapter{Music synthesis}
 
 
