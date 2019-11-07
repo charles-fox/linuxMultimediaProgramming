@@ -452,6 +452,26 @@ LADSPA is a weaker API which also enables plugins to be chained, similarly to VS
 
 FFADO is a driver for pro Firewire devices, and includes JACK and other interfaces as well as its own interface and command-line tools for basic recording and playback.  (Until recent USB3, Firewire was the "pro" choice; USB3 has now caught up and should be the new pro standard.)
 
+\section{MIDI wire protocol}
+MIDI connections are comprised of a pair of uni-directional busses. One is used to for the master to send messages to devices and the other is used for devices to send messages to the master. They are busses in the sense that all devices use the same physical wires and can see all the messages on these wires, and must look out for which ones are addressed to them to read and act on only those.
+
+Each direction's bus runs on three physical wires. (Though standard MIDI DIN connectors have 5 pins, with two spare to help with related work such as supplying “phantom” power to devices.) One is 5V, one is ground, and one is UART data. The bus nature of wire from the master to the devices is seen in the MIDI specification that all devices have three sockets, “in”, “out”, and “thru”, where “thru” relays all “in” messages to the next device in a daisy chain wiring; other hardware adapters can merge the “out” messages from several devices onto a single wire, which is a rarer thing to want to do. [TODO check this?] As a 1980s standard, all messages are 8-bit words (known as “MIDI bytes”), transmitted similarly to a serial port connection at a standard rate of 31.25kilobits/sec.  For example, we can send and recieve MIDI messages from an Arduino by writing directly to these wires without the need for additional drivers such as ALSA.
+
+Start and stop bits are added to each byte for transmission, so groups of 10 bits go down the wire for each 8-bit message word.
+
+MIDI allows for 16 "channels" which usually each correspond to one device. Devices listen for messages addressed to their channel.  The first 4 bits (half the entire byte) of each MIDI byte contain the channel ID address of the message.
+
+MIDI bytes may be status bytes or data bytes. Status bytes have a one in the most significant bit, data bytes have a zero there.  Status bytes specifty a command or event type, and are then followed by a fixed number -- usually two -- of data bytes describign the details of the command or event.  A status byte followed by its data bytes is called a message.
+
+Status bytes usually consist of four bits of type information (commands such as Note on, Note off, controller value, velocity value) and four bits of channel information saying who the message is four. (this gives 16 channels, usually one instrument is assigned to each channel).
+
+For note on, note off, and velocity change, the two data bytes contain the pitch number (0-127 covering a 128 key piano range) and the value (0-127 range for the velocity of the strike) respectively.   Controller messages similarly use their two bytes to specifiy which controller (again in the range 0-127) and its value (0-127).  "Controllers" are effectively the many twiddly knobs available as input devices on synthesisers.    Pitch bend is handled by a particular controller used for this purpose by convention.
+
+See https://www.midi.org/specifications-old/item/table-1-summary-of-midi-message
+
+Modern MIDI connections usually run over USB, similarly to "virtual" serial ports.  You can buy connectors with USB on one end and MIDI on the other.
+
+
 \chapter{ALSA command line tools}
 
 ALSA is available both as its C API and as a set of command line tools which call it.  We will look at these tools first then at the library in the next chapter.   Most modern desktops run Pulse Audio which includes an ALSA emulation layer in which these commands and calls will run. On non-Pulse machines it is possible to setup to have the same commands execute on the native ALSA layer.  Here we show the commands indifferent to how they are being run -- typically they will go through Pulse on a modern desktop.
