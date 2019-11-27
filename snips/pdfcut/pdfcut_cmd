@@ -1,5 +1,5 @@
 extract pdf pages:
- pdftk A=etc.pdf cat A1 A2    A6 A7 A8  A9  A11 A12 A13  A14 A15     A19-25 A26 A27 A29 A28 A30 A31 A33    output out.pdf
+ pdftk A=etc.pdf cat A1 A2 A3-25 A26 output out.pdf
 
 Convert pdf to multiple png pages:
 pdftoppm -rx 80 -ry 80 -png myslides.pdf prefix
