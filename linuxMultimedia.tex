@@ -1472,7 +1472,13 @@ xmodmap -e "keycode  60 = period greater a b slash question d"
 \end{lstlisting}
 (xmodmap can also be given a config file containing many such mappings.  The seven outputs for key 60 here are for the key itself, then when pressed with shift, ctrl, alt, AltGr and combinations thereof (aka super,hyper,meta etc). )
 
-TODO may need to remove the 'lock' on each key, then update it, then re-lock it ?
+You may need to remove the 'lock' on each key, then update it, then re-lock it, such as these commands to map caps lock to Escape for vi users:
+
+\begin{lstlisting}
+xmodmap -e "clear lock"
+xmodmap -e "keycode 66 = Escape NoSymbol Escape"
+\end{lstlisting}
+
 
 \paragraph{Changing the prompt format} can be very useful for setups where we plan to dial into the machine from outside, in this case it is useful to show the machine name to distinguish from local prompts on the outside machine,
 \begin{lstlisting}
