@@ -1,0 +1,163 @@
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.1.1}{Known similar documents}{chapter.1}% 2
+\BOOKMARK [1][-]{section.1.2}{Structure}{chapter.1}% 3
+\BOOKMARK [1][-]{section.1.3}{C with CMake}{chapter.1}% 4
+\BOOKMARK [-1][-]{part.1}{Graphics}{}% 5
+\BOOKMARK [0][-]{chapter.2}{Graphics architecture}{part.1}% 6
+\BOOKMARK [1][-]{section.2.1}{History}{chapter.2}% 7
+\BOOKMARK [1][-]{section.2.2}{Modern linux graphics stack}{chapter.2}% 8
+\BOOKMARK [2][-]{subsection.2.2.1}{Mesa stack}{section.2.2}% 9
+\BOOKMARK [2][-]{subsection.2.2.2}{Windowing systems}{section.2.2}% 10
+\BOOKMARK [2][-]{subsection.2.2.3}{Propriatory NVidia stack}{section.2.2}% 11
+\BOOKMARK [1][-]{section.2.3}{Further reading}{chapter.2}% 12
+\BOOKMARK [0][-]{chapter.3}{OpenGL \(via SDL\)}{part.1}% 13
+\BOOKMARK [1][-]{subsection.3.0.1}{SDL}{chapter.3}% 14
+\BOOKMARK [2][-]{subsection.3.0.2}{GL/SDL Textures}{subsection.3.0.1}% 15
+\BOOKMARK [2][-]{subsection.3.0.3}{Video textures with CV/GL/SDL}{subsection.3.0.1}% 16
+\BOOKMARK [2][-]{subsection.3.0.4}{GL animation}{subsection.3.0.1}% 17
+\BOOKMARK [0][-]{chapter.4}{SDL 2D graphics and input}{part.1}% 18
+\BOOKMARK [1][-]{section.4.1}{Combining 2D and 3D graphics in SDL}{chapter.4}% 19
+\BOOKMARK [0][-]{chapter.5}{Game Engines}{part.1}% 20
+\BOOKMARK [1][-]{section.5.1}{2D}{chapter.5}% 21
+\BOOKMARK [1][-]{section.5.2}{3D}{chapter.5}% 22
+\BOOKMARK [0][-]{chapter.6}{CAD}{part.1}% 23
+\BOOKMARK [1][-]{section.6.1}{Collada \(dae\) format}{chapter.6}% 24
+\BOOKMARK [1][-]{section.6.2}{OpenSceneGraph \(uses dae\)}{chapter.6}% 25
+\BOOKMARK [1][-]{section.6.3}{ODE physics engine?}{chapter.6}% 26
+\BOOKMARK [1][-]{section.6.4}{FreeCAD}{chapter.6}% 27
+\BOOKMARK [1][-]{section.6.5}{Blender}{chapter.6}% 28
+\BOOKMARK [0][-]{chapter.7}{OpenCV}{part.1}% 29
+\BOOKMARK [1][-]{section.7.1}{Reading and writing}{chapter.7}% 30
+\BOOKMARK [1][-]{section.7.2}{Basic manipulations}{chapter.7}% 31
+\BOOKMARK [0][-]{chapter.8}{Files and formats}{part.1}% 32
+\BOOKMARK [1][-]{section.8.1}{Data formats}{chapter.8}% 33
+\BOOKMARK [2][-]{subsection.8.1.1}{Bitmap \(BMP\)}{section.8.1}% 34
+\BOOKMARK [1][-]{section.8.2}{ROS Image message}{chapter.8}% 35
+\BOOKMARK [1][-]{section.8.3}{Portable Network Graphics \(PNG\)}{chapter.8}% 36
+\BOOKMARK [0][-]{chapter.9}{GPU OpenCL as graphics programming?}{part.1}% 37
+\BOOKMARK [1][-]{section.9.1}{Architecture}{chapter.9}% 38
+\BOOKMARK [1][-]{section.9.2}{Low level GPU ISA programming}{chapter.9}% 39
+\BOOKMARK [1][-]{section.9.3}{OpenCL setup}{chapter.9}% 40
+\BOOKMARK [1][-]{section.9.4}{OpenCL programming}{chapter.9}% 41
+\BOOKMARK [0][-]{chapter.10}{Applications}{part.1}% 42
+\BOOKMARK [0][-]{chapter.11}{Vector graphics}{part.1}% 43
+\BOOKMARK [1][-]{section.11.1}{Postscript vector graphics}{chapter.11}% 44
+\BOOKMARK [1][-]{section.11.2}{Portable Document Fomat \(pdf\)}{chapter.11}% 45
+\BOOKMARK [1][-]{section.11.3}{SVG}{chapter.11}% 46
+\BOOKMARK [1][-]{section.11.4}{Cairo vector graphics API}{chapter.11}% 47
+\BOOKMARK [1][-]{section.11.5}{Fonts}{chapter.11}% 48
+\BOOKMARK [-1][-]{part.2}{Audio}{}% 49
+\BOOKMARK [0][-]{chapter.12}{Audio hardware \(sound cards\)}{part.2}% 50
+\BOOKMARK [0][-]{chapter.13}{Audio software stack}{part.2}% 51
+\BOOKMARK [1][-]{section.13.1}{MIDI wire protocol}{chapter.13}% 52
+\BOOKMARK [0][-]{chapter.14}{ALSA command line tools}{part.2}% 53
+\BOOKMARK [0][-]{chapter.15}{ALSA programming}{part.2}% 54
+\BOOKMARK [1][-]{section.15.1}{output}{chapter.15}% 55
+\BOOKMARK [1][-]{section.15.2}{input}{chapter.15}% 56
+\BOOKMARK [0][-]{chapter.16}{Audio files}{part.2}% 57
+\BOOKMARK [1][-]{section.16.1}{Formats}{chapter.16}% 58
+\BOOKMARK [2][-]{subsection.16.1.1}{wav}{section.16.1}% 59
+\BOOKMARK [2][-]{subsection.16.1.2}{vorbis}{section.16.1}% 60
+\BOOKMARK [2][-]{subsection.16.1.3}{AAC}{section.16.1}% 61
+\BOOKMARK [2][-]{subsection.16.1.4}{FLAC}{section.16.1}% 62
+\BOOKMARK [1][-]{section.16.2}{Editing audio files Sox and soxi}{chapter.16}% 63
+\BOOKMARK [1][-]{section.16.3}{Musical descriptor features}{chapter.16}% 64
+\BOOKMARK [0][-]{chapter.17}{Spatial audio}{part.2}% 65
+\BOOKMARK [1][-]{section.17.1}{OpenAL}{chapter.17}% 66
+\BOOKMARK [1][-]{section.17.2}{Resonance Audio}{chapter.17}% 67
+\BOOKMARK [1][-]{section.17.3}{Ambisonics}{chapter.17}% 68
+\BOOKMARK [0][-]{chapter.18}{JACK}{part.2}% 69
+\BOOKMARK [1][-]{section.18.1}{setup}{chapter.18}% 70
+\BOOKMARK [1][-]{section.18.2}{JACK tools}{chapter.18}% 71
+\BOOKMARK [1][-]{section.18.3}{Configuring JACK for pro audio}{chapter.18}% 72
+\BOOKMARK [2][-]{subsection.18.3.1}{Example: MAUDIO USB card}{section.18.3}% 73
+\BOOKMARK [0][-]{chapter.19}{LADSPA}{part.2}% 74
+\BOOKMARK [1][-]{section.19.1}{MIDI}{chapter.19}% 75
+\BOOKMARK [0][-]{chapter.20}{Music notation}{part.2}% 76
+\BOOKMARK [1][-]{section.20.1}{MusicXML}{chapter.20}% 77
+\BOOKMARK [1][-]{section.20.2}{MuseScore}{chapter.20}% 78
+\BOOKMARK [1][-]{section.20.3}{ABC notation}{chapter.20}% 79
+\BOOKMARK [1][-]{section.20.4}{Lilypond engraving}{chapter.20}% 80
+\BOOKMARK [2][-]{subsection.20.4.1}{MusicXML to LilyPond conversion with Frescobaldi}{section.20.4}% 81
+\BOOKMARK [2][-]{subsection.20.4.2}{Denemo Lilypond score editor GUI}{section.20.4}% 82
+\BOOKMARK [0][-]{chapter.21}{Music synthesis}{part.2}% 83
+\BOOKMARK [1][-]{section.21.1}{Musical descriptor features}{chapter.21}% 84
+\BOOKMARK [0][-]{chapter.22}{Speech synthesis}{part.2}% 85
+\BOOKMARK [0][-]{chapter.23}{Speech recognitions}{part.2}% 86
+\BOOKMARK [0][-]{chapter.24}{Applications}{part.2}% 87
+\BOOKMARK [1][-]{section.24.1}{Ardour 3}{chapter.24}% 88
+\BOOKMARK [1][-]{section.24.2}{ZynAddSubFX}{chapter.24}% 89
+\BOOKMARK [-1][-]{part.3}{Video}{}% 90
+\BOOKMARK [0][-]{chapter.25}{Video architecture}{part.3}% 91
+\BOOKMARK [0][-]{chapter.26}{Video4Linux \(V4L\)}{part.3}% 92
+\BOOKMARK [1][-]{section.26.1}{Loopback}{chapter.26}% 93
+\BOOKMARK [0][-]{chapter.27}{Video formats \(codecs\)}{part.3}% 94
+\BOOKMARK [1][-]{section.27.1}{raw images}{chapter.27}% 95
+\BOOKMARK [1][-]{section.27.2}{theora}{chapter.27}% 96
+\BOOKMARK [1][-]{section.27.3}{h264 \(aka. MPEG4-part 10; MPEG4-AVC}{chapter.27}% 97
+\BOOKMARK [1][-]{section.27.4}{MPEG2 video \(MPEG2-Part2; h.262\)}{chapter.27}% 98
+\BOOKMARK [1][-]{section.27.5}{MTS}{chapter.27}% 99
+\BOOKMARK [1][-]{section.27.6}{AV1}{chapter.27}% 100
+\BOOKMARK [0][-]{chapter.28}{ffmpeg}{part.3}% 101
+\BOOKMARK [0][-]{chapter.29}{GStreamer}{part.3}% 102
+\BOOKMARK [1][-]{section.29.1}{as command line tool}{chapter.29}% 103
+\BOOKMARK [2][-]{subsection.29.1.1}{Examples - local streams}{section.29.1}% 104
+\BOOKMARK [2][-]{subsection.29.1.2}{Examples - network streams}{section.29.1}% 105
+\BOOKMARK [2][-]{subsection.29.1.3}{Virtual v4l devices - loopback}{section.29.1}% 106
+\BOOKMARK [2][-]{subsection.29.1.4}{TODO}{section.29.1}% 107
+\BOOKMARK [2][-]{subsection.29.1.5}{OpenCV}{section.29.1}% 108
+\BOOKMARK [2][-]{subsection.29.1.6}{Python}{section.29.1}% 109
+\BOOKMARK [1][-]{section.29.2}{as C API}{chapter.29}% 110
+\BOOKMARK [0][-]{chapter.30}{ROS}{part.3}% 111
+\BOOKMARK [0][-]{chapter.31}{\(C\)VLC}{part.3}% 112
+\BOOKMARK [0][-]{chapter.32}{Video edit applications}{part.3}% 113
+\BOOKMARK [1][-]{section.32.1}{OpenShot}{chapter.32}% 114
+\BOOKMARK [1][-]{section.32.2}{Desktop screencast recording}{chapter.32}% 115
+\BOOKMARK [1][-]{section.32.3}{Zonemaster}{chapter.32}% 116
+\BOOKMARK [-1][-]{part.4}{Multimedia}{}% 117
+\BOOKMARK [0][-]{chapter.33}{Containers}{part.4}% 118
+\BOOKMARK [1][-]{section.33.1}{Ogg}{chapter.33}% 119
+\BOOKMARK [1][-]{section.33.2}{Matroska \(.mkv\)}{chapter.33}% 120
+\BOOKMARK [1][-]{section.33.3}{AVI}{chapter.33}% 121
+\BOOKMARK [0][-]{chapter.34}{mp4}{part.4}% 122
+\BOOKMARK [1][-]{section.34.1}{Subtitles \(DVD style\)}{chapter.34}% 123
+\BOOKMARK [1][-]{section.34.2}{COntainer manipulation commands}{chapter.34}% 124
+\BOOKMARK [0][-]{chapter.35}{rosbag as a container}{part.4}% 125
+\BOOKMARK [0][-]{chapter.36}{H323 \(ekiga streams\)}{part.4}% 126
+\BOOKMARK [0][-]{chapter.37}{Streaming}{part.4}% 127
+\BOOKMARK [1][-]{section.37.1}{Real-time transport protocol \(RTP\) streaming}{chapter.37}% 128
+\BOOKMARK [1][-]{section.37.2}{Session Initial Protocol \(SIP\)}{chapter.37}% 129
+\BOOKMARK [0][-]{chapter.38}{Augmented reality \(GL+CV\)}{part.4}% 130
+\BOOKMARK [0][-]{chapter.39}{Parallel programming}{part.4}% 131
+\BOOKMARK [0][-]{chapter.40}{DSP microprocessors \(Texas instruments\)}{part.4}% 132
+\BOOKMARK [0][-]{chapter.41}{FPGA DSP \(verilog, Chisel\)}{part.4}% 133
+\BOOKMARK [0][-]{chapter.42}{Very high level event representation}{part.4}% 134
+\BOOKMARK [1][-]{section.42.1}{MPEG7 format}{chapter.42}% 135
+\BOOKMARK [1][-]{section.42.2}{QSRlib}{chapter.42}% 136
+\BOOKMARK [0][-]{chapter.43}{MISC IDEAS}{part.4}% 137
+\BOOKMARK [-1][-]{part.5}{Appendix: Sysadmin for multimedia}{}% 138
+\BOOKMARK [0][-]{chapter.44}{Basic sysadmin}{part.5}% 139
+\BOOKMARK [1][-]{section.44.1}{Users}{chapter.44}% 140
+\BOOKMARK [1][-]{section.44.2}{Setup}{chapter.44}% 141
+\BOOKMARK [2][-]{subsection.44.2.1}{Ignore laptop lid closures}{section.44.2}% 142
+\BOOKMARK [1][-]{section.44.3}{GNU Screen}{chapter.44}% 143
+\BOOKMARK [1][-]{section.44.4}{Scheduling automatic program exection times \(cron jobs\)}{chapter.44}% 144
+\BOOKMARK [1][-]{section.44.5}{System logs}{chapter.44}% 145
+\BOOKMARK [1][-]{section.44.6}{USB device naming}{chapter.44}% 146
+\BOOKMARK [1][-]{section.44.7}{USB mount problems}{chapter.44}% 147
+\BOOKMARK [1][-]{section.44.8}{Finding data}{chapter.44}% 148
+\BOOKMARK [0][-]{chapter.45}{Local subnets}{part.5}% 149
+\BOOKMARK [1][-]{section.45.1}{Network hardware}{chapter.45}% 150
+\BOOKMARK [1][-]{section.45.2}{Basic tools}{chapter.45}% 151
+\BOOKMARK [1][-]{section.45.3}{Removing automated tools}{chapter.45}% 152
+\BOOKMARK [1][-]{section.45.4}{Static IP}{chapter.45}% 153
+\BOOKMARK [1][-]{section.45.5}{Hostnames}{chapter.45}% 154
+\BOOKMARK [1][-]{section.45.6}{Gateway: routing to the internet}{chapter.45}% 155
+\BOOKMARK [1][-]{section.45.7}{Routing and firewall: iptables}{chapter.45}% 156
+\BOOKMARK [1][-]{section.45.8}{DHCP}{chapter.45}% 157
+\BOOKMARK [2][-]{subsection.45.8.1}{additional notes - server}{section.45.8}% 158
+\BOOKMARK [2][-]{subsection.45.8.2}{additional notes - client}{section.45.8}% 159
+\BOOKMARK [1][-]{section.45.9}{DNS}{chapter.45}% 160
+\BOOKMARK [2][-]{subsection.45.9.1}{additoinal notes - DNS}{section.45.9}% 161
+\BOOKMARK [1][-]{section.45.10}{Mounts}{chapter.45}% 162
+\BOOKMARK [1][-]{section.45.11}{Use}{chapter.45}% 163

@@ -731,31 +731,75 @@ files
 
 \chapter{Music notation}
 
-\section{MusicML}
-Is a (not very) human read-writable XML standard backed by many large companies and projects, including beign the standard for music notation on Wikipedia.
+\section{MusicXML}
+MusicXML is a (not very) human read-writable XML standard, which is backed by many large companies and projects, including being the standard for music notation on Wikipedia.  It is not nice to write by hand and is not usually intended to be written by hand. For creative composition work, it is better to use a graphic free editor such as MuseScore which loads and save in MusicXML but provides a GUI editor.  It is nice for programmers to use as an interchange format.  Unlike MIDI, MusicXML is a {\em notation} format which describes sheet music symbols such as clefs, keys, quavers and accidentals, rather than just the sounds of the notes.
 
-(Unliek Lilypond) it would not be nice to write by hand. It is better to use a graphic free editor such as MuseScore.
+Example of a treble cleff staff with a 4/4 time signiature and a middle C note:
 
-Can be converted to lilypond for engraving with musicxml2ly tool (ships with Lilypond). It is not usually possible to go the other way. Hence editing should be done in MusicXML and only exported one-way to Lilypond for engraving.  Don't write in Lilypond as its not transferrable out. (until someone writes a converter).
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE score-partwise PUBLIC
+    "-//Recordare//DTD MusicXML 3.1 Partwise//EN"
+    "http://www.musicxml.org/dtds/partwise.dtd">
+<score-partwise version="3.1">
+  <part-list>
+    <score-part id="P1">
+      <part-name>Music</part-name>
+    </score-part>
+  </part-list>
+  <part id="P1">
+    <measure number="1">
+      <attributes>
+        <divisions>1</divisions>
+        <key>
+          <fifths>0</fifths>
+        </key>
+        <time>
+          <beats>4</beats>
+          <beat-type>4</beat-type>
+        </time>
+        <clef>
+          <sign>G</sign>
+          <line>2</line>
+        </clef>
+      </attributes>
+      <note>
+        <pitch>
+          <step>C</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>4</duration>
+        <type>whole</type>
+      </note>
+    </measure>
+  </part>
+</score-partwise>
+\end{verbatim}
 
-Due to its horrific XML verbosity (several lines of text to describe each note) there is a zipped version included in the specification. As with other XMLs, the philosophy is to be human readable but verbose then worry about compression separately.
-
+Due to its high XML verbosity (several lines of text to describe each note) there is a zipped version included in the specification. As with other XMLs, the philosophy is to be human readable but verbose then worry about compression separately.
 
 Ontology of MusicXML: harmony changes and section names are discrete events put into measures at points.  Lyrical sylablus are tagged to individual notes. (which make it hard to write lyrics separetly from the music; but forces the music to have the correct maps to the notes.  As usual, MusicXML is not for composing in, it's a low-level description of the notes. Might want to use some other ABC like notation for lyrics and compile to here?)
 
 \section{MuseScore}
-Is standard opensource graphical MusicXML editor. Has its own format too.   
+Is standard opensource graphical MusicXML editor. (It can also load and save it its own native format, and various others.)  It can play scores as MIDI during editing. 
 
-Has semantic guitar chords (appear as 'harmony' objects in XML). Transposable (Notes->Transpose). Can play back as MIDI. To split music into sections eg. verse, chorus, use a 'section break', show by 'new system' flag in the XML, plus add>text>rehearsal mark. (The mark names a point not a segment; but we can interpret as namign the segment up to the next mark or end.)
+To install on Debian-based systems:
+\begin{verbatim}
+sudo apt install musescore
+\end{verbatim}
 
-To enter: press N for note entry mode. Press number 1-8 for duration. Type note letter name C,D,E etc or 0 for rest. They assume the current octave.  Cursor keys to move back and forward in time, and to move notes up and down. Also mouse entry.
+To enter notes: press N for note entry mode (which works a bit like vi's insert mode). Press number 1-8 for duration. Type note letter name C,D,E etc or 0 for rest. They assume the current octave.  Cursor keys to move back and forward in time, and to move notes up and down. Also mouse entry.
 
-MuseScore.com has a large library of standard music to download, eg. Beatles, Mozart, in own and MusicXML formats.
+Has semantic guitar chords (appear as 'harmony' objects in XML). Transposable (Notes->Transpose). To split music into sections eg. verse, chorus, use a 'section break', show by 'new system' flag in the XML, plus add>text>rehearsal mark. (The mark names a point not a segment; but we may also interpret this as naming thewhole segment up to the next mark or end.)
 
-MuseScore can be used as a command line tool to generate graphical images of scores from MusicXML files, (I think this is how wikipedia converts MusicXML musical fragments into png files for display on its pages). Example png generation:
 
-MuseScore.exe -s -m -r 100 musicXML.xml -o musicXML.png
+MuseScore can also be used as a command line tool to generate graphical images of scores from MusicXML files, (eg. this is how Wikipedia converts MusicXML musical fragments into png files for display on its pages). Example png generation:
 
+\begin{verbatim}
+musescore -s -m -r 100 test.xml -o test.png
+\end{verbatim}
+
+MuseScore.com maintains a large library of standard music to download, eg. Beatles, Mozart, MusicXML and its own formats.
 
 \section{ABC notation}
 
@@ -770,7 +814,9 @@ Maybe a nice format for MusicHastie-like systems to all standardize upon.
 
 \section{Lilypond engraving}
 
-Lilypond is like Latex for music scores.  It names both a file format and a program.  It creates extremely high-end, professional "engravings" of scores, including fine details equivilent to Latex's kerning and ligatures. Such as tweaking the exact size of note heads and stems, setting stem directions, and hundreds of other small rules passed down from centuries of beautiful score engraving tradition.   The Lilyond program is not an editor and works from a latex-like source file specifying the musical, but not graphical, objects, such as bars, notes, and time signatures. These files can be written by hand or by an editor program such as Denemo (see below). These files do not contain any high level semantic information and they do not show relationships between simultenoys staves (e.g. that a note in one staff is occuring at the saem time as in another) or enable transpoition -- they only represent the low-level musical note content needed for engraving. So you probably don't want to code directly in LilyPond files. You want to code in some higher level representation or your favourite composition GUI program then export to MusicXML and then convert that to Lilypond format before making final engraving edits to the Lilypond file.  
+Lilypond is like Latex for music scores.  It names both a file format and a program.  It creates extremely high-end, professional "engravings" of scores, including fine details equivilent to Latex's kerning and ligatures. Such as tweaking the exact size of note heads and stems, setting stem directions, and hundreds of other small rules passed down from centuries of beautiful score engraving tradition.   The Lilypond program is not an editor and works from a latex-like source file specifying the musical, but not graphical, objects, such as bars, notes, and time signatures. These files can be written by hand or by an editor program such as Denemo (see below). These files do not contain any high level semantic information and they do not show relationships between simultenoys staves (e.g. that a note in one staff is occuring at the saem time as in another) or enable transpoition -- they only represent the low-level musical note content needed for engraving. So you probably don't want to code directly in LilyPond files. You want to code in some higher level representation or your favourite composition GUI program then export to MusicXML and then convert that to Lilypond format before making final engraving edits to the Lilypond file.  
+
+MusicML can be converted to lilypond for engraving with musicxml2ly tool (ships with Lilypond). It is not usually possible to go the other way. Hence editing should be done in MusicXML and only exported one-way to Lilypond for engraving.  Don't write in Lilypond as its not transferrable out. (until someone writes a converter).
 
 LilyPond can however do basic transposition from within its code -- usign a transpose command and environment. This is sufficient for quick conversions eg. for Bb jazz isntruments. But not going to be able to do hierarachical stuff.
 
