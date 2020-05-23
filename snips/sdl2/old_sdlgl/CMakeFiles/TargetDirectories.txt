@@ -1,0 +1,3 @@
+/home/charles/Dropbox/linuxMultimedia/snips/sdl_gl/CMakeFiles/edit_cache.dir
+/home/charles/Dropbox/linuxMultimedia/snips/sdl_gl/CMakeFiles/rebuild_cache.dir
+/home/charles/Dropbox/linuxMultimedia/snips/sdl_gl/CMakeFiles/sdlgl.dir
