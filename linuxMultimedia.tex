@@ -143,7 +143,41 @@ Little public information is available on these and in general we try to avoid t
 \url{https://blogs.igalia.com/itoral/2014/07/29/a-brief-introduction-to-the-linux-graphics-stack/}
 
 
-\chapter{OpenGL (via SDL)}
+
+
+
+
+\chapter{SDL2 2D graphics and input}
+
+SDL2 (Simple Direct Layer, API version 2) is a 2D graphics and other things library targetted for use in sprite-based games and similar applications.  It is a similar library to those of 1990s 16-bit C librares as used on the Commodore Amiga, Acorn Archimedes\footnote{The Archimedes was actually 32 bit, and the Amiga and Atari ST used the hybrid 32/16bit 68000 CPU. But culturally they were all part of the "16 bit era" and this style of programming.  The era was characterised by moving from assembler to portable C programming, allowing "16 bit" C code to easily be compiled for all the different machines with a few tweaks to their library calls.  The downside of portability was a lowest common denominator effect in which games were written for actual 16-machines then ported to more powerful ones like the Archimedes without taking any advantage of their 32 bit power. }, and Sega Megadrive.  Modern 2D and 3D games are usually written using higher level "game engines" (see next chapter) but those engines themselves may build SDL2 for their 2D graphics.  If you are interested to experience what writing 16-bit games was like in the 1990s but don't want to run a 16-bit emualtor and use the original libraries, then SDL2 will give a reasonably similar experience but on a modern machine. 
+
+SDL2 also provides a hardware abstraction layer for computer multimedia hardware components including OpenGL graphics cards, and also keyboards and joysticks. It includes a polling event queue system as provided by many 16-bit operating systems for communication between game and other objects.  
+
+SDL2 is used in 3D games including 0AD, FreeCiv, Oolite, and in 2D games such as Secret Maryo Chnonicles and many others in Humble Bundles.  The best known tutorials for SDL2 are those at lazyfoo.net and the following overview is based on them. Refer to that site for more deails of SDL2 beyond this introduction.
+
+\section{Hello SDL2}
+
+To install SDL2 on Ubuntu 18.04:
+\lstinputlisting{snips/sdl2/INSTALL}
+
+Here is how to create an SDL windows, either on the desktop or fullscreen, and blit a sprite to it (written entirely in the C subset of C++, as used during the 16-bit era):
+
+\lstinputlisting{snips/sdl2/testSDL2.cpp}
+
+\section{Polling event queue}
+If you have used systems such as Scratch to write simple games, you will be familiar with the concept of broadcasting and receiving messages to communicate between game objects.   Systems like Scratch implement this software architecture internally by maintaining a global queue of event structures, called an event queue.  Anyone can append events to this queue.  And anyone can "poll" the queue to ask if there are events of interest to them, which may be either copied or removed from the queue and given to the poller.  
+
+Like 16-bit operating systems, SDL provides such a system. Unlike modern operating systems, event polling requires a large amount of trust between its users. Everyone involved needs to (a) remember to poll the queue on a regular basis, (b) not remove events from the queue if they will be needed by someone else, and (c) (if not running on a multi-process or multi-threaded system) stop running and pass control to someone else after a short time to allow everone to run rather than hog the CPU.
+
+\section{Animation}
+TODO make a game loop, mutiple sprites, flip double buffers.
+
+
+
+
+
+
+\chapter{OpenGL 3D graphics}
 
 OpenGL is the industry standard 3D graphics command language.  It provides an API containing commands which draw triangles and linesin 3D space, to render them under different lighting models, and to position the camera geometry around them.
 
@@ -151,12 +185,17 @@ In theory, the OpenGL API can be implemented in all kinds of ways, including fas
 
 Hence, to use the OpenGL requires an implementation library, such as Mesa, and usually a second library which links it to the screen or to a window in the operating system.   We will made use of the SDL (Simple Direct Layer) library as this link here.   SDL provides a graphics context which may be full-screen (eg for writing games) or windowed within the operating system.   
 
+[TODO as of 2020, OpenGL is expected to be superceeded by the new Vulkan API].
 
-\subsection{SDL}
 
-As modern systems operate from within a desktop window manager, which often gets implemented through OpenGL itself, some method is needed to prepare part of the screen and/or a window in the windowing system for the programmer's own OpenGL commands to run.  This is called a GL context.  It is provided by libraries such as SDL.   The programmer cannot give OpenGL commands directly because the window manager has already bagged the status of "master" of libDRM, and has instructed it not to take commands from anyone else.  SDL is given special permission by the window manager to pass its own commands (via the OpenGL implementations) to libDRM.  libDRM will then see that they coem from an allowed source and let them through to the kernel and GPU.
+\subsection{Graphics contexts (via SDL)}
 
-Simple DirectMedia Layer (SDL) is a cross-platform software development library designed to provide a hardware abstraction layer for computer multimedia hardware components including OpenGL graphics cards, and also keyboards and joysticks.  It is used in 3D games including 0AD, FreeCiv, Oolite, and in 2D games such as Secret Maryo Chnonicles and many others in Humble Bundles.  (Traditionally, a different link library, GLUT, was used. GLUT's programming model requires it to take full control of your program and communicate only through callbacks, while SDL keeps the user in control and assumes they will call its functions regularly. We consider the GLLUT model to be "rude" in takign over control, and this may conflict with other tools which also ask for control, such as ROS.  GLUT is considered old and dying.  Other altneratives include GLFW and pyglet for Python).
+As modern systems operate from within a desktop window manager, which often gets implemented on OpenGL itself, some method is needed to prepare part of the screen and/or a window in the windowing system for the programmer's own OpenGL commands to run.  This is called a GL context.  It is provided by libraries such as SDL.   The programmer cannot give OpenGL commands directly because the window manager has already bagged the status of "master" of libDRM, and has instructed it not to take commands from anyone else.  SDL is given special permission by the window manager to pass its own commands (via the OpenGL implementations) to libDRM.  libDRM will then see that they coem from an allowed source and let them through to the kernel and GPU.
+
+
+(Traditionally, a different link library, GLUT, was used to bind GL to provide graphics contexts. But GLUT's programming model requires it to take full control of your program and communicate only through callbacks, while SDL keeps the user in control and assumes they will call its functions regularly. We consider the GLUT model to be "rude" in takign over control, and this may conflict with other tools which also ask for control, such as ROS.  GLUT is thus considered old and dying.  Other altneratives include GLFW and pyglet for Python).
+
+[TODO these are in SDL1, update to SDL2]
 
 \lstinputlisting{snips/sdl_gl/sdlgl.cpp}
 \lstinputlisting{snips/sdl_gl/CMakeLists.txt}
@@ -179,28 +218,18 @@ Once you have a context set up, you can apply any GL commands. The classic tutor
 
 How OpenGL works intenrnall: graphics pipeline: https://fgiesen.wordpress.com/2011/07/01/a-trip-through-the-graphics-pipeline-2011-part-1/
 
-\chapter{SDL 2D graphics and input}
-eg for 2d platform games
-we are using SDL1.2 (there is newer 2.0 now)
 
-lazyfoo.net
 
-Here is how to blit an image,
 
-\lstinputlisting{/home/charles/Dropbox/linuxMultimedia/snips/sdlImageBlit/lesson01.cpp}
 
-\section{Combining 2D and 3D graphics in SDL}
-eg for Augmented Reality overlay!
-blit + GL
-done by blitting to texture ?
 
 \chapter{Game Engines}
 \section{2D}
 pygame - built on SDL and OpenAL.  2D scene graph. Collision detection. Partial android version.
+Godot 2d
 
 \section{3D}
-Panda3D - unity-like - developed by Disney?
-Blender game engine
+Godot 3d
 
 \chapter{CAD}
 \section{Collada (dae) format}
