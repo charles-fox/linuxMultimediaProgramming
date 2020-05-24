@@ -435,7 +435,7 @@ FreeCAD
 \part{Audio}
 
 
-\chapter{Audio hardware (sound cards)}
+\chapter{Audio hardware architecture}
 
 A sound card is really just a group of DAC (digital-anallog) converters, and indeed it is possible to make your own from any DAC such as found on Labjack, Software Defined Radios, or Arduino Duo. (Though not Arduino Uni, which fakes DAC using digital PWM).   Typically pro and consumer soundcards are optimised for certain features useful specifically for music production, including:
 Low latency: a science lab DAC might not care about response time if it is just recording data; a musician cares a lot, especially if they are applying real-time processing to an instrument being played live, which needs to be just a few milliseconds latency.
@@ -449,6 +449,76 @@ Sound cards, like graphics cards, connect to the computers system bus. They are 
 Sound card hardware APIs vary by manufacturer, and like GPUs their details may be propriatory and known only to the driver writers inside the company, who then make a software API available. As with GPUs the hardware API are then reverse engineered by open source driver writers.  They typically (?) consist, like GPUs, of device-specfic commands sent as data writes and reads (i.e. commands which initiate data transfers to/from main memory and/or CPU?).
 
 (In theory: APIs could include GPU texture style DMA transfers with main memory, I'm not sure if anyone needs or does this though? Might that be interesting?  Are there speeds to be gained by reading direct to CPU rather than memory first? Is this already done?)
+
+
+\chapter{Audio file formats}
+
+\section{Formats}
+\subsection{wav}
+
+header + raw bytes. (raw = Pulse Code Modulation) eg. 32 bit audio = 4 bytes per sample, from linearly spaced possible values. (32 bit here is the 'bit depth').
+NB 4Gb limit? still dont know how to fix this/ repair from header.
+
+Since recently - wav also supports floating point representations (which avoid clipping but require more computation).
+
+\subsection{Vorbis}
+Compressed audio, using Fourier freuencies/wavelets and pychological iformation removal (similar to mp3).  For example humans don't perceive phase information and some frequencies mask others which can be removed to save space.  Usually used inside ogg containers as the audio component.
+
+TODO how to edit meta-data artist, year etc.
+
+\subsection{AAC}
+Audio format often used in mp4 containers along with videos.
+
+\subsection{FLAC}
+Lossless, enables the raw wav to be exactly reconstructed.
+
+\section{Editing audio files Sox and soxi}
+Sox is the swiss army knife of the audio command line. Its friend soxi gives information about audio files.
+\begin{lstlisting}
+
+	sox k.wav -n stat   #see length(seconds)
+	sox in.wav out.wav trim start_time dur			
+	sox in.wav out.wav pad start_pad_sec end_pad_sec
+
+	sox ts.wav -b 16 output.wav rate -s -a 48000 dither -s    #upsample
+	sox mono.wav -c 2 stereo.wav                              #make stereo fm mono (JACK cares a lot about right types here)
+
+	#delay and weighed mix.  -p is used in place of output fn, to pipe out.
+	sox -m -v 0.9 a.wav   -v 0.5 '|sox a.wav -p pad 1' out.wav    #in seconds
+	sox -m -v 0.9 a.wav   -v 0.5 '|sox a.wav -p pad 1s' out.wav   #in samples
+
+	#lima
+	sox -D -m -v 1 -t sox "|sox a.wav -p pad 0s trim 0 5s"      -v 0.5 -t sox "|sox a.wav -p pad 1s trim 0 5s"  out.wav
+ 
+	#equiv to (as "-p" subs to "-t sox -" and "-" is the pipe out)
+	sox  -m -v 1 -t sox "|sox a.wav -t sox - pad 0s trim 0 5s"      -v 0.5 -t sox "|sox a.wav -t sox - pad 1s trim 0 5s"   out.wav
+	
+	#piping out of sox
+	sox -m -v 0.9 a.wav   -v 0.5 '|sox a.wav -p pad 1s' -t wav - | less    #WARNING about wav header though
+
+	#pad and trim
+	sox Array1-01.wav -p pad 0s trim 13437440s 104800s  o2.wav
+
+ soxi  /share/spandh.ami1/asr/dev/mtg/ac/exp.mdm/exp/lima/pylima/out/testRun/AMI-S1000B_m4016_083984_084639/iter1/mix.wav
+
+Input File     : '/share/spandh.ami1/asr/dev/mtg/ac/exp.mdm/exp/lima/pylima/out/testRun/AMI-S1000B_m4016_083984_084639/iter1/mix.wav'
+Channels       : 1
+Sample Rate    : 16000
+Precision      : 32-bit
+Duration       : 00:00:06.55 = 104800 samples ~ 491.25 CDDA sectors
+File Size      : 419k
+Bit Rate       : 512k
+Sample Encoding: 32-bit Signed Integer PCM
+
+\end{lstlisting}
+
+
+\section{Musical descriptor features}
+Queen Mary tools?
+
+
+
+
 
 \chapter{Audio software stack}
 
@@ -556,72 +626,6 @@ http://users.suse.com/~mana/alsa090_howto.html
 \lstinputlisting{snips/alsa/audioout.c}
 
 \section{input}
-
-\chapter{Audio files}
-
-\section{Formats}
-\subsection{wav}
-
-header + raw bytes. (raw = Pulse Code Modulation) eg. 32 bit audio = 4 bytes per sample, from linearly spaced possible values. (32 bit here is the 'bit depth').
-NB 4Gb limit? still dont know how to fix this/ repair from header.
-
-Since recently - wav also supports floating point representations (which avoid clipping but require more computation).
-
-\subsection{vorbis}
-used in ogg containers.
-
-TODO how to edit meta-data artist, year etc.
-
-\subsection{AAC}
-Audio format often used in mp4 containers along with videos.
-
-\subsection{FLAC}
-Lossles.
-
-\section{Editing audio files Sox and soxi}
-Sox is the swiss army knife of the audio command line. Its friend soxi gives information about audio files.
-\begin{lstlisting}
-
-	sox k.wav -n stat   #see length(seconds)
-	sox in.wav out.wav trim start_time dur			
-	sox in.wav out.wav pad start_pad_sec end_pad_sec
-
-	sox ts.wav -b 16 output.wav rate -s -a 48000 dither -s    #upsample
-	sox mono.wav -c 2 stereo.wav                              #make stereo fm mono (JACK cares a lot about right types here)
-
-	#delay and weighed mix.  -p is used in place of output fn, to pipe out.
-	sox -m -v 0.9 a.wav   -v 0.5 '|sox a.wav -p pad 1' out.wav    #in seconds
-	sox -m -v 0.9 a.wav   -v 0.5 '|sox a.wav -p pad 1s' out.wav   #in samples
-
-	#lima
-	sox -D -m -v 1 -t sox "|sox a.wav -p pad 0s trim 0 5s"      -v 0.5 -t sox "|sox a.wav -p pad 1s trim 0 5s"  out.wav
- 
-	#equiv to (as "-p" subs to "-t sox -" and "-" is the pipe out)
-	sox  -m -v 1 -t sox "|sox a.wav -t sox - pad 0s trim 0 5s"      -v 0.5 -t sox "|sox a.wav -t sox - pad 1s trim 0 5s"   out.wav
-	
-	#piping out of sox
-	sox -m -v 0.9 a.wav   -v 0.5 '|sox a.wav -p pad 1s' -t wav - | less    #WARNING about wav header though
-
-	#pad and trim
-	sox Array1-01.wav -p pad 0s trim 13437440s 104800s  o2.wav
-
- soxi  /share/spandh.ami1/asr/dev/mtg/ac/exp.mdm/exp/lima/pylima/out/testRun/AMI-S1000B_m4016_083984_084639/iter1/mix.wav
-
-Input File     : '/share/spandh.ami1/asr/dev/mtg/ac/exp.mdm/exp/lima/pylima/out/testRun/AMI-S1000B_m4016_083984_084639/iter1/mix.wav'
-Channels       : 1
-Sample Rate    : 16000
-Precision      : 32-bit
-Duration       : 00:00:06.55 = 104800 samples ~ 491.25 CDDA sectors
-File Size      : 419k
-Bit Rate       : 512k
-Sample Encoding: 32-bit Signed Integer PCM
-
-\end{lstlisting}
-
-\section{Musical descriptor features}
-Queen Mary tools?
-
-
 
 \chapter{Spatial audio}
 
