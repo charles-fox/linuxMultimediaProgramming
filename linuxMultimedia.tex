@@ -1301,15 +1301,16 @@ The best way to do these is to create the image in main RAM in standard (4-byte 
 
 (Note that GL can render to other buffers inside the graphics card, than the one sent the screen. This is done in souble buffering for example. It is also possible to DMA these buffers back into RAM, eg. if we want to get a rendered image as a sprite and save it to an image file.)
 
-\section{Video textures with CV/GL/SDL}
+\section{Video textures with CV+GL+SDL2}
 
-[TODO this is in SDL1 and needs converting to SDL2]
+Suppose we are making a 3D video game set in a city and want to render a video of the Joker's threat to Gotham City on a giant screen on the side of a skyscraper.  Or in augmented reality, we want to just render a flat video background image onto the whole 2D screen, then draw 3D objects over.  In AR we draw the real world camera image then augmnet it with arificial objects, such as Pokemon creatures.   
 
-Suppose we are making a 3D video game set in a city and want to render a video of the Joker's threat to Gotham City on a giant screen on the side of a skyscraper.   Here we read frames usign OpenCV and push them into GL textures in real time.   This method is also useful for AR if we want to just render a flat video backgraound image then draw 3D objects over it in GL -- it is done in exactly the saem way.  It is fast because the texture transfer is done via DMA on the GL command, so doesn't take up CPU time.
+We can do this, at speed, by OpenCV and to read video frames, then use GL to render them as textures of a flat object.  Naivley, it might appear that we are wasting processing time by using full 3D GL as needed in the Joker TV case, to render flat 2D images in the simpler AR case.  But the method is fast because the texture transfer is done via DMA on the GL command, so doesn't take up CPU time.  Then remember that modern 2D graphics rendering is usually implemented using 3D GL systems anyway, so any perspective transforms are computationally free as done by the GPU.
 
-\lstinputlisting{snips/gl/texture_video_AR/gl_video_texture.cpp}
+Here is a simple example of reading your webcam with CV, mapping it onto a polygon with GL, and displaying on an SDL2 GL context:
 
-
+\lstinputlisting{snips/augmentedReality/texture_video_AR/ar.cpp}
+\lstinputlisting{snips/augmentedReality/texture_video_AR/CMakeLists.txt}
 
 \chapter{ROS}
 
@@ -1344,10 +1345,15 @@ multicast: cvlc -vvv \textasciitilde{}/data/qb/NorwichLeeds1280.mp4
 
 \chapter{Containers}
 
-arbitary data streams mixed in. eg robot commands and sensors. Also
-subtitles, foreign language audio tracks...
+`Multimedia' means multiple media, being streamed or processed together in synchronisation with one another.  Most typically this means video and audio together, as when consuming a movie.   But multimedia can also include any additional temporal information, synchonised in such streams.   For example, text song lyrics and subtitles may be included with music and movie streams.   Multiple audio and subititle streams can be included with a single video in a move to enable switching between foreign languages.   Modern cinematic movies include many audio streams, not just for left and right stereo but for surround systems, often separating music and sound effects from speech into streams to enable the music and effects to remain while the viewer switches languages.   (Setting these to mix correctly is the cause of the common modern problem of having to adjust TV volume for overly loud music and effects and quiet speech. This usually happens when the streams assume a surround sound system is availanble but they are being mixed into an older stereo TV.)
 
-Architecturally -- media streaming is nice as there are no/few branch hazards. Hence DSPs etc.
+In scientific applications it is common to insert arbitary additional data into multimedia streams. In robotics, we might store commands given to a robot and infomration about its status in streams along with its recorded video and audio sensors.   We might include sensors of other modalities such as touch and smell.   In music, we might want to include meta-data about the content of the audio, such as symbols showing beat, bars, and chords synchronised to the playback, for use by DJs, audio search, and computer music applications.   In movies, we might want to insert similar semantic symbols about the events in the movie to enable search and indexing. For example querties such as "show me the whole second scene in this movie with Meryl Streep outdoors."
+
+Multimedia is thus all about {\em containers}, which are formats that wrap and synchronize one or more temporal media together.  Container formats such as mp4 contain both the audio and video formats that we have seen in previous parts of this book.   They define how to store them locally and stream them in real time, including local streans fron reading local files, and internet streams for broadcasting or on-demand.
+
+Processing multimdia is computationally intensive as it is about coding and decoding everything we have seen previously, but all at the same time.   However, computation is simpler than usual because in streming there are architecturally few branch hazards.  There are not many "if" statements, instead all the media runs smoothly through algorithmic and architectural pipelines, being processing in the same order for long periods of time. This makes it highly ammenable to pipelining and parallelization.   Each medium and each processing step within the medium can be processed physically in parallel, with each step streaming data to the next.  Multimedia computations tend to call the same set of basic functions all the time, including Fourier-like transforms and convolutions.   Specialist hardware (DSPs) is often used in consumer and professional devices to exploit these regularities and perform what appers to be a lot of computation in relatively low-power speialised devices.
+
+Let's look at the most common container formats:
 
 \section{Ogg}
 Open container format, designed to stream Theora video+Vorbis audio.
@@ -1359,13 +1365,13 @@ filenames: .mkv,  ( .mka=audio only; , mks=subititles only; mk3d for 3d video).
 \section{AVI}
 Audio Video Interleave. Container format containing variously coded audio and video.
 
-\chapter{mp4}
+\section{mp4}
 mp4 (MPEG4-part 14) is a container format.
 
-\section{Subtitles (DVD style)}
+\subsection{Subtitles (DVD style)}
 also for live opera captioning, kareoke etc.
 
-\section{COntainer manipulation commands}
+\isubsection{mp4 container manipulation commands}
 
 Extract audio from mp4 container:
 \begin{lstlisting}
@@ -1373,9 +1379,16 @@ Extract audio from mp4 container:
 \end{lstlisting}
 
 
-\chapter{rosbag as a container}
+\section{rosbag as a container}
+used in robotics
 
-\chapter{H323 (ekiga streams)}
+
+
+
+\chapter{Streaming}
+Some containers can be used to stream; some streaming protocols don't use containers (?). They are a similar idea, containers usually for files and streams for live streams. When we stream a container we just take the file data and bung it over the network.
+
+\sectiom{H323 (ekiga) streams}
  (ITU) telcon  (signalling)
 	is a recommendation (?) to use a whole stack for AV streams:
 		RTP (application layer)		
@@ -1392,10 +1405,6 @@ Extract audio from mp4 container:
 		(http://www.protocols.com/pbook/h323.htm)
 
 vs Skype format, whichis secret/closed.
-
-
-\chapter{Streaming}
-Some containers can be used to stream; some streaming protocols don't use containers (?). They are a similar idea, containers usually for files and streams for live streams. When we stream a container we just take the file data and bung it over the network.
 
 \section{Real-time transport protocol (RTP) streaming}
 
@@ -1425,6 +1434,19 @@ multicast option
 to set up telcon calls
 
 
+\section{WebRTC}
+point to point web video open standard set of protocols (IETF standard) as of 2020 for web-browser based video calls.
+
+can be used to creat a 1-to-1 video call in browser in just a few lines of javascript 
+
+TODO show how to do this
+
+WebRTC does not fix the container and codecs but does require than some standard ones are present including h.264 and VP8. (https://developer.mozilla.org/en-US/docs/Web/Media/Formats/WebRTC_codecs)  It also specifies options that everyone must implement (however they like) including echo cancellation (and background blurring?).
+
+Large many-to-many meetings require software to merge streams from many users at a central server, eg. Jitsi Meet video brige, Zoom, MS Teams, Blackboard collab ultra etc.
+Smaller meetings softwares may sometimes run just with everyone sending point to point directly to one another.
+
+
 
 \chapter{Game Engines}
 \section{2D}
@@ -1433,6 +1455,19 @@ Godot 2d
 
 \section{3D}
 Godot 3d
+
+
+\chapter{Very high level event representation}
+
+\section{MPEG7 format}
+
+MPEG7 is a weak standard for multimedia files to contain meta-infomration about themsevles.  In simplest case, this includes tags such as Artist, Album and Year for musical audio files (as already used in MP3's ID3 tags).  However MPEG7 is defined as an open-ended container where all manner of both human annotation and automatically extracted features can be tagged both to a file as a whole and also to specific times in the stream.  The systems is intended primarily to aid infomration retreival, for example to enable users to search collections of files for songs containing certain melodies (query by humming) or textures (classical vs pop); and similarly for images and video, to search for files containing features such as visual textures or high level objects like cats and tables.   For speech and singing audio, automated speed recongition could add transcripts automatically and enable easy searching by these texts.
+
+MPEG7 defines both the basic structure which these and infinitely more features can be contained; and also defines many potential standards for specific features, based on massive consultations with information retreival communities.   For example in music, the Music InformatioN Retreival confernece community has found many near-standard features such as pitch and texture descriptors, while the image retrieval and machine vision community has found similar near-standards as emshrined in OpenCV's feature libraries such as interest points and SIFT features.
+
+The dream is for music files to come with full hierachical descriptions of their song structures, chords, lyrics, melodies, and audio descriptors such as musical texture, mixing style, and classes such as genre, mood, subgenre.   And for video to include semantic-network style representations of the characters, events, and plot lines, as well as details of objects and actors, product placements, visual style, and film genre.  Most of these will be tagged by AI systems, as they are features already used in standard AI libraries such as OpenCV.   Others are massively more speculative and would require a full understanding of the metahphysics and aethethics to be optained and to be automated.   The MPEG7 community was formed from the engineers who built the low-level MP3 and MP4 codecs and were left with nothing else to do -- reaching for these philosophical levels of abstraction is likely to keep them all busy in their retirements as they enjoy the patent revenues of their previous work.
+
+\section{QSRlib}
 
 
 
@@ -1461,23 +1496,11 @@ filelock stuck on a lock
 Thrift (over TCP)
 
 
-\chapter{DSP microprocessors (Texas instruments)}
+\section{DSP microprocessors (Texas instruments)}
 
-\chapter{FPGA DSP (verilog, Chisel)}
-
-
-\chapter{Very high level event representation}
-
-\section{MPEG7 format}
-
-MPEG7 is a weak standard for multimedia files to contain meta-infomration about themsevles.  In simplest case, this includes tags such as Artist, Album and Year for musical audio files (as already used in MP3's ID3 tags).  However MPEG7 is defined as an open-ended container where all manner of both human annotation and automatically extracted features can be tagged both to a file as a whole and also to specific times in the stream.  The systems is intended primarily to aid infomration retreival, for example to enable users to search collections of files for songs containing certain melodies (query by humming) or textures (classical vs pop); and similarly for images and video, to search for files containing features such as visual textures or high level objects like cats and tables.   For speech and singing audio, automated speed recongition could add transcripts automatically and enable easy searching by these texts.
-
-MPEG7 defines both the basic structure which these and infinitely more features can be contained; and also defines many potential standards for specific features, based on massive consultations with information retreival communities.   For example in music, the Music InformatioN Retreival confernece community has found many near-standard features such as pitch and texture descriptors, while the image retrieval and machine vision community has found similar near-standards as emshrined in OpenCV's feature libraries such as interest points and SIFT features.
-
-The dream is for music files to come with full hierachical descriptions of their song structures, chords, lyrics, melodies, and audio descriptors such as musical texture, mixing style, and classes such as genre, mood, subgenre.   And for video to include semantic-network style representations of the characters, events, and plot lines, as well as details of objects and actors, product placements, visual style, and film genre.  Most of these will be tagged by AI systems, as they are features already used in standard AI libraries such as OpenCV.   Others are massively more speculative and would require a full understanding of the metahphysics and aethethics to be optained and to be automated.   The MPEG7 community was formed from the engineers who built the low-level MP3 and MP4 codecs and were left with nothing else to do -- reaching for these philosophical levels of abstraction is likely to keep them all busy in their retirements as they enjoy the patent revenues of their previous work.
+\section{FPGA DSP (verilog, Chisel)}
 
 
-\section{QSRlib}
 
 
 \chapter{Video edit applications}
