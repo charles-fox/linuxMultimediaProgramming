@@ -14,7 +14,6 @@ static void init_texture(void) {
     if (surf==NULL) { //If failed, say why and don't continue loading the texture
         printf("Error: \"%s\"\n",SDL_GetError()); return;
     }
- 
     //Determine the data format of the surface by seeing how SDL arranges a test pixel.  This probably only works
     //  correctly for little-endian machines.
     GLenum data_fmt;
@@ -24,7 +23,6 @@ static void init_texture(void) {
     else {
         printf("Error: \"Loaded surface was neither RGB or BGR!\""); return;
     }
- 
     //Generate an array of textures.  We only want one texture (one element array), so trick
     //it by treating "texture" as array of length one.
     glGenTextures(1,&texture);
@@ -55,25 +53,10 @@ static void init_texture(void) {
     //them on), linearly filter them.  Qualitatively, this causes "blown up" (overmagnified) textures to look blurry instead of blocky.
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
- 
     //Unload SDL's copy of the data; we don't need it anymore because OpenGL now stores it in the texture.
     SDL_FreeSurface(surf);
 }
  
-static bool get_input(void) {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        switch (event.type) {
-            case SDL_QUIT: return false; //The little X in the window got pressed
-            case SDL_KEYDOWN:
-                if (event.key.keysym.sym==SDLK_ESCAPE) {
-                    return false;
-                }
-                break;
-        }
-    }
-    return true;
-}
 static void draw(void) {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glViewport(0,0,screen_size[0],screen_size[1]);
@@ -95,23 +78,22 @@ static void draw(void) {
     glVertex3f( 1.0f,-0.2f, 0.0f);
     glEnd();
     glDisable(GL_TEXTURE_2D);
- 
-    glBegin(GL_LINES);
-    glColor3f(1.0f,0.0f,0.0f); glVertex3f(0.0f,0.0f,0.0f); glVertex3f(1.0f,0.0f,0.0f);
-    glColor3f(0.0f,1.0f,0.0f); glVertex3f(0.0f,0.0f,0.0f); glVertex3f(0.0f,1.0f,0.0f);
-    glColor3f(0.0f,0.0f,1.0f); glVertex3f(0.0f,0.0f,0.0f); glVertex3f(0.0f,0.0f,1.0f);
-    glColor3f(1.0f,1.0f,1.0f);
-    glEnd();
 }
  
 int main(int argc, char* argv[]) {
     SDL_Init(SDL_INIT_EVERYTHING|SDL_INIT_NOPARACHUTE);
-    window = SDL_CreateWindow("GL/SDL2 texture", SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED, screen_size[0],screen_size[1], SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow("texture", SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED, screen_size[0],screen_size[1], SDL_WINDOW_OPENGL);
     SDL_GLContext context = SDL_GL_CreateContext(window);
     glEnable(GL_DEPTH_TEST);
     init_texture();
     while (true) {
-        if (!get_input()) break;
+    	SDL_Event event;
+    	while (SDL_PollEvent(&event)) {
+        	switch (event.type) {
+            		case SDL_QUIT: return false; //The little X in the window got pressed
+                }
+			break;
+        }
         draw();
     	SDL_GL_SwapWindow(window);
     }
