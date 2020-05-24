@@ -1,1 +1,0 @@
-/usr/bin/c++   -std=c++11   CMakeFiles/gl_sdl2_triangle.dir/gl_sdl2_triangle.cpp.o  -o gl_sdl2_triangle -rdynamic -lGL -lGLU -lSDL2 

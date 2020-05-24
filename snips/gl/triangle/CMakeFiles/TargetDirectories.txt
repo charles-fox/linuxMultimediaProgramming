@@ -1,3 +1,0 @@
-/home/charles/git/linuxMultimediaProgramming/snips/gl/triangle/CMakeFiles/edit_cache.dir
-/home/charles/git/linuxMultimediaProgramming/snips/gl/triangle/CMakeFiles/rebuild_cache.dir
-/home/charles/git/linuxMultimediaProgramming/snips/gl/triangle/CMakeFiles/gl_sdl2_triangle.dir
