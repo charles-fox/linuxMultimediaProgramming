@@ -174,69 +174,6 @@ Compressed, like JPG, so needing a complex library, {\em libpng}, to load and sa
 
 
 
-\chapter{Vector graphics}
-
-Vector graphics are 2D graphics which describe lines and shapes in terms of their points and connections in space rather than pixels. This means they can be rendered in different ways and scaled without pixellating.  There have been several formats and tools. The main standards today are pdf for text-heavy files, svg for graphic-heavy, and Cairo for creating these and others, including GUI renderings.
-
-\section{Postscript vector graphics}
-
-Postscript is an old but very alive vector graphics file format. Actually it is more than this: it is a fully fledged programming language.   Postscript files are human-readable programs which instruct a postscript device how to draw a vector image.  However full programming functionality such as for and while loops are not often used nowadays, and the postscipt "programs" encountered in the wild are usually just CAD-like lists of commands to move and draw with a virtual pen, like a 1908s LOGO turtle drawing.  It is common today to write programs in other languages (C, Python) which spit out postscript programs, rather that writing the programs by hand.
-
-Example test.ps showing how to draw lines (open the file in a view such as GhostScript or send to a Postscript printer to view):
-\lstinputlisting{snips/postscript/test.ps}
-
-Encapuslated Postscript (eps) is a very minor extension to Postscript which adds a bounding box to the image; i.e. information about the size of the page or region in which it exists. This is commonly used to tell Latex how much space to leave around the egdes of figures. Simple tools convert ps to eps and back again.
-
-
-\section{Portable Document Fomat (pdf)}
-
-PDF is a newer vector graphics language based closely on postscript and eps.  It removes Postscipt's underused programming language facilities and keeps just the element descriptions, considering them to be static descriptions rather than programs.  (eg. a "line" is a description of the properties of a line entity rather than a command to "draw a line").  It adds the ability to wrap fonts inside the pdf file so they are guarenteed to be viewable with it - where postscript required the reader to have the right fonts on their computer.  PDF standard also defins a compression system which is often used to prevent human-reading and editing of the source as well as for actual compression.
-
-\lstinputlisting{snips/pdfcut/pdfcut_cmd}
-
-
-\section{SVG}
-PS and PDF have some ownshipship issues; SVG is a fully open standard for vector graphics files. Is is a flavour of XML and widely supported by web browsers:
-
-\lstinputlisting{snips/postscript/test.svg}
-
-\section{Cairo vector graphics API}
-
-Cairo is an API for vector graphics drawing with many backends which can render these commands in many ways such as postscript and pdf files, SVG, on-screen GUIs, and OpenGL shapes.
-
-Cairo's basic model includes:
-Mask: defines a shape
-Source: defines what's in the shape, e.g. a color, a bitmap, or a shading style.
-Surface: the "canvas" being drawn on; this is implemented by the backends.
-
-(This is a differnet model from those used by backends, however the backends do a lot of work to convert. eg. SVG uses a stylesheet model.  These models are important when we update drawings, e.g. in pure SVG we could wasily redraw all pictures on a website using red instead of green by changing the style. Using cairo, this change would be made at a higher level, in the drawing code, and the individual SVGs would not be able to inherit styles in that way any more. )
-
-\lstinputlisting{snips/postscript/cairo/test1.cpp}
-
-Cairo has many bindings including Python:
-
-\lstinputlisting{snips/postscript/cairo/test1.py}
-
-Cairo can also be used to draw in GUIs, as GTK provides a Cairo surrface type:
-
-\lstinputlisting{snips/postscript/cairo-gtk/cairo-gtk.py}
-
-\section{Fonts}
-
-Fonts are special sets of vector graphics (for characters) which come wrapped with additional rules for how to display them together. (e.g. moving letters around to fit with one another, and responding to commands for resizing, italicizatio, kerning, etc.). In particular they are often displayed very small on pixel screen when reading text documents on screen, and come with special rules to display nicely at low resultions - such as use of grey pixels as hints to blend between black and white pixels - as well as printing nicely as pure black and white vectors.
-
-Copy the .ttf file and paste it inside ~/.fonts folder, ie /home/username/.fonts folder. Create one if you dont already have one.
-
-Now run
-
-sudo fc-cache -fv
-
-
-also Pango font rendering ?
-
-
-
-
 
 \chapter{SDL2 2D graphics and input}
 
@@ -313,43 +250,6 @@ How OpenGL works intenrnall: graphics pipeline: https://fgiesen.wordpress.com/20
 
 
 
-
-
-
-\chapter{Game Engines}
-\section{2D}
-pygame - built on SDL and OpenAL.  2D scene graph. Collision detection. Partial android version.
-Godot 2d
-
-\section{3D}
-Godot 3d
-
-\chapter{CAD}
-\section{Collada (dae) format}
-
-
-\section{OpenSceneGraph (uses dae)}
-B+trees (from GIS book?) - for collision detection
-
-\section{ODE physics engine?}
-
-\section{FreeCAD}
-is for engineers. Emphasis on correctness and artifical shapes.
-
-from:
-https://www.youtube.com/watch?v=hkOuBvbvxSo&index=1&list=PLrEZShA-NGC9IIpq9chta_PKAnEjJGe8q
-
-part view
-
-add box
-
-data view (bot left) , placement property
-
-
-\section{Blender}
-is more for artists and game designers. Emphasis on expressibility and natural shapes.
-
-
 \chapter{OpenCV}
 
 
@@ -423,11 +323,105 @@ Hello world in OpenCL:
 
 
 
+\chapter{Image Applications}
+GIMP - is like Photoshop but better and free
+TODO explan masking, is most common need eg for games sprites
 
-\chapter{Applications}
 
-GIMP
-FreeCAD
+
+
+\chapter{Vector graphics}
+
+Vector graphics are 2D graphics which describe lines and shapes in terms of their points and connections in space rather than pixels. This means they can be rendered in different ways and scaled without pixellating.  There have been several formats and tools. The main standards today are pdf for text-heavy files, svg for graphic-heavy, and Cairo for creating these and others, including GUI renderings.
+
+\section{Postscript vector graphics}
+
+Postscript is an old but very alive vector graphics file format. Actually it is more than this: it is a fully fledged programming language.   Postscript files are human-readable programs which instruct a postscript device how to draw a vector image.  However full programming functionality such as for and while loops are not often used nowadays, and the postscipt "programs" encountered in the wild are usually just CAD-like lists of commands to move and draw with a virtual pen, like a 1908s LOGO turtle drawing.  It is common today to write programs in other languages (C, Python) which spit out postscript programs, rather that writing the programs by hand.
+
+Example test.ps showing how to draw lines (open the file in a view such as GhostScript or send to a Postscript printer to view):
+\lstinputlisting{snips/postscript/test.ps}
+
+Encapuslated Postscript (eps) is a very minor extension to Postscript which adds a bounding box to the image; i.e. information about the size of the page or region in which it exists. This is commonly used to tell Latex how much space to leave around the egdes of figures. Simple tools convert ps to eps and back again.
+
+
+\section{Portable Document Fomat (pdf)}
+
+PDF is a newer vector graphics language based closely on postscript and eps.  It removes Postscipt's underused programming language facilities and keeps just the element descriptions, considering them to be static descriptions rather than programs.  (eg. a "line" is a description of the properties of a line entity rather than a command to "draw a line").  It adds the ability to wrap fonts inside the pdf file so they are guarenteed to be viewable with it - where postscript required the reader to have the right fonts on their computer.  PDF standard also defins a compression system which is often used to prevent human-reading and editing of the source as well as for actual compression.
+
+\lstinputlisting{snips/pdfcut/pdfcut_cmd}
+
+
+\section{SVG}
+PS and PDF have some ownshipship issues; SVG is a fully open standard for vector graphics files. Is is a flavour of XML and widely supported by web browsers:
+
+\lstinputlisting{snips/postscript/test.svg}
+
+\section{Cairo vector graphics API}
+
+Cairo is an API for vector graphics drawing with many backends which can render these commands in many ways such as postscript and pdf files, SVG, on-screen GUIs, and OpenGL shapes.
+
+Cairo's basic model includes:
+Mask: defines a shape
+Source: defines what's in the shape, e.g. a color, a bitmap, or a shading style.
+Surface: the "canvas" being drawn on; this is implemented by the backends.
+
+(This is a differnet model from those used by backends, however the backends do a lot of work to convert. eg. SVG uses a stylesheet model.  These models are important when we update drawings, e.g. in pure SVG we could wasily redraw all pictures on a website using red instead of green by changing the style. Using cairo, this change would be made at a higher level, in the drawing code, and the individual SVGs would not be able to inherit styles in that way any more. )
+
+\lstinputlisting{snips/postscript/cairo/test1.cpp}
+
+Cairo has many bindings including Python:
+
+\lstinputlisting{snips/postscript/cairo/test1.py}
+
+Cairo can also be used to draw in GUIs, as GTK provides a Cairo surrface type:
+
+\lstinputlisting{snips/postscript/cairo-gtk/cairo-gtk.py}
+
+\section{Fonts}
+
+Fonts are special sets of vector graphics (for characters) which come wrapped with additional rules for how to display them together. (e.g. moving letters around to fit with one another, and responding to commands for resizing, italicizatio, kerning, etc.). In particular they are often displayed very small on pixel screen when reading text documents on screen, and come with special rules to display nicely at low resultions - such as use of grey pixels as hints to blend between black and white pixels - as well as printing nicely as pure black and white vectors.
+
+Copy the .ttf file and paste it inside ~/.fonts folder, ie /home/username/.fonts folder. Create one if you dont already have one.
+
+Now run
+
+sudo fc-cache -fv
+
+
+also Pango font rendering ?
+
+
+
+
+\chapter{CAD}
+
+CAD is the 3D analog of vector graphics.
+
+\section{Collada (dae) format}
+
+\section{OpenSceneGraph (uses dae)}
+B+trees (from GIS book?) - for collision detection
+
+\section{ODE physics engine?}
+
+\section{FreeCAD}
+is for engineers. Emphasis on correctness and artifical shapes.
+
+from:
+https://www.youtube.com/watch?v=hkOuBvbvxSo&index=1&list=PLrEZShA-NGC9IIpq9chta_PKAnEjJGe8q
+
+part view
+
+add box
+
+data view (bot left) , placement property
+
+
+\section{Blender}
+is more for artists and game designers. Emphasis on expressibility and natural shapes.
+
+
+
 
 
 
@@ -1299,6 +1293,23 @@ Application Development Manual:  https://gstreamer.freedesktop.org/data/doc/gstr
 heavily based on GObject/GLib (C, not cpp)
 
 
+\chapter{Augmented reality (GL+CV)}
+
+The Graphics Stack architecture above has implications for programs that need to combine 2D and 3D graphics and video, such as head-up displays in 3D games, and augmented reality 3D graphics drawn on top of 2D video camera images.
+
+The best way to do these is to create the image in main RAM in standard (4-byte ABGR, or 3-byte BGR) arrays. Then, like the window manager itself, ask OpenGL to DMA then into GPU texture memory and render them in 3D (using a flat projection matrix). Other 3D graphics can then be drawn over them.  Unlike other image copying, this is a FAST operation due to the DMA implementation.
+
+(Note that GL can render to other buffers inside the graphics card, than the one sent the screen. This is done in souble buffering for example. It is also possible to DMA these buffers back into RAM, eg. if we want to get a rendered image as a sprite and save it to an image file.)
+
+\section{Video textures with CV/GL/SDL}
+
+[TODO this is in SDL1 and needs converting to SDL2]
+
+Suppose we are making a 3D video game set in a city and want to render a video of the Joker's threat to Gotham City on a giant screen on the side of a skyscraper.   Here we read frames usign OpenCV and push them into GL textures in real time.   This method is also useful for AR if we want to just render a flat video backgraound image then draw 3D objects over it in GL -- it is done in exactly the saem way.  It is fast because the texture transfer is done via DMA on the GL command, so doesn't take up CPU time.
+
+\lstinputlisting{snips/gl/texture_video_AR/gl_video_texture.cpp}
+
+
 
 \chapter{ROS}
 
@@ -1325,48 +1336,6 @@ multicast: cvlc -vvv \textasciitilde{}/data/qb/NorwichLeeds1280.mp4
 :norm=ntsc :v4l2-width=320 :v4l2-height=240 :v4l2-standard=45056 :channel=1
 --no-sout-audio --sout '\#transcode\{vb=\textquotedbl{}1600\textquotedbl{},vcodec=mpgv,acodec=mpga,venc=ffmpeg\}:rtp\{proto=udp,mux=ts,dst=127.0.0.1,port=9001\}'
 --loop --ttl 
-
-\chapter{Video edit applications}
-
-\section{OpenShot}
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{figs/openshot.png}
-	\caption{OpenShot, used here to edit an audio recording of a lecture together with png-exported Beamer slides.}
-  \label{fig:jack-settings}
-\end{figure}
-
-Good Linux style is usually to prefer command line tools for basic video editing. For example, see ffpmeg example above for basic commands to cut video files, splice them, and build from or extract still images and audio files.  But for more artistic applications, some users might prefer to use a GUI which wraps these features.
-
-OpenShot allows video, audio, and still-image clips to be combined over time into videos.  It is set up similarly to music software such as Ardour, with tmpora,l tracks show at the bottom of the screen.   At the top left of the screen is the list of available media clips.  
-
-To use OpenShot, first drag each media clip from Nautilus into the set of media clips.  It will appear in the list.  
-
-Then to deploy it in the video track, drag a copy from this list onto the temporal tracks at the bottom.
-
-To crop: select a clip on the temporal track. Then select the resize tool icon just above the temporal track on the left (<--> icon) to resize the two edges.  (Or right clip the clip, go to properties, length to specify with exact numbers.)
-
-To move clips in the temporal track, select the mouse-pointer icon in the abve right.   As in music editors, there are also ways to quantize cut and resize points using a magnet tool, which is on by default and may need to be turned off for fine editing.
-
-OpenShot has tools to add text titles and captions, in its menus.  It also provides various fades and effects (which should be used sparingly to avoid looking like amateur home video).
-
-OpenShot can save the whole project as an OpenShot project file.  It can also export to most major video formats, including preset formats for common applications such as popular Internet video sites.
-
-
-
-\section{Desktop screencast recording}
-
-Download the {\em recordmydesktop} tool (e.g. from synaptic). Then just,
-\begin{lstlisting}
-recordmydesktop
-\end{lstlisting}
-will record a screencast file, named with the current date and time.  Stop the recording with Ctrl-D.
-
-
-\section{Zonemaster}
-Is a GUI applicatoin for CCTV multi IP-camera control, e.g. for home security monitoring and recording.
-
 
 
 
@@ -1456,22 +1425,14 @@ multicast option
 to set up telcon calls
 
 
-\chapter{Augmented reality (GL+CV)}
 
-The Graphics Stack architecture above has implications for programs that need to combine 2D and 3D graphics and video, such as head-up displays in 3D games, and augmented reality 3D graphics drawn on top of 2D video camera images.
+\chapter{Game Engines}
+\section{2D}
+pygame - built on SDL and OpenAL.  2D scene graph. Collision detection. Partial android version.
+Godot 2d
 
-The best way to do these is to create the image in main RAM in standard (4-byte ABGR, or 3-byte BGR) arrays. Then, like the window manager itself, ask OpenGL to DMA then into GPU texture memory and render them in 3D (using a flat projection matrix). Other 3D graphics can then be drawn over them.  Unlike other image copying, this is a FAST operation due to the DMA implementation.
-
-(Note that GL can render to other buffers inside the graphics card, than the one sent the screen. This is done in souble buffering for example. It is also possible to DMA these buffers back into RAM, eg. if we want to get a rendered image as a sprite and save it to an image file.)
-
-\section{Video textures with CV/GL/SDL}
-
-[TODO this is in SDL1 and needs converting to SDL2]
-
-Suppose we are making a 3D video game set in a city and want to render a video of the Joker's threat to Gotham City on a giant screen on the side of a skyscraper.   Here we read frames usign OpenCV and push them into GL textures in real time.   This method is also useful for AR if we want to just render a flat video backgraound image then draw 3D objects over it in GL -- it is done in exactly the saem way.  It is fast because the texture transfer is done via DMA on the GL command, so doesn't take up CPU time.
-
-\lstinputlisting{snips/gl/texture_video_AR/gl_video_texture.cpp}
-
+\section{3D}
+Godot 3d
 
 
 
@@ -1517,6 +1478,51 @@ The dream is for music files to come with full hierachical descriptions of their
 
 
 \section{QSRlib}
+
+
+\chapter{Video edit applications}
+
+\section{OpenShot}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figs/openshot.png}
+	\caption{OpenShot, used here to edit an audio recording of a lecture together with png-exported Beamer slides.}
+  \label{fig:jack-settings}
+\end{figure}
+
+Good Linux style is usually to prefer command line tools for basic video editing. For example, see ffpmeg example above for basic commands to cut video files, splice them, and build from or extract still images and audio files.  But for more artistic applications, some users might prefer to use a GUI which wraps these features.
+
+OpenShot allows video, audio, and still-image clips to be combined over time into videos.  It is set up similarly to music software such as Ardour, with tmpora,l tracks show at the bottom of the screen.   At the top left of the screen is the list of available media clips.  
+
+To use OpenShot, first drag each media clip from Nautilus into the set of media clips.  It will appear in the list.  
+
+Then to deploy it in the video track, drag a copy from this list onto the temporal tracks at the bottom.
+
+To crop: select a clip on the temporal track. Then select the resize tool icon just above the temporal track on the left (<--> icon) to resize the two edges.  (Or right clip the clip, go to properties, length to specify with exact numbers.)
+
+To move clips in the temporal track, select the mouse-pointer icon in the abve right.   As in music editors, there are also ways to quantize cut and resize points using a magnet tool, which is on by default and may need to be turned off for fine editing.
+
+OpenShot has tools to add text titles and captions, in its menus.  It also provides various fades and effects (which should be used sparingly to avoid looking like amateur home video).
+
+OpenShot can save the whole project as an OpenShot project file.  It can also export to most major video formats, including preset formats for common applications such as popular Internet video sites.
+
+
+
+\section{Desktop screencast recording}
+
+Download the {\em recordmydesktop} tool (e.g. from synaptic). Then just,
+\begin{lstlisting}
+recordmydesktop
+\end{lstlisting}
+will record a screencast file, named with the current date and time.  Stop the recording with Ctrl-D.
+
+
+\section{Zonemaster}
+Is a GUI applicatoin for CCTV multi IP-camera control, e.g. for home security monitoring and recording.
+
+
+
 
 \chapter{MISC IDEAS}
 
