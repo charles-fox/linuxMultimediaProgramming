@@ -156,10 +156,8 @@ Various color depths.
 "convert" command - very versatile. eg. ps to png.
 
 
-\section{Data formats}
 
-
-\subsection{Bitmap (BMP)}
+\section{Bitmap (BMP)}
 
 Windows standard. Consists of a simple header then raw RGB array data.
 
@@ -173,11 +171,6 @@ Windows standard. Consists of a simple header then raw RGB array data.
 \section{Portable Network Graphics (PNG)}
 
 Compressed, like JPG, so needing a complex library, {\em libpng}, to load and save.  File made of chunks of labelled types.
-
-
-\section{ROS Image message}
-
-header includes timestamps etc as well as img size and depth.
 
 
 
@@ -310,13 +303,7 @@ GL textures are simple bitmap images, ie. arrays of raw data in a specified form
 \lstinputlisting{snips/gl/texture/texture.cpp}
 \lstinputlisting{snips/gl/texture/CMakeLists}
 
-\subsection{Video textures with CV/GL/SDL}
 
-[TODO this is in SDL1 and needs converting to SDL2]
-
-Suppose we are making a 3D video game set in a city and want to render a video of the Joker's threat to Gotham City on a giant screen on the side of a skyscraper.   Here we read frames usign OpenCV and push them into GL textures in real time.   This method is also useful for AR if we want to just render a flat video backgraound image then draw 3D objects over it in GL -- it is done in exactly the saem way.  It is fast because the texture transfer is done via DMA on the GL command, so doesn't take up CPU time.
-
-\lstinputlisting{snips/gl/texture_video_AR/gl_video_texture.cpp}
 
 \subsection{GL animation}
 
@@ -1311,6 +1298,11 @@ heavily based on GObject/GLib (C, not cpp)
 ROS video streams ROS, CV have differerent img formats, use cvbridge
 node to convert them: http://wiki.ros.org/cv\_bridge/Tutorials/ConvertingBetweenROSImagesAndOpenCVImagesPython
 
+\section{ROS Image message}
+
+header includes timestamps etc as well as img size and depth.
+
+
 
 \chapter{(C)VLC}
 
@@ -1464,6 +1456,17 @@ The Graphics Stack architecture above has implications for programs that need to
 The best way to do these is to create the image in main RAM in standard (4-byte ABGR, or 3-byte BGR) arrays. Then, like the window manager itself, ask OpenGL to DMA then into GPU texture memory and render them in 3D (using a flat projection matrix). Other 3D graphics can then be drawn over them.  Unlike other image copying, this is a FAST operation due to the DMA implementation.
 
 (Note that GL can render to other buffers inside the graphics card, than the one sent the screen. This is done in souble buffering for example. It is also possible to DMA these buffers back into RAM, eg. if we want to get a rendered image as a sprite and save it to an image file.)
+
+\section{Video textures with CV/GL/SDL}
+
+[TODO this is in SDL1 and needs converting to SDL2]
+
+Suppose we are making a 3D video game set in a city and want to render a video of the Joker's threat to Gotham City on a giant screen on the side of a skyscraper.   Here we read frames usign OpenCV and push them into GL textures in real time.   This method is also useful for AR if we want to just render a flat video backgraound image then draw 3D objects over it in GL -- it is done in exactly the saem way.  It is fast because the texture transfer is done via DMA on the GL command, so doesn't take up CPU time.
+
+\lstinputlisting{snips/gl/texture_video_AR/gl_video_texture.cpp}
+
+
+
 
 \chapter{Parallel programming}
 
