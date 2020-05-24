@@ -88,12 +88,8 @@ int main(int argc, char* argv[]) {
     init_texture();
     while (true) {
     	SDL_Event event;
-    	while (SDL_PollEvent(&event)) {
-        	switch (event.type) {
-            		case SDL_QUIT: return false; //The little X in the window got pressed
-                }
-			break;
-        }
+    	SDL_PollEvent(&event);
+        if (event.type == SDL_QUIT) return false;
         draw();
     	SDL_GL_SwapWindow(window);
     }
