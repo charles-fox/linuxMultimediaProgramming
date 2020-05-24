@@ -3,7 +3,4 @@ cmake_minimum_required(VERSION 2.8)
 project( videoWrite )
 find_package( OpenCV REQUIRED )
 add_executable( gl_sdl2_triangle gl_sdl2_triangle.cpp )
-add_executable( gl_sdl2_cube gl_sdl2_cube.cpp )
 target_link_libraries( gl_sdl2_triangle GL GLU SDL2  )
-target_link_libraries( gl_sdl2_cube GL GLU SDL2  )
-
