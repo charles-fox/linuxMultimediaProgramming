@@ -23,8 +23,7 @@ static void init_texture(void) {
     else {
         printf("Error: \"Loaded surface was neither RGB or BGR!\""); return;
     }
-    //Generate an array of textures.  We only want one texture (one element array), so trick
-    //it by treating "texture" as array of length one.
+    //Generate an array of textures.  We only want one texture (one element array).
     glGenTextures(1,&texture);
     //Select (bind) the texture we just generated as the current 2D texture OpenGL is using/modifying.
     //All subsequent changes to OpenGL's texturing state for 2D textures will affect this texture.
@@ -53,7 +52,6 @@ static void init_texture(void) {
     //them on), linearly filter them.  Qualitatively, this causes "blown up" (overmagnified) textures to look blurry instead of blocky.
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    //Unload SDL's copy of the data; we don't need it anymore because OpenGL now stores it in the texture.
     SDL_FreeSurface(surf);
 }
  
