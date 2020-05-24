@@ -980,44 +980,6 @@ eg. playing 2 hi-res youtubes in cinema mode at once takes about 200\% CPU and s
 
 IP cameras - streaming.  vs. save to container files.
 
-\chapter{Video4Linux (V4L)}
-
-is a standard API for video devices such as webcams, plus some drivers
-implementing it.
-
-API devices appear as files at ls /sys/class/video4linux/ which can
-be accessed eg. via pythonCV: cv2.videoCapture(3) 
-
-v4l2-ctl: gives low level info and setting for USB camera hardware
-typically GUI tools are calling into it to change camera settings
-
-has many useful help options, see --help 
-
-get current settings: v4l2-ctl --device=/dev/video0 --get-fmt-video
-
-eg to set image size and codec: v4l2-ctl --device=/dev/video0 --set-fmt-video=width=800,height=600,pixelformat=1
-
-logitech C920 has onboard codecs: YUYV -- splits up luma (Y) and croma
-(Cr and Cb red and blue diffs) and downsamples chroma a bit (YUV 4:4:2)
-MPEG H264
-
-ask for available frame rates: v4l2-ctl --device=/dev/video0 --list-frameintervals=width=640,height=480,pixelformat=YUYV
-
-
-\section{Loopback}
-\label{loopback}
-
-Loopback is a system which allows you to create virtual video devices
-in V4L, so that other applications may access them just as if they
-were real devices. Like real devices they appears in /dev/videoX.
-
-Loopback module must be installed then enabled with:
-
-\begin{lstlisting}
-sudo apt-get install v4l2loopback-dkms 
-sudo modprobe v4l2loopback
-\end{lstlisting}
-This creates virtual devices /sys/class/video4linux/video1 and /dev/video1 which behave like local webcams. For example they can be opened in OpenCV:
 
 
 \chapter{Video formats (codecs)}
@@ -1116,6 +1078,47 @@ Join two videos:
 \begin{lstlisting}
 ffmpeg -i "concat:1.mp4|2.mp4" -c copy out.mp4
 \end{lstlisting}
+
+
+\chapter{Video4Linux (V4L)}
+
+is a standard API for video devices such as webcams, plus some drivers
+implementing it.
+
+API devices appear as files at ls /sys/class/video4linux/ which can
+be accessed eg. via pythonCV: cv2.videoCapture(3) 
+
+v4l2-ctl: gives low level info and setting for USB camera hardware
+typically GUI tools are calling into it to change camera settings
+
+has many useful help options, see --help 
+
+get current settings: v4l2-ctl --device=/dev/video0 --get-fmt-video
+
+eg to set image size and codec: v4l2-ctl --device=/dev/video0 --set-fmt-video=width=800,height=600,pixelformat=1
+
+logitech C920 has onboard codecs: YUYV -- splits up luma (Y) and croma
+(Cr and Cb red and blue diffs) and downsamples chroma a bit (YUV 4:4:2)
+MPEG H264
+
+ask for available frame rates: v4l2-ctl --device=/dev/video0 --list-frameintervals=width=640,height=480,pixelformat=YUYV
+
+
+\section{Loopback}
+\label{loopback}
+
+Loopback is a system which allows you to create virtual video devices
+in V4L, so that other applications may access them just as if they
+were real devices. Like real devices they appears in /dev/videoX.
+
+Loopback module must be installed then enabled with:
+
+\begin{lstlisting}
+sudo apt-get install v4l2loopback-dkms 
+sudo modprobe v4l2loopback
+\end{lstlisting}
+This creates virtual devices /sys/class/video4linux/video1 and /dev/video1 which behave like local webcams. For example they can be opened in OpenCV:
+
 
 
 
