@@ -199,20 +199,25 @@ To install SDL2 on Ubuntu 18.04:
 
 Here is how to create an SDL windows, either on the desktop or fullscreen, and blit a sprite to it (written entirely in the C subset of C++, as used during the 16-bit era):
 
-\lstinputlisting{snips/sdl2/testSDL2.cpp}
+\lstinputlisting{snips/sdl2/hello/testSDL2.cpp}
+\lstinputlisting{snips/sdl2/hello/CMakeLists.txt}
 
-\section{Polling event queue}
+\section{A minimal game}
 If you have used systems such as Scratch to write simple games, you will be familiar with the concept of broadcasting and receiving messages to communicate between game objects.   Systems like Scratch implement this software architecture internally by maintaining a global queue of event structures, called an event queue.  Anyone can append events to this queue.  And anyone can "poll" the queue to ask if there are events of interest to them, which may be either copied or removed from the queue and given to the poller.  
 
 Like 16-bit operating systems, SDL provides such a system. Unlike modern operating systems, event polling requires a large amount of trust between its users. Everyone involved needs to (a) remember to poll the queue on a regular basis, (b) not remove events from the queue if they will be needed by someone else, and (c) (if not running on a multi-process or multi-threaded system) stop running and pass control to someone else after a short time to allow everone to run rather than hog the CPU.
 
-\section{Animation}
-TODO make a game loop, mutiple sprites, flip double buffers.
+Here is a minimal game in SDL2. It puts the previous hello world sprite drawing inside a game loop.  It polls for keyboards and window close (quit) events. It uses keyboard events to update the sprite's position. It blits each frame onto a freshly blanked surface, then tells the window to show the new suface when it is ready.
 
+\lstinputlisting{snips/sdl2/game/game.cpp}
+\lstinputlisting{snips/sdl2/game/CMakeLists.txt}
 
-
-
-
+\section{An extended game}
+TODO
+multiple sprites
+collsion detection
+pushing own events into queue to broadcast?
+all sprites reading the events ? (how/when to remove them?)
 
 \chapter{OpenGL 3D graphics}
 
