@@ -49,7 +49,7 @@ Current authors include: Charles Fox, ADD NAMES HERE
 
 This is a technical coding introduction to Linux multimedia libraries and tools including graphics, sound, and video programming.   Linux famously allows many competing libraries and tools to provide similar functions from which the open source community eventually select the best.  This eventually gives great tools but can be quite confusing for beginner programmers as they are faced with many alternative ways to do everything.  The idea in this document is to select only the best of breed of everything and present them together. It's like a Linux distribution in making these selections. But it is a distribution of ideas and choices rather than of actual software. (unless we do a Docker as well).   As such, the choice of what to leave out and not cover is also important. The idea is to present a single, best, toolkit, of tools which work and which also work well with one another as in a distro.   This is not a detailed tech manual. The purpose is to present the best tools for media tasks, and to give basic but compilable hello-world examples of code to help get new project started. I use these code snippets all the time when I need to make small new projects based on libraries I might not have used for a while and need to remember how to set them up.  After that it's usually easy to consult their big docs on the net to get details for the specific things I need to do.
 
-The document is an attempt at open sourcing some of my written notes using github and Creative Commons. I am collecting all my little text and code snippits from over the years of working with Linux graphics, sound and video into one place and thought I might as well share them in case they are useful to anyone. They are based on about my last 10 years of working as an academic and commercial researcher in pattern multimedia pattern recongition in machine vision, speech recongition, computer music and robotics, and have been used to implement the systems in my research papers (https://scholar.google.co.uk/citations?user=dQ7RURYAAAAJ&hl=en). As I just finished writing my Springer book "Data Science for Transport" it's easy to reuse the book template, though this is just intended as a loose collection of stuff, not an actual book itself.    Maybe one day this might get big enough to make an actual but fully open-source and continually updated commuity book as sometimes printed by O'Reilly Community Press \url{www.oreilly.com/openbook/} or No Starch Press (https://nostarch.com/writeforus).  Continual updating would be really important as like a distro all these tool are constantly changing.    The plan is to keep it on github where others can fork it and send back pull requests for incorporation in the main version, both to grow the text and to keep all the software versions up to date. Github also allows readers to edit the text within the github webpage, without having to download to their own machine, this is a really quick and easy way to fix things so please if anyone out there happens to be reading this just go ahead, fork, edit and send a pull request to help keep up to date. If you make useful edits and would like to add your name to the author list then please ask and I will add it.
+The document is an attempt at open sourcing some of my written notes using github and Creative Commons. I am collecting all my little text and code snippits from over the years of working with Linux graphics, sound and video into one place and thought I might as well share them in case they are useful to anyone. They are based on about my last 10 years of working as an academic and commercial researcher in pattern multimedia pattern recongition in machine vision, speech recongition, computer music and robotics, and have been used to implement the systems in my research papers (https://scholar.google.co.uk/citations?user=dQ7RURYAAAAJ). As I just finished writing my Springer book "Data Science for Transport" it's easy to reuse the book template, though this is just intended as a loose collection of stuff, not an actual book itself.    Maybe one day this might get big enough to make an actual but fully open-source and continually updated commuity book as sometimes printed by O'Reilly Community Press \url{www.oreilly.com/openbook/} or No Starch Press (https://nostarch.com/writeforus).  Continual updating would be really important as like a distro all these tool are constantly changing.    The plan is to keep it on github where others can fork it and send back pull requests for incorporation in the main version, both to grow the text and to keep all the software versions up to date. Github also allows readers to edit the text within the github webpage, without having to download to their own machine, this is a really quick and easy way to fix things so please if anyone out there happens to be reading this just go ahead, fork, edit and send a pull request to help keep up to date. If you make useful edits and would like to add your name to the author list then please ask and I will add it.
 
 \section{Known similar documents}
 - OReilley 2005, Linux multimedia hacks, Kyle Rankin. More of a consumer/user's guide to apps than a programming guide.
@@ -247,7 +247,7 @@ Here is code to create a GL context using SDL2 and draw a rotating coloured cube
 GL textures are simple bitmap images, ie. arrays of raw data in a specified format. (Such as 32bit RBGA color bytes).  They can be created programatically in this format but are more usually coverted to this GL format from some other existing format, such as SDL2's image structures.   In this example we load a BMP image as an SDL2 structure, then convert and pass it to GL to use as a texture. Note that SDL2 and GL image strucures and not the same and need to be converted:
 
 \lstinputlisting{snips/gl/texture/texture.cpp}
-\lstinputlisting{snips/gl/texture/CMakeLists}
+\lstinputlisting{snips/gl/texture/CMakeLists.txt}
 
 
 
@@ -271,7 +271,122 @@ How OpenGL works intenrnall: graphics pipeline: https://fgiesen.wordpress.com/20
 
 
 
-\chapter{GPU OpenCL as graphics programming?}
+\chapter{OpenCL programming}
+
+Modern GPUs aren't just for graphics, they have opened up their highly parallel architectures for general parallel computation use which includes but is no longer limited to graphics and image processing.   OpenCL is one competing open source API for programming GPUs.   (The other is SYCL. CUDA is a proprpiatory one only for NVidia GPUs.)
+
+\section{Installing OpenCL}
+
+OpenCL has two parts: the API and a backend for your specific GPU.   
+
+The API has come in several release versions, with 1.0, 1.2 and 2.0 being the most popular.  All of these API versions are however provided together in the single file CL/cl2.hpp.  It is easy to install this front-end API as it is the same for all computers.
+
+The API is then implemented by a backend which is specific to your particular GPU. Often these are propriatory, provided by the manufacturer of the GPU.  (We consider that propriatory implementations of open APIs are acceptable here, though this is often debated.)    It is harder to find what and how to install the backend than the front end because different GPUs all have different processes.  You need to find infomration about how to do it from the manufacturer of your particular GPU.
+
+\subsection{Example: Install for Ubuntu 16.04 on Intel HD series GPU}
+
+\begin{lstlisting}
+#install the API
+sudo apt install ocl-icd-libopencl1 opencl-headers clinfo
+
+#install specific propriatory backend for a Intel HD Graphics series GPU
+add-apt-repository ppa:intel-opencl/intel-opencl
+apt-get update
+apt-get install intel-opencl-icd
+\end{lstlisting}
+
+\subsection{Finding how to install for other systems}
+
+To test if CL is already installed and working:
+
+\begin{lstlisting}
+clinfo
+	Numnber of processors: 0
+\end{lstlisting}
+
+To find graphics card/s make and model:
+
+\begin{lstlisting}
+lspci | grep VGA
+00:02.0 VGA compatible controller: Intel Corporation Device 591b (rev 04)
+
+sudo lshw -C display
+[sudo] password for charles: 
+  *-display UNCLAIMED     
+       description: Display controller
+       product: Advanced Micro Devices, Inc. [AMD/ATI]
+       vendor: Advanced Micro Devices, Inc. [AMD/ATI]
+       physical id: 0
+       bus info: pci@0000:01:00.0
+       version: c0
+       width: 64 bits
+       clock: 33MHz
+       capabilities: pm pciexpress msi bus_master cap_list
+       configuration: latency=0
+       resources: memory:a0000000-afffffff memory:b0000000-b01fffff ioport:e000(size=256) memory:ec400000-ec43ffff memory:ec440000-ec45ffff
+  *-display
+       description: VGA compatible controller
+       product: Intel Corporation
+       vendor: Intel Corporation
+       physical id: 2
+       bus info: pci@0000:00:02.0
+       version: 04
+       width: 64 bits
+       clock: 33MHz
+       capabilities: pciexpress msi pm vga_controller bus_master cap_list rom
+       configuration: driver=i915 latency=0
+       resources: iomemory:2f0-2ef irq:132 memory:eb000000-ebffffff memory:2fa0000000-2fafffffff ioport:f000(size=64) memory:c0000-dffff
+\end{lstlisting}
+
+Then look up the card on the net for CL compatability and power:
+
+\begin{lstlisting}
+Intel 591b part of the "HD Graphics 630" series. 
+	591b is the version for mobile laptops etc.
+	("HD Graphics 630" is part of "gen9" Intel GPUs)
+	https://en.wikipedia.org/wiki/List_of_Intel_graphics_processing_units
+		should run OpenCL 2.1 for Linux
+		clock 350-1000MHz
+		core config 192:24:3 (GT2)
+\end{lstlisting}
+If compatible, find and install an OpenCL runtime for the particular card:
+\begin{lstlisting}
+
+	Intel OpenCL runtimes download:
+		https://software.intel.com/en-us/articles/opencl-drivers
+			"Intel® Graphics Technology Runtimes"  -- is for "HD Graphics series"
+			-- Linux OS
+		points to here to install:
+		https://github.com/intel/compute-runtime/blob/master/documentation/Neo_in_distributions.md
+
+\end{lstlisting}
+	which says to do
+\begin{lstlisting}
+		add-apt-repository ppa:intel-opencl/intel-opencl
+		apt-get update
+		apt-get install intel-opencl-icd
+\end{lstlisting}
+then clinfo works.
+
+TODO:  (We can choose the Mesa stack or a propriatory (eg. NVidia or Intel) stack, for the particular GPU type in our computer.  The Ubuntu nvidia stack can be installed via the Restricted repository, eg. nvidia-opencl-dev gets everything, and replaces the Mesa stack.  Then sudo apt install nvidia-cuda-toolkit to get CUDA and OpenCL APIs, cublas, cudnn, etc.  The mesa stack is harder ...  maybe easier in 16.04 ?
+\begin{lstlisting}
+/usr/lib/x86_64-linux-gnu/libOpenCL.so.1
+\end{lstlisting}
+ICD (Installable Client Driver) - Khronos tool to allow multiple implemenations of CL to coexist.
+mesa-opencv-icd  apt package ?
+
+There are ways to specify which APIs will be used: https://github.khronos.org/OpenCL-CLHPP/
+
+CL1.2 reference card: https://www.khronos.org/files/opencl-1-2-quick-reference-card.pdf
+
+
+\section{Hello world OpenCL}
+Once CL is installed, a simple hello world program (written in pure C, with the CL kernel as a string) is,
+
+\lstinputlisting{snips/cl/go.cpp}
+\lstinputlisting{snips/cl/CMakeLists.txt}
+
+(Cmake requres a manual link of libopencl.so.1 to libopencl.so before finding it).
 
 \section{Architecture}
 
@@ -307,29 +422,7 @@ https://stackoverflow.com/questions/27733704/how-is-webgl-or-cuda-code-actually-
 to pass GPU binary via a CL function:
 https://www.khronos.org/registry/OpenCL/sdk/1.0/docs/man/xhtml/clCreateProgramWithBinary.html
 
-
 TODO how to call libDRM directly with the commands ?
-\section{OpenCL setup}
-We can choose the Mesa stack or a propriatory (eg. NVidia or Intel) stack, for the particular GPU type in our computer.
-
-The Ubuntu nvidia stack can be installed via the Restricted repository, eg. nvidia-opencl-dev gets everything, and replaces the Mesa stack.  Then sudo apt install nvidia-cuda-toolkit to get CUDA and OpenCL APIs, cublas, cudnn, etc.
-
-The mesa stack is harder ...  maybe easier in 16.04 ?
-\begin{lstlisting}
-/usr/lib/x86_64-linux-gnu/libOpenCL.so.1
-\end{lstlisting}
-ICD (Installable Client Driver) - Khronos tool to allow multiple implemenations of CL to coexist.
-mesa-opencv-icd  apt package ?
-
-
-\section{OpenCL programming}
-
-Hello world in OpenCL:
-\lstinputlisting{snips/cl/go.cpp}
-\lstinputlisting{snips/cl/CMakeLists.txt}
-
-(Cmake requres a manual link of libopencl.so.1 to libopencl.so before finding it).
-
 
 
 \chapter{Image Applications}
@@ -378,13 +471,15 @@ Surface: the "canvas" being drawn on; this is implemented by the backends.
 
 \lstinputlisting{snips/postscript/cairo/test1.cpp}
 
-Cairo has many bindings including Python:
+Cairo has many bindings including Python.
 
-\lstinputlisting{snips/postscript/cairo/test1.py}
+%TODO
+%\lstinputlisting{snips/postscript/cairo/test1.py}
 
 Cairo can also be used to draw in GUIs, as GTK provides a Cairo surrface type:
 
-\lstinputlisting{snips/postscript/cairo-gtk/cairo-gtk.py}
+%TODO
+%\lstinputlisting{snips/postscript/cairo-gtk/cairo-gtk.py}
 
 \section{Fonts}
 
@@ -899,8 +994,21 @@ Generally we don't want to compose or edit in Denemo because then we are stuck i
 Queen Mary tools?
 \chapter{Speech synthesis}
 
-festival
+Festival is a speech synthesiser developed by the University of Edinburgh. It is used both for research and also by end-users.
 
+To install then read out a text file:
+
+\begin{lstlisting}
+sudo apt install festival
+cat myfile | festival --tts
+\end{lstlisting}
+
+Festival can also send the synthesised voice to an audio file,
+\begin{lstlisting}
+text2wave myfile.txt > myaudio.wav
+\end{lstlisting}
+
+By default, Festival reads English and sounds like Stephen Hawking. You can also install many other voices that sound like natural native English, Scottish, and American male and female speakers, and other languages and voices for them.  For use in advanced research, Festival can be driven from a Lisp-style command line (via the festival command) or its funtions called in many other ways.  The full manual is at http://www.cstr.ed.ac.uk/projects/festival/manual/ .
 
 \chapter{Speech recognitions}
 

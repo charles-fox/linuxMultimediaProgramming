@@ -3,28 +3,28 @@
 #include <CL/cl.h>
 
 //the CLC program as a string (this is not C. It is CLC).
-const char rot13_cl[] = "					\
-__kernel void rot13							\
-    (   __global    const   char*    in		\
-    ,   __global            char*    out	\
-    )										\
-{											\
-    const uint index = get_global_id(0);	\
-    char c=in[index];						\
+const char rot13_cl[] = "\
+__kernel void rot13 \
+    (   __global    const   char* in	\
+    ,   __global            char* out	\
+    )					\
+{					\
+    const uint index = get_global_id(0); \
+    char c=in[index];			\
     if (c<'A' || c>'z' || (c>'Z' && c<'a')) \
-	{										\
-        out[index] = in[index];				\
-    } else 									\
-	{										\
-        if (c>'m' || (c>'M' && c<'a')) 		\
-		{									\
-	    	out[index] = in[index]-13;		\
-		} else 								\
-		{									\
-		    out[index] = in[index]+13;		\
-		}									\
-    }										\
-}											\
+	{ \
+        out[index] = in[index];		\
+    } else 				\
+	{				\
+        if (c>'m' || (c>'M' && c<'a')) 	\
+		{			\
+	    	out[index] = in[index]-13; \
+		} else 			   \
+		{			   \
+		    out[index] = in[index]+13; \
+		}  \
+    }	\
+} \
 ";
 
 void rot13 (char *buf)
