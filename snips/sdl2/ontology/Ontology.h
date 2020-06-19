@@ -3,6 +3,8 @@
 #include <string>
 #include <map>
 using namespace std;
+struct substance;    //predeclare to enable circule refs
+
 
 class Argument {
 	public:
@@ -20,9 +22,12 @@ class Float : public Argument {
 };
 class SubstanceName : public Argument {
 	public:
-		std::string name;
+		substance* pSubstance;
 		virtual std::string toString();
 };
+
+
+
 
 //here pointers are used only to allow polymorphism on the arguments
 typedef struct{
@@ -30,9 +35,11 @@ typedef struct{
 	std::map<string, Argument*> arguments;
 } Predicate;
 
-typedef struct{
+typedef struct substance {
 	std::map<string, Predicate> properties;
 } Substance;
+
+
 
 typedef struct{
 	std::vector<Substance*> substances;
