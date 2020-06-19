@@ -52,11 +52,16 @@ This is a technical coding introduction to Linux multimedia libraries and tools 
 The document is an attempt at open sourcing some of my written notes using github and Creative Commons. I am collecting all my little text and code snippits from over the years of working with Linux graphics, sound and video into one place and thought I might as well share them in case they are useful to anyone. They are based on about my last 10 years of working as an academic and commercial researcher in pattern multimedia pattern recongition in machine vision, speech recongition, computer music and robotics, and have been used to implement the systems in my research papers (https://scholar.google.co.uk/citations?user=dQ7RURYAAAAJ). As I just finished writing my Springer book "Data Science for Transport" it's easy to reuse the book template, though this is just intended as a loose collection of stuff, not an actual book itself.    Maybe one day this might get big enough to make an actual but fully open-source and continually updated commuity book as sometimes printed by O'Reilly Community Press \url{www.oreilly.com/openbook/} or No Starch Press (https://nostarch.com/writeforus).  Continual updating would be really important as like a distro all these tool are constantly changing.    The plan is to keep it on github where others can fork it and send back pull requests for incorporation in the main version, both to grow the text and to keep all the software versions up to date. Github also allows readers to edit the text within the github webpage, without having to download to their own machine, this is a really quick and easy way to fix things so please if anyone out there happens to be reading this just go ahead, fork, edit and send a pull request to help keep up to date. If you make useful edits and would like to add your name to the author list then please ask and I will add it.
 
 \section{Known similar documents}
-- OReilley 2005, Linux multimedia hacks, Kyle Rankin. More of a consumer/user's guide to apps than a programming guide.
-- Pakt 2017 linux sound book, \url{www.safaribooksonline.com/library/view/linux-sound-programming/9781484224960/}
-- \url{en.wikibooks.org/wiki/Configuring_Sound_on_Linux} 
-- Steve Money, BBC Micro Graphics and Ground, 1983, was the inspiration for this, though it was all a lot less complication in those days.
-- Robin Lovelace's open source github books on R an GIS are the inspiration for doing it this way, thanks Robin you are such a star!
+
+Steve Money, BBC Micro Graphics and Sound, 1983, was the original inspiration for this, being a one-stop book for multimedia programming on the Beeb.  Though it was all a lot less complicated in those days.
+
+Kyle Rankin, Linux multimedia hacks, O'Reilly 2005. More of a consumer/user's guide to apps than a programming guide.
+
+Pakt 2017 linux sound book, \url{www.safaribooksonline.com/library/view/linux-sound-programming/9781484224960/}
+
+\url{en.wikibooks.org/wiki/Configuring_Sound_on_Linux} is an open book effort for linux sound.
+
+Robin Lovelace's open source github books on R an GIS are the inspiration for doing it this way, thanks Robin you're a star!
 
 \section{Structure}
 Multimedia data representation and programming, like most types of data repreesntation and programming, are characterised by heriachies of abstractions. At the lowest levels, mutltmedia is represented by 0s and 1s in computer memory.  These are grouped into bytes of 8 bits each, and then into words of up to 8 bytes each (on a 64bit machine).  For example, a 4-byte word may presensent the color of a single pixel with red,gree,blue and transparency each as one byte.  Or a 3 byte word (24bit) may represent the displacement of a single instant of audio.  TIme and spatial series of such values form images, sound waves, and video.
@@ -191,6 +196,8 @@ SDL2 (Simple Direct Layer, API version 2) is a 2D graphics and other things libr
 SDL2 also provides a hardware abstraction layer for computer multimedia hardware components including OpenGL graphics cards, and also keyboards and joysticks. It includes a polling event queue system as provided by many 16-bit operating systems for communication between game and other objects.  
 
 SDL2 is used in 3D games including 0AD, FreeCiv, Oolite, and in 2D games such as Secret Maryo Chnonicles and many others in Humble Bundles.  The best known tutorials for SDL2 are those at lazyfoo.net and the following overview is based on them. Refer to that site for more deails of SDL2 beyond this introduction.
+
+There are now also Java SDL2 implementations for Android so it may be a nice way to make platform independent games.
 
 \section{Hello SDL2}
 
