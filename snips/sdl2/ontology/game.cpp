@@ -27,8 +27,6 @@ Predicate Predicate_copy(Predicate& p) {
 
 
 
-//(maybe we actually need the world to become global like bush said?)
-
 //for eachISA, copy in each of the parent's propertes
 //(don't recurse to grandparents, assume the parent already did that)
 //(NB this can introduce contradictins, both with existing properties and with multuple inheritence)
@@ -37,14 +35,15 @@ void inheritPropertiesFromIsas(Substance s) {
 	for (auto& kv : s.properties) {       //key value pair
 		if (kv.first=="ISA") {         //convention: special pred names in caps
 			cout << "found ISA" << kv.first  << endl;
-			Argument* a = ((SubstanceName*)(kv.second.arguments["parent"]));
-			Substance* parent = ((SubstanceName*)a)->pSubstance;
+			Argument& a = kv.second.arguments["parent"];
+			Substance* parent = (Substance*)(a.val_substancePtr);
+			
 			for (auto& kvp : parent->properties) {   
 				cout << "parent prop" << kvp.first << endl;
 				//TODO copy it (including if its an ISA?)
 				//pnew = Predicate_copy(p);
 				//s.propertes.insert(pnew);
-			}
+			}			
 		}
 	}
 }
@@ -59,31 +58,6 @@ void resolveContradictions(Substance s) {
 	//if this happens, remove all of them (as we can't infer anything)
 }
 
-Int Int_init(int i) {
-	Int x;
-	x.val=i;
-	return x;
-}
-Float Float_init(float f) {
-	Float x;
-	x.val=f;
-	return x;
-}
-SubstanceName SubstanceName_init(Substance* sp) {
-	SubstanceName x;
-	x.pSubstance=sp;
-	return x;
-}
-std::string Int::toString() {
-	return string("hh");
-}
-std::string Float::toString() {
-	return string("hh");
-}
-std::string SubstanceName::toString() {
-	return string("hh");
-}
-
 
 int main( int argc, char* args[] ) {
 
@@ -91,49 +65,45 @@ int main( int argc, char* args[] ) {
 	Substance cow = Substance_init();
 
 	Predicate cow_age = Predicate_init(); 
-	Int cow_age_int = Int_init(2);
-	cow_age.arguments.insert(pair<string, Argument*>(string("number_of_years"), (Argument*) &cow_age_int));
+	Argument cow_age_arg0;
+	cow_age_arg0.val_int = 10;
+	cow_age.arguments.insert(pair<string, Argument>(string("number_of_years"), cow_age_arg0));
 	Substance_addProperty(cow, cow_age, string("age"));
 
+
 	Predicate cow_legs = Predicate_init(); 
-	Int cow_legs_int = Int_init(4);
-	cow_age.arguments.insert(pair<string, Argument*>(string("number"), (Argument*) &cow_legs_int));
-	Substance_addProperty(cow, cow_age, string("legs"));
-	
+	Argument cow_legs_arg0;
+	cow_legs_arg0.val_int = 4;
+	cow_age.arguments.insert(pair<string, Argument>(string("number_of_legs"), cow_legs_arg0));
+	Substance_addProperty(cow, cow_legs, string("legs"));
+
 	//recover a property predicate, an argument from it, and cast the argument to a pre-known type.
 	Predicate pp = cow.properties["age"];
-	Argument* arg0 = pp.arguments["number_of_years"];
-	cout << arg0 << endl;
-	cout << ((Int*)arg0)->val << endl;
+	Argument arg0 = pp.arguments["number_of_years"];
+	cout << arg0.val_int << endl;
+
 
 	Substance fresian = Substance_init();
 
 	Predicate fresian_ISA1 = Predicate_init(); 
-	SubstanceName fresian_parent1 = SubstanceName_init(&cow);
-	fresian_ISA1.arguments.insert(pair<string, Argument*>(string("parent"), (Argument*) &fresian_parent1));
+	Argument fresian_isa0_arg0;
+	fresian_isa0_arg0.val_substancePtr = (void*)(&cow);
+	fresian_ISA1.arguments.insert(pair<string, Argument>(string("parent"), fresian_isa0_arg0));
 	Substance_addProperty(fresian, fresian_ISA1, string("ISA"));
 
-/*
 	Predicate fresian_age = Predicate_init(); 
-	Int fresian_age_int = Int_init(5);
-	fresian_age.arguments.insert(pair<string, Argument*>(string("number_of_years"), (Argument*) &fresian_age_int));
+	Argument fresian_age_arg0;
+	fresian_age_arg0.val_int = 5;
+	fresian_age.arguments.insert(pair<string, Argument>(string("number_of_years"), fresian_age_arg0));
 	Substance_addProperty(fresian, fresian_age, string("age"));
-*/
+
 
 	inheritPropertiesFromIsas(fresian);
-
 
 
 	cout << "---" << endl;
 	for (auto& kv : fresian.properties) {
 		cout << "x" << kv.first << endl;
 	}
-
-	union U {
-		int val_int;
-		float val_float;
-		Substance* val_sp;
-	};
-
 
 }
