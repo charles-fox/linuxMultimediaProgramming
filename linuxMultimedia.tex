@@ -99,7 +99,7 @@ CMake lets us specify what libraries, and what versions of them,  are used by wh
 
 \section{History}
 
-In the old days, (e.g. 1980s), graphics were simple.  An area of memory was allocated to represent the array of pixels on the screen. User programs would write to it like any other part of memory. Then a graphics chip would read from it and turn the data into CRT scanning commands to send to the monitor.
+In the old days, (e.g. 1980s), graphics were simple.  An area of memory was allocated to directly represent the array of pixels on the screen.   User programs would write to it like any other part of memory. Then a graphics chip would read from it and turn the data into CRT scanning commands to send to the monitor.
 
 In the 2000s, in addition to memory mapping (frame buffers), optional plug-in GPUs sat on the system bus as IO modules and drew graphics in response to commands such as OpenGL or DirectX sent to them via the system bus. Hence one would buy a graphics card labelled as having these functions.   Today this is no longer the case.  The reason for this was that OpenGL etc rapidly gained many extension commands in later version, and hardware makers struggled to keep up designign new hardware to implement them. They they began to open up "shader languages" to enable these commands to be done in software.  Hackers then started using shader languages for non-graphical computing, which led to the present GPU-computing architectures.
 
@@ -108,7 +108,7 @@ In the 2000s, in addition to memory mapping (frame buffers), optional plug-in GP
 
 Today the situtation is a lot more complex and priobably only a handful of people in the world now understand the whole of the modern graphics stack. APIs inclusing OpenGL, DirectX, and others, are implemented in software libraries, and are translated into lower-level GPU architecture commands.   This stack is made especially complicated by the struggle between open-source architecture on which we will focus, and propriatory competitors.  As modern graphics cards are made only by propriatory comopanies, they may keep some hardware infromation secret or difficult to obtain, which gives them a competitiative advantage in providing some of these software components.  As a result, and together with current interest in GPU computing and reuse and extension of graphics APIs for pure computation, the whole graphics stack is changing very quickly.
 
-Graphics cards sit on the system bus as IO modules.  Importantly, they can use DMA (direct memory access).  For example, an image can be placed in regular RAM, then a single command given to the GPU to load it from main RAM into the GPU.  This copy does not go via the CPU, it goes via DMA, so from the CPU's point of view is almost instant.  (It will, however, slow if the bus is needed for other thigns, such as additional DMAs froma  webcam into the main RAM.)
+Graphics cards sit on the system bus as IO modules.  Importantly, they can use DMA (direct memory access).  For example, an image can be placed in regular RAM, then a single command given to the GPU to load it from main RAM into the GPU.  This copy does not go via the CPU, it goes via DMA, so from the CPU's point of view is almost instant.  (It will, however, slow if the bus is needed for other things, such as additional DMAs from a webcam into the main RAM.)
 
 \subsection{Mesa stack}
 
