@@ -922,17 +922,35 @@ Due to its high XML verbosity (several lines of text to describe each note) ther
 Ontology of MusicXML: harmony changes and section names are discrete events put into measures at points.  Lyrical sylablus are tagged to individual notes. (which make it hard to write lyrics separetly from the music; but forces the music to have the correct maps to the notes.  As usual, MusicXML is not for composing in, it's a low-level description of the notes. Might want to use some other ABC like notation for lyrics and compile to here?)
 
 \section{MuseScore}
-Is standard opensource graphical MusicXML editor. (It can also load and save it its own native format, and various others.)  It can play scores as MIDI during editing. 
+Is standard opensource graphical MusicXML editor. It can also load and save it its own native format, and various others.  It can play scores as MIDI during editing. 
 
-To install on Debian-based systems:
+To install and run on Debian-based systems:
 \begin{verbatim}
-sudo apt install musescore
+sudo apt install musescore3
+musescore3
 \end{verbatim}
 
-To enter notes: press N for note entry mode (which works a bit like vi's insert mode). Press number 1-8 for duration. Type note letter name C,D,E etc or 0 for rest. They assume the current octave.  Cursor keys to move back and forward in time, and to move notes up and down. Also mouse entry.
+\subsection{Note entry}
+
+\subsubsection{Note mode}
+Entering notes can be done in several modes.  The main one is entered a bit like vi'm insert mode by pressing N for notes.
+
+In note mode, you can move around the score using the cursor keys.   Press letter names A-G on the computer keyboard -- or 0 for rest -- to enter notes.   By default these will be quavers.  To change the note duration setting, press 1-8.
+
+Like duration, (length extending) dots state can be toggled with the "." key.  When this is on, all notes will have dots.    To insert a tied note press "+" instead of the letter.
+
+\subsubsection{Mouse entry}
+
+You can also move notes around by dragging them with the mouse. Add new notes with the mouse by clicking. Click on them again to delete.
+
+\subsubsection{MIDI entry}
+TODO can be live or note by note
+
+\subsection{More features}
+
+To change key signature: View->pallette to make sure you can see the pallete. Drag a key signature from the pallete into the score.
 
 Has semantic guitar chords (appear as 'harmony' objects in XML). Transposable (Notes->Transpose). To split music into sections eg. verse, chorus, use a 'section break', show by 'new system' flag in the XML, plus add>text>rehearsal mark. (The mark names a point not a segment; but we may also interpret this as naming thewhole segment up to the next mark or end.)
-
 
 MuseScore can also be used as a command line tool to generate graphical images of scores from MusicXML files, (eg. this is how Wikipedia converts MusicXML musical fragments into png files for display on its pages). Example png generation:
 
