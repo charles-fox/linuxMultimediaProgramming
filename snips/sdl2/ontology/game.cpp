@@ -17,10 +17,14 @@ Predicate Predicate_init(bool isExclusive=false) {
 	p.isExclusive=isExclusive;
 	return p;
 }
-Predicate Predicate_copy(Predicate& p) {
+Predicate Predicate_copy(Predicate& pold, pnew) {
 	Predicate pnew;
 	pnew.isExclusive=p.isExclusive;
 	//TODO copy each arg
+	for (auto kvp : pold->arguments) {
+		Argument argnew;
+		argnew = pold TODO
+	}
 	return pnew;
 }
 
@@ -41,7 +45,8 @@ void inheritPropertiesFromIsas(Substance s) {
 			for (auto& kvp : parent->properties) {   
 				cout << "parent prop" << kvp.first << endl;
 				//TODO copy it (including if its an ISA?)
-				//pnew = Predicate_copy(p);
+				Prdicate pnew;
+				Predicate_copy(p, pnew);
 				//s.propertes.insert(pnew);
 			}			
 		}
