@@ -950,7 +950,12 @@ TODO can be live or note by note
 
 To change key signature: View->pallette to make sure you can see the pallete. Drag a key signature from the pallete into the score.
 
-Has semantic guitar chords (appear as 'harmony' objects in XML). Transposable (Notes->Transpose). To split music into sections eg. verse, chorus, use a 'section break', show by 'new system' flag in the XML, plus add>text>rehearsal mark. (The mark names a point not a segment; but we may also interpret this as naming thewhole segment up to the next mark or end.)
+To enter chords, Ctrl-K.  These are transposable, and appear as 'harmony' objects in XML.  A list of understood chord symbols is at https://musescore.org/en/handbook/chord-symbols#enter-chord-symbol . 
+
+To split music into sections (eg. verse, chorus), use a 'section break' from Pallete->BreaksAndSpacers (which appears as a 'new system' flag in the XML), plus pallette>text>rehersal mark ([B1]), double click it. (The mark names a point not a segment; but we may also interpret this as naming the whole segment up to the next mark or end.)
+
+To transpose: Main window menu -> Tools -> Transpose.    By internal->major second.
+(e.g. if the file is in C and you want a Bb instrument to play it to sound in concert C:   When the instrument plays it's own C it sounds as concert Bb, so you need to transpose the file up a tone.)
 
 MuseScore can also be used as a command line tool to generate graphical images of scores from MusicXML files, (eg. this is how Wikipedia converts MusicXML musical fragments into png files for display on its pages). Example png generation:
 
