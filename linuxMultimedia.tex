@@ -84,7 +84,7 @@ We need to use C so we can see the bits and bytes and understand what's going on
 \lstinputlisting{snips/cmake/tutorial.cpp}
 \lstinputlisting{snips/cmake/CMakeLists.txt}
 
-CMake is the best modern build system for C++ on Linux and also other platforms (the C stands for `cross-platform', not the C laguages, as cmake can be used with other languages).  To use it, first write a program and cmake file as above. Then run,
+CMake is the best modern build system for C++ on Linux and also other platforms (the C stands for `cross-platform', not the C languages, as cmake can be used with other languages).  To use it, first write a program and cmake file as above. Then run,
 \begin{lstlisting}
 cmake .
 make
@@ -550,6 +550,12 @@ GTK3 is a very large and complex system so uusally, some extra commands are need
 
 \lstinputlisting{snips/gtk3/window/CMakeLists.txt}
 
+
+\section{Drawing with Cairo inside GTK3 windows (GDK)}
+The Cairo API is just an API for describing drawing commands, it doesn't care what you are drawing them onto.   We previously used it to draw onto files of various types.   It can also draw onto a special type of GTK3 widget called a DrawingArea, enabling Cairo to be used inside GTK3 windows like this:
+
+\lstinputlisting{snips/gtk3/gtk3cairo/gtk3cairo.c}
+\lstinputlisting{snips/gtk3/gtk3cairo/CMakeLists.txt}
 
 \chapter{CAD}
 
