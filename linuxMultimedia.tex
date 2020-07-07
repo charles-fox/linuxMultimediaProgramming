@@ -301,11 +301,14 @@ How OpenGL works intenrnall: graphics pipeline: https://fgiesen.wordpress.com/20
 
 \chapter{OpenCV}
 
+OpenCV is an image processing library targetting at machine vision, also incluing basic image processing functions and functions to read and write graphics and video files and devices.
 
 \section{Reading and writing}
 
-\lstinputlisting{snips/openCVcppCMake/videoWrite.cpp}
-\lstinputlisting{snips/openCVcppCMake/CMakeLists.txt}
+The following opens up either a webcam or a video file, performs some blurring and edge detection, and displays the result on the scren in real time:
+
+\lstinputlisting{snips/opencv/hellocv/hellocv.cpp}
+\lstinputlisting{snips/opencv/hellocv/CMakeLists.txt}
 
 \section{Basic manipulations}
 

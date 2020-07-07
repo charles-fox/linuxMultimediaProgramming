@@ -4,27 +4,17 @@
 using namespace std;
 using namespace cv;
 
-///opt/ros/kinetic/include/opencv-3.1.0-dev/opencv2/opencv.hpp
-
-// g++ -std=c++11 -I/opt/ros/kinetic/include/opencv-3.3.1/  openCVhello.cpp  /opt/ros/kinetic/lib/libopencv_*.so
-
-//not working:
-//g++ -std=c++11 `pkg-config --cflags opencv` edgeTest.cpp `pkg-config --libs opencv`
-
-
 int main(int, char**)
 {
-	VideoCapture cap(0);
-	//VideoCapture cap("/home/charles/ibex2pics/videoJan2016/output.mp4"); // open the default camera
-  	if(!cap.isOpened())  // check if we succeeded
-	{
+	VideoCapture cap(0); //to use local webcam
+	//VideoCapture cap("myfile.mp4"); // to use a file
+  	if(!cap.isOpened()) {
     		cout << "outch" << endl;
 		return -1;
 	}
   	namedWindow("edges",1);
-  	for(;;)
-  	{
 
+  	for(;;)  {
 		double blurRadius1 = 10;
 		double blurRadius2 = 5;
 		double canny1  =4;
@@ -38,15 +28,11 @@ int main(int, char**)
 		Mat channel[3];
 		Mat blur;
 		Mat edges;
-	//	cvtColor(frame, grey, COLOR_BGR2GRAY);
 		split(frame, channel);
 
 		GaussianBlur(channel[1], blur, Size(5,5), blurRadius1, blurRadius2);
 		Canny(blur, edges, 0, canny1, canny2);
 
-	//	imshow("IBEX", frame);
-	//	imshow("IBEX", edges);
-		
 		Mat composite;
 		double alpha = 0.5;
 		double beta = 1-alpha;
@@ -59,8 +45,7 @@ int main(int, char**)
 		if(waitKey(30) >= 0) 
 			break;
 	}
-	// the camera will be deinitialized automatically in VideoCapture destructor
-  return 0;
+  	return 0;
 }
 
 
