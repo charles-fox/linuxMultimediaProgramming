@@ -539,6 +539,16 @@ sudo fc-cache -fv
 also Pango font rendering ?
 
 
+\chapter{GUIs (GTK3)}
+
+GTK3 is a library for making windows, icons, mouse and pointer (WIMP) displays and interactions on the desktop.   It sits on top of XWindows to provide a higher level interface.    (Where XWindows draws lines and triangles, GTK3 draws buttons, menus etc.)
+
+To get a GTK3 window running:
+\lstinputlisting{snips/gtk3/window/hello.c}
+
+GTK3 is a very large and complex system so uusally, some extra commands are needed to set it up in CMake. (Traditionally, pkgconfig was a tool which was called inside of gcc invocations to produce lists of gcc options to find and set the paths to all the gtk components. Nowadays we do this in CMake instead:
+
+\lstinputlisting{snips/gtk3/window/CMakeLists.txt}
 
 
 \chapter{CAD}
