@@ -1091,7 +1091,10 @@ Generally we don't want to compose or edit in Denemo because then we are stuck i
 
 \section{Musical descriptor features}
 Queen Mary tools?
-\chapter{Speech synthesis}
+
+\chapter{Speech}
+
+\section{Speech synthesis}
 
 Festival is a speech synthesiser developed by the University of Edinburgh. It is used both for research and also by end-users.
 
@@ -1109,9 +1112,31 @@ text2wave myfile.txt > myaudio.wav
 
 By default, Festival reads English and sounds like Stephen Hawking. You can also install many other voices that sound like natural native English, Scottish, and American male and female speakers, and other languages and voices for them.  For use in advanced research, Festival can be driven from a Lisp-style command line (via the festival command) or its funtions called in many other ways.  The full manual is at http://www.cstr.ed.ac.uk/projects/festival/manual/ .
 
-\chapter{Speech recognitions}
+\section{Speech recognition}
 
-kaldi?
+Speech transcription for users can be done by downloading and running Mozilla's  DeepSpeech:
+
+\begin{verbatim}
+# Install DeepSpeech
+pip3 install deepspeech
+
+# Download pre-trained English model files
+curl -LO https://github.com/mozilla/DeepSpeech/releases/download/v0.7.4/deepspeech-0.7.4-models.pbmm
+curl -LO https://github.com/mozilla/DeepSpeech/releases/download/v0.7.4/deepspeech-0.7.4-models.scorer
+
+# Download example audio files
+curl -LO https://github.com/mozilla/DeepSpeech/releases/download/v0.7.4/audio-0.7.4.tar.gz
+tar xvf audio-0.7.4.tar.gz
+
+# Transcribe an audio file
+deepspeech --model deepspeech-0.7.4-models.pbmm --scorer deepspeech-0.7.4-models.scorer --audio audio/2830-3980-0043.wav > transcript.txt
+
+\end{verbatim}
+
+(From: https://deepspeech.readthedocs.io/en/v0.7.4/?badge=latest )  
+(This uses neural networks via the TensorFlow parallel computing library, which can run on CPU but will be faster on a TensorFlow optimising GPU.)
+
+(For professional speech researchers, use the Kaldi toolkit to create your own ASR systems: kaldi-asr.org . If you have previously used HTK, Kaldi is a replacement for HTK with some similarities.)
 
 
 \chapter{Applications}
