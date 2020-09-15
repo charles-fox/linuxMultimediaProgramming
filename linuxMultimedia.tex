@@ -1835,14 +1835,14 @@ groupadd myname
 
 \section{Setup}
 
-\paragraph{Swapping keys} is often useful as a lab machine may have unusual form factor and keyboard, or we might just want to make CAPS into ESCAPE to use in vi, or a key might be broken.
+\paragraph{Swapping keys} is often useful.  A lab machine may have unusual form factor and keyboard, or we might just want to make CAPS into ESCAPE to use in vi, or a key might be broken, or we might need a fast way to enter foreign language symbols.
 
 Each hardware key has a numerical code. You need to get the code for the key whose behaviour you want to change.  Obtain a list of all codes by
 \begin{lstlisting}
 xmodmap -pk
 \end{lstlisting}
 
-The seven outputs for each key here are for the key itself, then when pressed with shift, ctrl, Shift+Ctl, AltGr and AltGr+Shift (These combinations were once kmown as super,hyper,meta etc.)   To remap the seven outputs for a keycode:
+The seven outputs for each key here are for the key itself, then when pressed with shift, ctrl, Shift+Ctl, AltGr and AltGr+Shift.  (The combinations were once made by extra keys called super,hyper,meta etc.)   To remap the seven outputs for a keycode:
 
 \begin{lstlisting}
 xmodmap -e "keycode  60 = period greater a b slash question d"
