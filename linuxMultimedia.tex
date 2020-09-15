@@ -213,7 +213,69 @@ Lossy compression, based n Fourer/wavelets. Patent issues.
 
 \section{TIFF}
 
+\subsection{GeoTIFF}
+
 Used in geospatial data as GeoTIFF, as TIFF has handy metadata slots that can be used to store the GIS coordinates and scale where the image lives.
+
+Geospatial images (usually called "rasters" in GIS world) are complicated because they are of the Earth's surface, which is neither flat nor perfectly spherical or ellipsoidal.    So hundreds of different approximate 2 coordinate schemes are used, depending on the type and scale of work being done.    (See my book Data Science for Transort which goes into datums and projections in detail, and also discusses vector shapefiles for GIS.) In the present setting it is sufficient to know that every GeoTif carries information about the coordinate system used, as well as its location and orientation on the Earth (or other planet) as metadata.  Coordinate systems include lattitue-longitute degrees as used in GPS and also systems in North-East meters, and we often need to convert between them.
+
+The library used to work with GeoTif (and other GIS image formats) is GDAL. GDAL comes as a set of command line tools, and also has bindings to many langages including Python, to call them from code.
+
+If you have been given a GeoTif, the main tool to inspect it is
+\begin{lstlisting}
+gdalinfo map.tif
+\end{lstlisting}
+
+This shows information about the image size in pixels but also the coordinate system used, the pixels per coordinate scale, and the location of the image on the Earth's surface in that coordinate system.
+
+To create a new GeoTIFF from a png, adding manual georeferencing (extreme coords are in WNES order)
+
+\begin{lstlisting}
+gdal_translate -a_srs "+proj=latlong +datum=WGS84" -of GTiff -co "INTERLEAVE=PIXEL" -a_ullr  -0.533567 53.273045  -0.511025  53.264248   map.png map.tif
+\end{lstlisting}
+
+This gives correct gdalinfo for upper and lower, left and right.  Note this is a -ve degrees per row because rows go down but north goes up.
+
+GoTif can be created from other GIS formats such as asc (ASCII) GIS:
+\begin{lstlisting}
+gdal_translate -of "GTiff" se2502_DSM_2M.asc   se2502_DSM_2M.tif
+\end{lstlisting}
+
+To convert a GeoTiff to another coordinate system, such as UTM30 (meters for UK zone):
+\begin{lstlisting}
+gdalwarp -t_srs '+proj=utm +zone=30 +datum=WGS84' field-wgs84.tif field-utm30.tif
+\end{lstlisting}
+(If this is run on a GeoTif which has no coordinate system, only numeric values, then it keeps the numbers the same but tags them as being in the given coordinate system.)
+
+To cut out a region from a GeoTif (aka 'clipping a raster'):
+\begin{lstlisting}
+gdal_translate -projwin  -0.533 53.272 -0.512 53.265  -of GTiff map.tif field-wgs84.tif
+\end{lstlisting}
+
+To resample a GeoTif to 120x100 pixels (colsxrows)
+\begin{lstlisting}
+gdalwarp -ts 120 100  in.tif out.tif
+\end{lstlisting}
+
+or if you want to specify he resample as 2 meters per pixel instead:
+\begin{lstlisting}
+gdalwarp -tr 2 2  field-utm30.tif out2.tif
+\end{lstlisting}
+
+GDAL has some very powerful maniulations, such as the ability to instantly merge many GeoTif tiles, with different locations and orientations, into a single large image, with all tiles in their correct places:
+\begin{lstlisting}
+gdal_merge -o out.tif in1.tif in2.tif in3.tif
+\end{lstlisting}
+
+Unlike other image formats which only store RGB or RGBA channels, (Geo)Tif can store any number of channels (called 'bands' in GIS world). For examle satellite data might have "colors" for many hyperspectral frequencies which are invisible to human eyes, but can be displayed in false color to make them visible.
+
+To load GeoTif into Python and view one channel (band) as an image,
+\lstinputlisting{snips/geotif/plotGeoTif.py}
+
+Or to extract metadata,
+\lstinputlisting{snips/geotif/testGDAL.py}
+
+(Some GeoTiffs store their data as float32, others as bytes. If you have bytes then you will need to chunk it into groups of 4 bytes (for 32 bit colour) and covert them to floats.)
 
 \section{Convert images between formats}
 "convert" command - very versatile. eg. ps to png.
