@@ -1835,19 +1835,28 @@ groupadd myname
 
 \section{Setup}
 
-\paragraph{Swapping keys} is often useful as a lab machine may have unusual form factor and keyboard, or we might just want to make CAPS into ESCAPE to use in vi, by adding to bashrc:
+\paragraph{Swapping keys} is often useful as a lab machine may have unusual form factor and keyboard, or we might just want to make CAPS into ESCAPE to use in vi, or a key might be broken.
+
+Each hardware key has a numerical code. You need to get the code for the key whose behaviour you want to change.  Obtain a list of all codes by
+\begin{lstlisting}
+xmodmap -pk
+\end{lstlisting}
+
+The seven outputs for each key here are for the key itself, then when pressed with shift, ctrl, Shift+Ctl, AltGr and AltGr+Shift (These combinations were once kmown as super,hyper,meta etc.)   To remap the seven outputs for a keycode:
 
 \begin{lstlisting}
 xmodmap -e "keycode  60 = period greater a b slash question d"
 \end{lstlisting}
-(xmodmap can also be given a config file containing many such mappings.  The seven outputs for key 60 here are for the key itself, then when pressed with shift, ctrl, alt, AltGr and combinations thereof (aka super,hyper,meta etc). )
+(xmodmap can also be given a config file containing many such mappings.  
 
-You may need to remove the 'lock' on each key, then update it, then re-lock it, such as these commands to map caps lock to Escape for vi users:
+You may need to remove the 'lock' on each key, then update it, then re-lock it, such as these commands to map Caps Lock to Escape for vi users:
 
 \begin{lstlisting}
 xmodmap -e "clear lock"
 xmodmap -e "keycode 66 = Escape NoSymbol Escape"
 \end{lstlisting}
+
+Add these commands to .bashrc to retain them.
 
 
 \paragraph{Changing the prompt format} can be very useful for setups where we plan to dial into the machine from outside, in this case it is useful to show the machine name to distinguish from local prompts on the outside machine,
