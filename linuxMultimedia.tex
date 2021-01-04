@@ -362,6 +362,16 @@ Once you have a context set up, you can apply any GL commands. The classic tutor
 How OpenGL works intenrnall: graphics pipeline: https://fgiesen.wordpress.com/2011/07/01/a-trip-through-the-graphics-pipeline-2011-part-1/
 
 
+\chapter{Scene graph 3D graphics: OGRE}
+
+OpenGL is a relatively low level 3D graphics API.  It's main shortcoming is that it alwys draws everything that exists in its tree.  If you are making a simulation or game based on a large world with many phyisical entities, you don't usually want to draw everything. Rather, you want to add some logic which inspects the tree to see which enities are actually worth drawing, which are usually those that are close by and in the direction that your camera is facing.    APIs which add this logic are called scene graph APIs.    
+
+There have been many competing scene graph APIs for Linux, extending and wrapping OpenGL and other low level APIs.  The official one from the same people as OpenGL used to be Open Inventor, which was nice but had some IP problems which lead the ommuity to move on before they were fixed.
+
+OGRE (1.9) -- the Object-oriented Rendering Engine -- is the one currently used in the Gazebo robotics simulator, so its ontology will be familiar if you are used to Gazebo's menus.   The other current one is OSG, Open Scene Graph.  OGRE uses C++ rather than C, beause it is based on objects.  As such i it out of scope of this book, but we will give a short example below.  Full details are at its tutorials, https://ogrecave.github.io/ogre/api/latest/setup.html.
+
+\lstinputlisting{snips/ogre/BasicTutorial1.cpp}
+
 
 \chapter{OpenCV}
 
