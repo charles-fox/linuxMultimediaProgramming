@@ -366,9 +366,11 @@ How OpenGL works intenrnall: graphics pipeline: https://fgiesen.wordpress.com/20
 
 OpenGL is a relatively low level 3D graphics API.  It's main shortcoming is that it alwys draws everything that exists in its tree.  If you are making a simulation or game based on a large world with many phyisical entities, you don't usually want to draw everything. Rather, you want to add some logic which inspects the tree to see which enities are actually worth drawing, which are usually those that are close by and in the direction that your camera is facing.    APIs which add this logic are called scene graph APIs.    
 
+Scene Graph APIs can also include other logic to provide additional higher level features than found in OpenGL level. For example they can choose to render textures in higher resolutions as objects get closer.   For large textures such as terrain maps they can manage loading images in and out of memory from disc over a network at runtime.  They can use geometric infromation in the scene graph to caulate and render shadows from objects, known as shadow mapping.  They might use the same information to provide fast answers to spatial queries (using similar methods as in GIS systems) such as whether objects are overlapping.
+
 There have been many competing scene graph APIs for Linux, extending and wrapping OpenGL and other low level APIs.  The official one from the same people as OpenGL used to be Open Inventor, which was nice but had some IP problems which lead the ommuity to move on before they were fixed.
 
-OGRE (1.9) -- the Object-oriented Rendering Engine -- is the one currently used in the Gazebo robotics simulator, so its ontology will be familiar if you are used to Gazebo's menus.   The other current one is OSG, Open Scene Graph.  OGRE uses C++ rather than C, beause it is based on objects.  As such i it out of scope of this book, but we will give a short example below.  Full details are at its tutorials, https://ogrecave.github.io/ogre/api/latest/setup.html.
+OGRE (1.9) -- the Object-oriented Rendering Engine -- is the one currently used in the Gazebo robotics simulator, so its ontology will be familiar if you are used to Gazebo's menus.   The other current one is OSG, Open Scene Graph.  OGRE uses C++ rather than C, beause it is based on objects.  As such it is out of scope of this book, but we will give a short example below.  Full details are at its tutorials, https://ogrecave.github.io/ogre/api/latest/setup.html.
 
 \lstinputlisting{snips/ogre/BasicTutorial1.cpp}
 \lstinputlisting{snips/ogre/CMakeLists.txt}
