@@ -856,9 +856,8 @@ TODO
 
 Synthesize and play a MIDI file using software synthesis,
 \begin{lstlisting}
-sudo apt install fludsynth
-sudo apt install fluid-soundfont-gm
-fluidsynth --audio-driver=alsa -o audio.alsa.device=hw:1 /usr/share/sounds/sf2/FluidR3_GM.sf2 myfile.mid
+sudo apt install fluidsynth fluid-soundfont-gm
+fluidsynth --audio-driver=alsa -o audio.alsa.device=hw:0 /usr/share/sounds/sf2/default-GM.sf2 myfile.mid
 \end{lstlisting}
 
 
