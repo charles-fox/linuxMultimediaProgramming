@@ -856,10 +856,16 @@ TODO
 
 Synthesize and play a MIDI file using software synthesis,
 \begin{lstlisting}
+sudo apt install timidity
+timidity myfile.mid
+\end{lstlisting}
+
+Or use FluidSynth which can run with different soundfonts and output to wav, (maybe Timidy also has these options TODO?)
+
+\begin{lstlisting}
 sudo apt install fluidsynth fluid-soundfont-gm
 fluidsynth --audio-driver=alsa -o audio.alsa.device=hw:0 /usr/share/sounds/sf2/default-GM.sf2 myfile.mid
 \end{lstlisting}
-
 
 
 
