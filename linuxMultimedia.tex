@@ -1769,6 +1769,17 @@ WebRTC does not fix the container and codecs but does require than some standard
 Large many-to-many meetings require software to merge streams from many users at a central server, eg. Jitsi Meet video brige, Zoom, MS Teams, Blackboard collab ultra etc.
 Smaller meetings softwares may sometimes run just with everyone sending point to point directly to one another.
 
+\chapter{Joysticks}
+
+Standard joysticks are detected by the OS and appear as /dev/input/js0
+
+This should occur when a USB joystick is plugged in.
+
+For Bluetooth joysticks, such as PS2 gamepads, you need to pair them like any other Bluetooth device, then they will appear here too.   (To pair: use the settings menu on the desktop, usually found alongside wifi and networks. The device needs to be turned on and sometimes put into pairing mode to give it permission to pair, eg. on a PS2 gamepad by holding down the Home button for 2 seconds.   Then use the desktop guy to find the device and pair with it.)
+
+The C standard joystick.h library can then be used to process data from /dev/input/js0 such as printing actions to the screen:
+
+\lstinputlisting{snips/joystick/testjoystick.c}
 
 
 \chapter{Game Engines}
