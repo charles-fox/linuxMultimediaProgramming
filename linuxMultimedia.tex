@@ -2637,4 +2637,46 @@ where the local machine and domain names are defined by DNS. From
 your home laptop you can also use your hosts file to give a short
 name to the gateway.
 
+
+\chapter{Package management}
+
+Most of the media libraries used in this document are available as OS packages, such as Debian .debs.
+
+To update apt's list of what's available from its remote repos, (do this before any other apt operations)
+\begin{lstlisting}
+apt update
+\end{lstlisting}
+
+To list all, and search what packages in configured repos are available for install, by keyword, then install and remove,
+
+\begin{lstlisting}
+apt list
+apt list --installed   #only show packages installed by apt
+apt search mykeyword
+apt install mypackagename
+apt remove mypackagename
+\end{lstlisting}
+
+To updgrade all packages on the system installed by apt to the latest available versions.
+\begin{lstlisting}
+apt upgrade
+\end{lstlisting}
+The above just gets the latest version of each package and doesn't add or remove any others which may be needed to make the new versions work. Doing that latter is more complex and requires some intelligence if multiple packages fight for wanting different versions of dependencies. The following distribution upgrade uses algorithms which try to optimise the upgrade to amke the most common packages work at the expense of less common ones in the case of such fights:
+
+\begin{lstlisting}
+apt dist-upgrade
+\end{lstlisting}
+
+
+To list what packages are installed on the whole system (not just by apt), and what files are owned by them:
+
+\begin{lstlisting}
+dpkg-query -l
+dpkg-query --listfiles mypackage
+\end{lstlisting}
+
+
+
+
+
 \end{document}
